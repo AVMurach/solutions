@@ -1,11 +1,65 @@
 
+.search {
+	height: 4.7mm;
+	/*background-color: #d6d9dd;*/
+	dock-align: top;
+}
+
+.parameter_grid {
+	width: 100%;
+	height: 5.7mm;
+	dock-align: top;
+}
+
+.caption_grid {
+	height: 4.7mm;
+	selected-color: #bacdce;
+	background-color: #efeff4;
+	dock-align: top;
+	padding-left: 2.4mm;
+}
+
+.bottom_btn {
+	width: 100%;
+	height: 5.7mm;
+	dock-align: bottom;
+	selected-color: #bacdce;
+	background-color: #fff;
+}
+
+
+.grid {
+	height: 7.4mm;
+	width: 100%;
+	background-color: #ffffff;
+	selected-color: #bacdce;
+}
+
+.grid vl {
+	width: 100%;
+	height: 100%;
+	dock-align: left;
+	padding-top: 6%;
+	padding-left: 2.4mm;	
+}
+
 .grid vl dl{
 	width: 100%;
-	height: 40%;
+	height: 60%;
+}
+
+.grid vl dl TextView {
+	width: 100%;
+	height: 100%;
+	margin-top: 2%;
+	white-space: normal;
+	font: 68% Arial;
+	color: #8e8e93;
+	dock-align: left;
 }
 
 .grid vl dl vl{
-	width: 9.2mm;
+	width: 8.2mm;
 	height: 84%;
 	dock-align: right;
 	margin-top: 10%;
@@ -62,6 +116,7 @@
 .main_row{
 	height: 100%;
 	color: #000;
+	font: 46% Arial;	
 }
 
 .parameter_grid TextView {
@@ -69,28 +124,30 @@
 }
 
 .description_row {
-	height: 40%;
-	font: 42% Arial;
+	height: 26%;
+	font: 95% Arial;
+	white-space: nowrap;
+	margin-top: 3%;
 }
 
 .swipe_layout {
-	height: 6.7mm;
+	height: 7.4mm;
 	background-color: #ffffff;
 }
 
 .swipe_order {
-	height: 13.8mm;
+	height: 7.4mm;
 }
 
 .quickOrder {
-	height: 13.8mm;
-	width: 36.7mm;
+	height: 7.4mm;
+	width: 41.7mm;
 	background-color: #4dd865;
 }
 
 .quickOrder vl {
 	height: 100%;
-	width: 100%;
+	width: 47%;
 }
 
 .quickOrder vl TextView {
@@ -103,39 +160,26 @@
 }
 
 .quickOrder vl hl {
-	height: 52%;
+	height: 60%;
 	width: 100%;
-	margin-top: 17%;
+	margin-top: 3%;
 }
 
-.add_button {
-	height: 100%;
-	width: 19.8%;
-	margin-left: 1.7%;
-	selected-color: #50cb65;
-	background-image: url(empty.png);
-	color: #ffffff;
-	font: 33.5% Arial;
+.quickOrder vl hl_right {
+	height: 94%;
+	width: 100%;
+	margin-top: 3%;
 }
 
-.cart_button {
-	height: 100%;
-	width: 30.1%;
-	margin-left: 1.7%;
-	selected-color: #50cb65;
-	background-image: url(cart.png);
-	font: 33.5% Arial;
-}
-
-.quickOrder vl hl hl {
+.quickOrder vl hl_right hl {
 	height: 98%;
-	width: 38.5%;
+	width: 90%;
 	margin-left: 4.3%;
 	vertical-align: central;
 	background-image: url(order_textfield.png);
 }
 
-.quickOrder vl hl hl EditText {
+.quickOrder vl hl_right hl EditText {
 	height: 65%;
 	width: 50%;
 	text-align: right;
@@ -146,10 +190,59 @@
 	font: 60% Arial;
 }
 
-.quickOrder vl hl hl TextView {
+.quickOrder vl hl_right hl TextView {
 	height: 67%;
 	width: 50%;
 	margin-top: 27%;
+	margin-left: 5%;
+	text-align: left;
+	vertical-align: central;
+	color: #ffffff;
+	font: 50% Arial;
+}
+
+.add_button {
+	height: 100%;
+	width: 42.7%;
+	margin-left: 1.7%;
+	selected-color: #50cb65;
+	background-image: url(empty.png);
+	color: #ffffff;
+	font: 33.5% Arial;
+}
+
+.cart_button {
+	height: 100%;
+	width: 55.0%;
+	margin-left: 5.7%;
+	selected-color: #50cb65;
+	background-image: url(cart.png);
+	font: 33.5% Arial;
+}
+
+.quickOrder vl hl hl {
+	height: 98%;
+	width: 90%;
+	margin-left: 4.3%;
+	vertical-align: central;
+	background-image: url(order_textfield.png);
+}
+
+.quickOrder vl hl hl EditText {
+	height: 75%;
+	width: 50%;
+	text-align: right;
+	margin-top: 14%;
+	padding-top: 10%;
+	padding-bottom: 17%;
+	color: #ffffff;
+	font: 60% Arial;
+}
+
+.quickOrder vl hl hl TextView {
+	height: 77%;
+	width: 50%;
+	margin-top: 33%;
 	margin-left: 5%;
 	text-align: left;
 	vertical-align: central;

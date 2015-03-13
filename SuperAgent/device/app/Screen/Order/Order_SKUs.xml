@@ -8,12 +8,8 @@
 
 	<c:DockLayout>
 
-		<c:DockLayout CssClass="top_navigator">
-			<c:HorizontalLayout>
-				<c:TextView Text="#skuAdd#" />
-			</c:HorizontalLayout>
-		</c:DockLayout>
-
+		<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
+		
 		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
 			<c:TextView Text="#ready#"></c:TextView>
 		</c:HorizontalLayout>
@@ -35,15 +31,18 @@
 			<c:Image></c:Image>
 		</c:DockLayout>
 		<c:HorizontalLine />
+		<c:HorizontalLine /> 
+		
+		
 
-		<s:If Test="@doGroupping">
+		<!-- <s:If Test="@doGroupping">
 		</s:If>	
 		<s:Else>
 			<c:HorizontalLayout Id="Orderadd" CssClass="caption_grid">
 				<c:TextView Text="#skuList#:"></c:TextView>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
-		</s:Else>
+		</s:Else> -->
 
 		<c:ScrollView Id="grScrollView" OnScroll="$OnScroll()">
 			<s:If Test="@doGroupping">
@@ -73,10 +72,15 @@
 									<c:EditText Id="editText{$index}" Text="0" Keyboard="numeric" />
 									<c:TextView Id="pack{$index}" Text=""/>
 								</c:HorizontalLayout>
-								<c:Button Text="+1" CssClass="add_button" OnClick="$AddToOrder(editText{$index})" />
-								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId)" />
+							
 							</c:HorizontalLayout>
 							<c:TextView Id="textView{$index}" Text="0 {#alreadyOrdered#}" />
+						</c:VerticalLayout>
+						<c:VerticalLayout>
+							<c:HorizontalLayout CssClass="hl_right">							
+								<c:Button Text="+1" CssClass="add_button" OnClick="$AddToOrder(editText{$index})" />
+								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId)" />
+							</c:HorizontalLayout>							
 						</c:VerticalLayout>
 					</c:HorizontalLayout>
 					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId)" CssClass="grid">
