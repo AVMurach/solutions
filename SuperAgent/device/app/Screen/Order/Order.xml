@@ -33,6 +33,23 @@
 					<c:TextView Text="#add#"></c:TextView>
 				</c:HorizontalLayout>
 				<c:HorizontalLine CssClass="b_line" />
+				
+				<c:HorizontalLayout CssClass="grid">
+					<c:VerticalLayout>
+						<c:DockLayout>
+							<c:Button Text="#synchronize#" OnClick="$SyncData()" />
+						</c:DockLayout>
+		
+						<c:TextView Id="dataSyncReport" CssClass="main_row" />
+		
+						<c:TextView Id="dataSyncError" CssClass="red_row" />
+		
+						<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
+							<c:Indicator Id="dataSyncIndicator" />
+							<c:TextView Text="#sync#..." />
+						</c:HorizontalLayout>
+					</c:VerticalLayout>
+				</c:HorizontalLayout>
 			</s:If>
 		</s:If>
 

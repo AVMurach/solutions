@@ -199,6 +199,8 @@ noteAsNew	Отметить как невыполненную
 noDescriGiven	(описание отсутствует)
 error	Ошибка
 at	в
+toSend	Отправить
+
 currency	руб.
 Synchronization_has_not_been_performed	Синхронизация не была выполнена
 delete	Удалить

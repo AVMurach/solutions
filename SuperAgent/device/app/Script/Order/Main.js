@@ -185,14 +185,15 @@ function CheckIfEmptyAndForward(order, wfName) {
 	if (wfName == "CreateOrder") {
 		if (save)
 			order.GetObject().Save();
-		Workflow.Commit();
+					
+		Workflow.Commit();		
 	} else if (wfName == "Order") {
 		if (IsNew(order)) {
 			order.GetObject().Save();
 			DB.Commit();
 		}
 		DoBackTo("OrderList");
-	} else{
+	} else {
 		if ($.sessionConst.encashEnabled)
 			Workflow.Action("Forward", []);
 		else
@@ -200,6 +201,46 @@ function CheckIfEmptyAndForward(order, wfName) {
 	}
 
 }
+
+
+//-------------------- Sync Data ------------
+function SyncData() {
+	DB.Commit();
+	$.dataSyncReport.Visible = false;
+	$.dataSyncError.Visible = false;
+	$.dataSyncLayout.Visible = true;
+	$.dataSyncIndicator.Start();
+
+	DB.Sync(SyncDataFinish);
+}
+
+function SyncDataFinish() {
+	$.dataSyncIndicator.Stop();
+	$.dataSyncLayout.Visible = false;
+
+	DrawDataReport();
+	
+	$.Remove("sessionConst");
+	Global.SetSessionConstants();
+	Indicators.SetIndicators();
+}
+
+function DrawDataReport() {
+	var at = Translate["#at#"];
+	
+	if (DB.SuccessSync) {
+		$.dataSyncReport.Text = at;
+		$.dataSyncReport.Visible = true;
+		$.dataSyncError.Visible = false;
+	} else {
+		$.dataSyncError.Text = Translate["#error#"] + ": " + date + at + time;
+		$.dataSyncError.Visible = true;
+		$.dataSyncReport.Visible = false;
+	}
+}
+//-------------------- Sync Data ------------
+
+
 
 function SaveOrder(order) {
 	order.GetObject().Save();

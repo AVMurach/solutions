@@ -82,7 +82,7 @@ function GetSKUAndGroups(searchText, priceList, stock) {
 	            groupParentJoin +
 	            recOrderStr +
 	            " WHERE " + stockCondition + " PL.Ref = @Ref " + searchString + filterString +
-	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 100";
+	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 1000";
 
     } else {
 
@@ -110,8 +110,14 @@ function GetSKUAndGroups(searchText, priceList, stock) {
     }
 
     query.AddParameter("Ref", priceList);
-
-    return query.Execute();
+    
+    if(IsNullOrEmpty(filterString)){
+    	
+    	var que = new Query("SELECT * FROM Catalog_SKU LIMIT 0"); 
+    	return que.Execute();
+    }else{    
+    	return query.Execute();
+    }
 
 }
 
