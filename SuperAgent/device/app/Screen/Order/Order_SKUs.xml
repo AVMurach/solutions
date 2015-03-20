@@ -18,18 +18,20 @@
 		<c:HorizontalLine />
 
 		<c:DockLayout CssClass="search">
+			<c:Button Id="btnfilter" Text="#filter#" OnClickAction="$Workflow.DoAction(SetFilter, Order)"></c:Button>
+			
 			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 			<c:DockLayout>
 				<c:Image />
 				<c:EditText Id="edtSearch" Text="$search" Placeholder="#search#"></c:EditText>
-			</c:DockLayout>
+			</c:DockLayout>			
 		</c:DockLayout>
 		<c:HorizontalLine />
 
-		<c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order)">
+		<!-- <c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order)">
 			<c:TextView Text="#filter#"></c:TextView>
 			<c:Image></c:Image>
-		</c:DockLayout>
+		</c:DockLayout> -->
 		<c:HorizontalLine />
 		<c:HorizontalLine /> 
 		
