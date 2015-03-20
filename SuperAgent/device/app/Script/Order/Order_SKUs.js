@@ -294,7 +294,7 @@ function ShowRecommendedQty(order, recOrder) {
 
 function SetFilter() {
     if (Variables.Exists("filterType") == false)
-        Variables.AddGlobal("filterType", "group");
+        Variables.AddGlobal("filterType", "brand");
     else
         return Variables["filterType"];
 }
