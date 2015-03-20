@@ -226,14 +226,14 @@ function SyncDataFinish() {
 }
 
 function DrawDataReport() {
-	var at = Translate["#at#"];
+	var at = Translate["#Submitted#"];
 	
 	if (DB.SuccessSync) {
 		$.dataSyncReport.Text = at;
 		$.dataSyncReport.Visible = true;
 		$.dataSyncError.Visible = false;
 	} else {
-		$.dataSyncError.Text = Translate["#error#"] + ": " + date + at + time;
+		$.dataSyncError.Text = Translate["#error#"];
 		$.dataSyncError.Visible = true;
 		$.dataSyncReport.Visible = false;
 	}

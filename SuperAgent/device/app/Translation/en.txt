@@ -199,6 +199,8 @@ noteAsNew	Note as new
 noDescriGiven	(no description given)
 error	Error
 at	at
+toSend	To send
+Submitted	Submitted
 currency	CAD
 Synchronization_has_not_been_performed	Synchronization has not been performed
 delete	Delete

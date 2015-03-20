@@ -200,6 +200,7 @@ noDescriGiven	(описание отсутствует)
 error	Ошибка
 at	в
 toSend	Отправить
+Submitted	Отправлено
 
 currency	руб.
 Synchronization_has_not_been_performed	Синхронизация не была выполнена

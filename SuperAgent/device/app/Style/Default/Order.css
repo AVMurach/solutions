@@ -1,3 +1,110 @@
+.gridSync {
+	height: 5.8mm;
+	width: 100%;
+	background-color: #ffffff;
+	selected-color: #bacdce;	
+}
+
+.gridSync img {
+	height: 1.9mm;
+	width: 1.3mm;
+	margin-top: 16%;
+	dock-align: right;
+	margin-right: 2.4mm;
+	background-image: url(arrow.png);
+}
+
+.gridSync vl dl Button {
+	width: 19.4mm;
+	height: 70%;
+	dock-align: right;
+	margin-left: -45%;
+	margin-right: 3%;
+	margin-top: 15%;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #43acfd;
+	border-radius: 5px;
+	color: #2d89cf;
+	text-align: center;
+	font: 65% arial;
+}
+
+.gridSync vl {
+	width: 100%;
+	height: 100%;
+	dock-align: left;
+	padding-top: 2%;
+	padding-left: 2.4mm;
+}
+
+.gridSync vl hl {
+	width: 100%;
+	height: 30%;
+	margin-top: -42%;	
+}
+
+.gridSync vl hl Indicator {
+	height: 100%;
+	/*width: 2.3mm;*/
+	color: #2d89cf;
+}
+
+.gridSync vl hl TextView {
+	width: 100%;
+	height: 80%;
+	margin-top: 10%;
+	margin-left: 2%;
+	font: 80% Arial-ItalicMT;
+	color: #2d89cf;
+}
+
+.gridSync vl dl {
+	height: 100%;
+	width: 100%;	
+}
+
+.main_rowSync {
+	width: 100%;
+	height: 100%;
+	white-space: normal;
+	placeholder-color: #2d89cf;
+	font: 42% Arial;	
+	margin-bottom: -50%;
+}
+
+.red_row {
+	width: 100%;
+	height: 40%;
+	white-space: normal;
+	font: 42% Arial;
+	margin-top: 20%;
+	color: #f74747;
+}
+
+.gridSync vl dl hl {
+	width: 100%;
+	height: 100%;	
+	margin-top: -87%;
+	margin-bottom: 10%;	
+}
+
+.gridSync vl dl hl Indicator {
+	height: 100%;
+	/*width: 2.3mm;*/
+	color: #2d89cf;	
+}
+
+.gridSync vl dl hl TextView {
+	width: 100%;
+	height: 60%;
+	margin-top: 10%;
+	margin-left: 2%;
+	font: 80% Arial-ItalicMT;
+	color: #2d89cf;
+}
+
+
 
 .swipe_layout {
 	height: 13.8mm;
