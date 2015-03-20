@@ -1,3 +1,9 @@
+.margin_top {
+	height: 1.3mm;
+	selected-color: #bacdce;
+	background-color: #efeff4;
+	dock-align: top;
+}
 
 .searchfilter {
 	height: 7.7mm;

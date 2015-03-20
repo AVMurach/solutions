@@ -113,6 +113,7 @@ function GetSKUAndGroups(searchText, priceList, stock) {
     
     if(IsNullOrEmpty(filterString)){
     	
+    	//липовый запрос, что бы получить выборку с пустым результатом
     	var que = new Query("SELECT * FROM Catalog_SKU LIMIT 0"); 
     	return que.Execute();
     }else{    
