@@ -18,7 +18,8 @@
 		<c:HorizontalLine />
 
 		<c:DockLayout CssClass="search">
-			<c:Button Id="btnfilter" Text="#filter#" OnClickAction="$Workflow.DoAction(SetFilter, Order)"></c:Button>
+			
+			<c:Button Id="btnfilter" Text="#filter#" OnClickAction="$ClearFiltersAndDoAction(SetFilter, Order)"></c:Button>
 			
 			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 			<c:DockLayout>

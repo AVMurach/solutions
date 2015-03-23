@@ -294,7 +294,7 @@ function ShowRecommendedQty(order, recOrder) {
 // --------------------------Filters------------------
 
 function SetFilter() {
-    if (Variables.Exists("filterType") == false)
+	if (Variables.Exists("filterType") == false)
         Variables.AddGlobal("filterType", "brand");
     else
         return Variables["filterType"];
@@ -308,6 +308,20 @@ function AskAndBack() {
 
 	Workflow.Refresh([$.screenContext]);
 
+}
+
+function ClearFiltersAndDoAction(SetFilter, Order) {
+
+	del = new Query("DELETE FROM USR_Filters");
+	del.Execute();
+	
+	if (Variables.Exists("filterType") != false){
+		Variables.Remove("filterType");
+		Variables.AddGlobal("filterType", "brand");
+	}
+	
+	Workflow.Action("SetFilter", [Order]);
+		
 }
 
 function CheckFilterAndForward() {
