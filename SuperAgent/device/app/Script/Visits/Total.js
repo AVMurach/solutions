@@ -240,3 +240,39 @@ function CreateQuestionnaireAnswers() {
 }
 
 
+//-------------------- Sync Data ------------
+function SyncDataTotal() {
+	DB.Commit();
+	$.dataSyncReport.Visible = false;
+	$.dataSyncError.Visible = false;
+	$.dataSyncLayout.Visible = true;
+	$.dataSyncIndicator.Start();
+
+	DB.Sync(SyncDataFinishTotal);
+}
+
+function SyncDataFinishTotal() {
+	$.dataSyncIndicator.Stop();
+	$.dataSyncLayout.Visible = false;
+
+	DrawDataReportTotal();
+	
+	$.Remove("sessionConst");
+	Global.SetSessionConstants();
+	Indicators.SetIndicators();
+}
+
+function DrawDataReportTotal() {
+	var at = Translate["#Submitted#"];
+	
+	if (DB.SuccessSync) {
+		$.dataSyncReport.Text = at;
+		$.dataSyncReport.Visible = true;
+		$.dataSyncError.Visible = false;
+	} else {
+		$.dataSyncError.Text = Translate["#error#"];
+		$.dataSyncError.Visible = true;
+		$.dataSyncReport.Visible = false;
+	}
+}
+//-------------------- Sync Data ------------

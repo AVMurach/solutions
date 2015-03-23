@@ -17,10 +17,30 @@
 				<c:TextView Text="#visitTotal#" />
 			</c:HorizontalLayout>
 		</c:DockLayout>
-
+		
 		<c:Image CssClass="7_scroll"></c:Image>
 		<c:HorizontalLine />
 
+		
+		<c:HorizontalLayout CssClass="gridSync">
+			<c:VerticalLayout>
+				<c:DockLayout>
+					<c:Button Text="#toSend#" OnClick="$SyncDataTotal()" />
+					
+					<c:TextView Id="dataSyncReport" CssClass="main_rowSync" />		
+					<c:TextView Id="dataSyncError" CssClass="red_row" />
+					
+					<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
+						<c:Indicator Id="dataSyncIndicator" />
+						<c:TextView Text="#sync#..." />
+					</c:HorizontalLayout>
+				</c:DockLayout>								
+			</c:VerticalLayout>
+		</c:HorizontalLayout>
+	
+		<c:HorizontalLine CssClass="b_line" />
+		
+		
 		<c:ScrollView Id="grScrollView">
 
 			<c:HorizontalLayout CssClass="caption_grid">
@@ -78,7 +98,7 @@
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
-
+			
 			<c:HorizontalLayout CssClass="caption_grid">
 				<c:TextView Text="#caps_summary#:"></c:TextView>
 			</c:HorizontalLayout>

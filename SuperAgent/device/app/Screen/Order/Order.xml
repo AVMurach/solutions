@@ -17,7 +17,12 @@
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
 			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CheckIfEmptyAndForward($workflow.order, $workflow.name)">
-				<c:TextView Id="btnForward" Text="#ready#" />
+				<s:If Test="$workflow.visit == null">
+					<c:TextView Id="btnForward" Text="#ready#" />
+				</s:If>
+				<s:Else>
+					<c:TextView Id="btnForward" Text="#forward#" />
+				</s:Else>
 			</c:DockLayout>
 			<c:HorizontalLayout>
 				<c:TextView Text="#order#" />
@@ -53,25 +58,27 @@
 			</c:DockLayout>
 			<c:HorizontalLine />			
 			
-			<s:Push Id="itemsCnt" Value="$GetOrderedSKUsCnt()"></s:Push>
-			<s:If Test="$itemsCnt != 0">
-				<s:If Test="$IsNew($workflow.order)">
-					<s:If Test="$NotEmptyRef($workflow.order.PriceList)">
-						<c:HorizontalLayout CssClass="gridSync">
-							<c:VerticalLayout>
-								<c:DockLayout>
-									<c:Button Text="#toSend#" OnClick="$SyncData()" />
-									
-									<c:TextView Id="dataSyncReport" CssClass="main_rowSync" />		
-									<c:TextView Id="dataSyncError" CssClass="red_row" />
-									
-									<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
-										<c:Indicator Id="dataSyncIndicator" />
-										<c:TextView Text="#sync#..." />
-									</c:HorizontalLayout>
-								</c:DockLayout>								
-							</c:VerticalLayout>
-						</c:HorizontalLayout> 
+			<s:If Test="$workflow.visit == null">
+				<s:Push Id="itemsCnt" Value="$GetOrderedSKUsCnt()"></s:Push>
+				<s:If Test="$itemsCnt != 0">
+					<s:If Test="$IsNew($workflow.order)">
+						<s:If Test="$NotEmptyRef($workflow.order.PriceList)">
+							<c:HorizontalLayout CssClass="gridSync">
+								<c:VerticalLayout>
+									<c:DockLayout>
+										<c:Button Text="#toSend#" OnClick="$SyncData()" />
+										
+										<c:TextView Id="dataSyncReport" CssClass="main_rowSync" />		
+										<c:TextView Id="dataSyncError" CssClass="red_row" />
+										
+										<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
+											<c:Indicator Id="dataSyncIndicator" />
+											<c:TextView Text="#sync#..." />
+										</c:HorizontalLayout>
+									</c:DockLayout>								
+								</c:VerticalLayout>
+							</c:HorizontalLayout> 
+						</s:If>
 					</s:If>
 				</s:If>
 			</s:If>
