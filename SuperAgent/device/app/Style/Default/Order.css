@@ -66,44 +66,49 @@
 
 .main_rowSync {
 	width: 100%;
-	height: 100%;
+	height: 42%;
 	white-space: normal;
 	placeholder-color: #2d89cf;
-	font: 42% Arial;	
-	margin-bottom: -50%;
+	font: 85% Arial;	
+	margin-top: 30%;
 }
 
 .red_row {
 	width: 100%;
-	height: 40%;
+	height: 42%;
 	white-space: normal;
-	font: 42% Arial;
-	margin-top: 20%;
+	font: 85% Arial;
+	margin-top: -40%;
 	color: #f74747;
 }
 
 .gridSync vl dl hl {
 	width: 100%;
 	height: 100%;	
-	margin-top: -87%;
-	margin-bottom: 10%;	
+	margin-top: -48%;		
 }
 
 .gridSync vl dl hl Indicator {
-	height: 100%;
+	height: 60%;
 	/*width: 2.3mm;*/
 	color: #2d89cf;	
 }
 
 .gridSync vl dl hl TextView {
 	width: 100%;
-	height: 60%;
-	margin-top: 10%;
+	height: 80%;
+	margin-top: 5%;
 	margin-left: 2%;
-	font: 80% Arial-ItalicMT;
+	font: 60% Arial-ItalicMT;
 	color: #2d89cf;
 }
 
+.end_of_block {
+	height: 0.3mm;
+	selected-color: #bacdce;
+	background-color: #efeff4;
+	dock-align: top;
+}
 
 
 .swipe_layout {

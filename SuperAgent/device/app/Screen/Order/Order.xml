@@ -32,23 +32,7 @@
 				<c:HorizontalLayout Id="btnAdd" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoAction(Add)">
 					<c:TextView Text="#add#"></c:TextView>
 				</c:HorizontalLayout>
-				<c:HorizontalLine CssClass="b_line" />
-				
-				<!--  <c:HorizontalLayout CssClass="gridSync">
-					<c:VerticalLayout>
-						<c:DockLayout>
-							<c:Button Text="#toSend#" OnClick="$SyncData()" />
-							
-							<c:TextView Id="dataSyncReport" CssClass="main_rowSync" />		
-							<c:TextView Id="dataSyncError" CssClass="red_row" />
-							
-							<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
-								<c:Indicator Id="dataSyncIndicator" />
-								<c:TextView Text="#sync#..." />
-							</c:HorizontalLayout>
-						</c:DockLayout>								
-					</c:VerticalLayout>
-				</c:HorizontalLayout> -->
+				<c:HorizontalLine CssClass="b_line" />				 
 			</s:If>
 		</s:If>
 
@@ -67,8 +51,31 @@
 					<c:TextView Text="$FormatValue($sum)" CssClass="main_row"></c:TextView>
 				</c:VerticalLayout>
 			</c:DockLayout>
-			<c:HorizontalLine />
-
+			<c:HorizontalLine />			
+			
+			<s:Push Id="itemsCnt" Value="$GetOrderedSKUsCnt()"></s:Push>
+			<s:If Test="$itemsCnt != 0">
+				<s:If Test="$IsNew($workflow.order)">
+					<s:If Test="$NotEmptyRef($workflow.order.PriceList)">
+						<c:HorizontalLayout CssClass="gridSync">
+							<c:VerticalLayout>
+								<c:DockLayout>
+									<c:Button Text="#toSend#" OnClick="$SyncData()" />
+									
+									<c:TextView Id="dataSyncReport" CssClass="main_rowSync" />		
+									<c:TextView Id="dataSyncError" CssClass="red_row" />
+									
+									<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
+										<c:Indicator Id="dataSyncIndicator" />
+										<c:TextView Text="#sync#..." />
+									</c:HorizontalLayout>
+								</c:DockLayout>								
+							</c:VerticalLayout>
+						</c:HorizontalLayout> 
+					</s:If>
+				</s:If>
+			</s:If>
+			
 			<c:HorizontalLayout CssClass="end_of_block" />
 
 			<c:HorizontalLayout CssClass="caption_grid">

@@ -110,6 +110,11 @@ function GetOrderedSKUs(order) {
 	return r;
 }
 
+function GetOrderedSKUsCnt() {
+	return itemsQty;
+	//return 0;
+}
+
 function GetOrderSUM(order) {
 	var query = new Query("SELECT SUM(Qty*Total) FROM Document_Order_SKUs WHERE Ref = @Ref");
 	query.AddParameter("Ref", order);
