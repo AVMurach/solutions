@@ -10,7 +10,7 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CheckAndCommit($workflow.order, $workflow.visit, $workflow.name)" >
+			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$AskSync($workflow.order, $workflow.visit, $workflow.name)" >
 				<c:TextView Id="btnForward" Text="#ready#" />
 			</c:DockLayout>			
 			<c:HorizontalLayout>
@@ -20,25 +20,6 @@
 		
 		<c:Image CssClass="7_scroll"></c:Image>
 		<c:HorizontalLine />
-
-		
-		<c:HorizontalLayout CssClass="gridSync">
-			<c:VerticalLayout>
-				<c:DockLayout>
-					<c:Button Text="#toSend#" OnClick="$SyncDataTotal()" />
-					
-					<c:TextView Id="dataSyncReport" CssClass="main_rowSync" />		
-					<c:TextView Id="dataSyncError" CssClass="red_row" />
-					
-					<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
-						<c:Indicator Id="dataSyncIndicator" />
-						<c:TextView Text="#sync#..." />
-					</c:HorizontalLayout>
-				</c:DockLayout>								
-			</c:VerticalLayout>
-		</c:HorizontalLayout>
-	
-		<c:HorizontalLine CssClass="b_line" />
 		
 		
 		<c:ScrollView Id="grScrollView">
@@ -139,7 +120,24 @@
 			</s:If>
 
 		</c:ScrollView>
-
+		
+		<c:HorizontalLine CssClass="b_line" />
+		<c:HorizontalLayout CssClass="gridSync">
+			<c:VerticalLayout>
+				<c:DockLayout>
+					<c:Button Text="#toSend#" OnClickAction="$CheckAndCommitAndSync($workflow.order, $workflow.visit, $workflow.name)" />
+					
+					<c:TextView Id="dataSyncReport" CssClass="main_rowSync" />		
+					<c:TextView Id="dataSyncError" CssClass="red_row" />
+					
+					<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
+						<c:Indicator Id="dataSyncIndicator" />
+						<c:TextView Text="#sync#..." />
+					</c:HorizontalLayout>
+				</c:DockLayout>								
+			</c:VerticalLayout>
+		</c:HorizontalLayout>
+		
 	</c:VerticalLayout>
 
 </c:Screen>

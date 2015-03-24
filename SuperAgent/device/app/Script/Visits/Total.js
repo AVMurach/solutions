@@ -100,8 +100,30 @@ function GetOrderSUM(order) {
     return FormatValue(sum);
 }
 
-function CheckAndCommit(order, visit, wfName) {
+function AskSync(order, visit, wfName) {
+	Dialog.Alert("#SendRequestNow#"
+		    , Callback
+		    , [order, visit, wfName]
+		    , "#true#"
+		    , "#cancel#"
+		    , "#false#");
+}
 
+function Callback(state, args) {
+	order = state[0];
+	visit = state[1];
+	wfName = state[2];
+	
+	if(args.Result == 0)
+		CheckAndCommitAndSync(order, visit, wfName);		
+    else if(args.Result == 2)
+    	CheckAndCommit(order, visit, wfName);
+    else if(args.Result == 1)
+        return;
+}
+
+function CheckAndCommit(order, visit, wfName) {
+	
 	if (VisitIsChecked(visit, order, wfName)) {
         visit = visit.GetObject();
     	visit.EndTime = DateTime.Now;
@@ -114,6 +136,26 @@ function CheckAndCommit(order, visit, wfName) {
         
         visit.Save();
         Workflow.Commit();
+    }
+    else
+        Dialog.Message(Translate["#messageNulls#"]);
+
+}
+
+function CheckAndCommitAndSync(order, visit, wfName) {
+	
+	if (VisitIsChecked(visit, order, wfName)) {
+        visit = visit.GetObject();
+    	visit.EndTime = DateTime.Now;
+
+        if (OrderExists(visit.Id)) {
+            order.GetObject().Save();
+        }
+        
+        CreateQuestionnaireAnswers();
+        
+        visit.Save();        
+        SyncDataTotal();                
     }
     else
         Dialog.Message(Translate["#messageNulls#"]);
@@ -260,6 +302,11 @@ function SyncDataFinishTotal() {
 	$.Remove("sessionConst");
 	Global.SetSessionConstants();
 	Indicators.SetIndicators();
+	
+	if(DB.SuccessSync){
+    	Workflow.Commit();
+    }
+	
 }
 
 function DrawDataReportTotal() {
@@ -268,7 +315,7 @@ function DrawDataReportTotal() {
 	if (DB.SuccessSync) {
 		$.dataSyncReport.Text = at;
 		$.dataSyncReport.Visible = true;
-		$.dataSyncError.Visible = false;
+		$.dataSyncError.Visible = false;		
 	} else {
 		$.dataSyncError.Text = Translate["#error#"];
 		$.dataSyncError.Visible = true;

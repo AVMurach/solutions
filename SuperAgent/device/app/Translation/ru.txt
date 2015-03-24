@@ -265,3 +265,4 @@ logout			Выход
 logoutQuery		При выходе будут удалены все данные
 cancel			Отменить
 logoutConfirm	Выйти
+SendRequestNow	Отправить заказ сейчас?
