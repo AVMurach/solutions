@@ -204,6 +204,12 @@ function CheckIfEmptyAndForward(order, wfName) {
 		else
 			Workflow.Action("SkipEncashment", []);
 	}
+	
+	//Murach A+
+	if (Variables.Exists("tickOnGlob")){
+		Variables.Remove("tickOnGlob");
+	}        
+	//Murach A-
 
 }
 
@@ -307,6 +313,12 @@ function OrderBack() {
 
 		}
 	}
+	
+	//Murach A+
+	if (Variables.Exists("tickOnGlob")){
+		Variables.Remove("tickOnGlob");
+	}        
+	//Murach A-
 
 }
 

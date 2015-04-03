@@ -228,6 +228,7 @@ contactName		Контактное лицо
 position		Должность
 visitdate		Дата визита
 alreadyOrdered	уже в заказе
+readyOrdered	В заказе
 repeat		Повторить
 nonregular	Единоразовые
 regular		Регулярные
@@ -266,3 +267,4 @@ logoutQuery		При выходе будут удалены все данные
 cancel			Отменить
 logoutConfirm	Выйти
 SendRequestNow	Отправить заказ сейчас?
+recentOrders	Из последних заказов
