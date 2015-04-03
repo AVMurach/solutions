@@ -5,6 +5,8 @@
 	<s:Push Id="search" Value="$param1"></s:Push>
 
 	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $order.PriceList, $order.Stock)"></s:Push>
+	
+	<s:Push Id="tickOn" Value="$TickOnTest()"></s:Push>
 
 	<c:DockLayout>
 
@@ -14,8 +16,19 @@
 			</c:HorizontalLayout>
 		</c:DockLayout>
 
-		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
-			<c:TextView Text="#ready#"></c:TextView>
+		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn">
+			<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn_left" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
+				<c:TextView Text="#ready#"></c:TextView>
+			</c:HorizontalLayout>
+			<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn_right" OnClickAction="$TickOnOff($tickOn, $edtSearch.Text)">				
+				<s:If Test="$tickOn">
+					<c:Image CssClass="tick" />
+				</s:If>
+				<s:Else>
+					<c:VerticalLayout CssClass="empty_tick"></c:VerticalLayout>
+				</s:Else>								
+				<c:TextView Text="#recentOrders#"></c:TextView>				
+			</c:HorizontalLayout>
 		</c:HorizontalLayout>
 		<c:HorizontalLine CssClass="b_line" />
 
@@ -98,7 +111,7 @@
 								</s:If>
 								<c:TextView Text="$item.Description" CssClass="main_row"></c:TextView>
 							</c:DockLayout>
-							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock} #brand#: {$item.Brand}" CssClass="description_row"></c:TextView>
+							<c:TextView Text="#price2# {$FormatValue($item.Price)} #stock#: {$item.CommonStock} #brand#: {$item.Brand}" CssClass="description_row"></c:TextView>
 						</c:VerticalLayout>
 					</c:DockLayout>
 				</c:SwipeHorizontalLayout>

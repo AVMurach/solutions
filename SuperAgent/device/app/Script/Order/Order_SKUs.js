@@ -9,8 +9,27 @@ var doGroupping;
 function OnLoading() {
     rec_order = "<font size=''>1576 шт.</font>";
     doGroupping = DoGroupping();
-    doRecommend = DoRecommend();
+    doRecommend = DoRecommend();        
 }
+
+//Murach A+
+function TickOnTest() {
+	if (Variables.Exists("tickOnGlob") == false){
+        return false;
+	}else{
+        return true;
+	}
+}
+
+function TickOnOff(tickOn, searchText) {
+	if (tickOn){
+		Variables.Remove("tickOnGlob");	    
+	}else{
+		Variables.AddGlobal("tickOnGlob", true)
+	}
+	Workflow.Refresh([searchText]);	
+}
+//Murach A-
 
 function WarMupFunction() {
 
@@ -63,6 +82,17 @@ function GetSKUAndGroups(searchText, priceList, stock) {
         recOrderSort = " OrderRecOrder DESC, ";
     }
 
+    //Murach A+
+    var recentOrders = "";
+    if (TickOnTest()){
+	    recentOrders = " AND S.Id IN (SELECT DISTINCT OSKU.SKU " +
+	    				"				FROM Document_Order_SKUs OSKU " +
+	    				"				WHERE OSKU.Ref In (SELECT Id	" +
+	    				"										FROM Document_Order" +
+	    				"										ORDER BY Date DESC LIMIT 5)) "
+    }
+    //Murach A-
+    
     if ($.workflow.order.Stock.EmptyRef()==true){
 
     	if ($.sessionConst.NoStkEnbl) {
@@ -81,7 +111,7 @@ function GetSKUAndGroups(searchText, priceList, stock) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
 	            recOrderStr +
-	            " WHERE " + stockCondition + " PL.Ref = @Ref " + searchString + filterString +
+	            " WHERE " + stockCondition + " PL.Ref = @Ref " + searchString + recentOrders + filterString +
 	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 100";
 
     } else {
@@ -102,7 +132,7 @@ function GetSKUAndGroups(searchText, priceList, stock) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
 	            recOrderStr +
-	            " WHERE PL.Ref = @Ref " + searchString + filterString +
+	            " WHERE PL.Ref = @Ref " + searchString + recentOrders + filterString +
 	            " ORDER BY " + groupSort + recOrderSort + " S.Description) INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock LIMIT 100";
 
     	query.AddParameter("stock", stock);

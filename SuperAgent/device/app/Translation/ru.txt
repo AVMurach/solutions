@@ -225,6 +225,7 @@ contactName		Контактное лицо
 position		Должность
 visitdate		Дата визита
 alreadyOrdered	уже в заказе
+dyOrdered	В заказе
 repeat		Повторить
 nonregular	Единоразовые
 regular		Регулярные
@@ -262,3 +263,4 @@ logout			Выход
 logoutQuery		При выходе будут удалены все данные
 cancel			Отменить
 logoutConfirm	Выйти
+recentOrders	Из последних заказов

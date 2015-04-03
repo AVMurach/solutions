@@ -225,6 +225,7 @@ contactName		Contact name
 position		Position
 visitdate		Visit date
 alreadyOrdered	already in order
+dyOrdered	In order
 repeat		Repeat
 nonregular	Non-regular
 regular		Regular
@@ -262,3 +263,4 @@ logout			Logout
 logoutQuery		When you exit will delete all data
 cancel			Cancel
 logoutConfirm	Logout
+recentOrders	Recent orders
