@@ -267,3 +267,4 @@ cancel			Cancel
 logoutConfirm	Logout
 SendRequestNow	Send request now?
 recentOrders	Recent orders
+mostPopular	Most popular

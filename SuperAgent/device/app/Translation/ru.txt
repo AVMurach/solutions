@@ -268,3 +268,4 @@ cancel			Отменить
 logoutConfirm	Выйти
 SendRequestNow	Отправить заказ сейчас?
 recentOrders	Из последних заказов
+mostPopular	Популярное

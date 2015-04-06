@@ -4,7 +4,7 @@
 	<s:Push Id="order" Value="$workflow.order"></s:Push>
 	<s:Push Id="search" Value="$param1"></s:Push>
 
-	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $order.PriceList, $order.Stock)"></s:Push>
+	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $order.PriceList, $order.Stock, $order, $order.Outlet)"></s:Push>
 	
 	<s:Push Id="tickOn" Value="$TickOnTest()"></s:Push>
 
@@ -23,7 +23,7 @@
 				<s:Else>
 					<c:VerticalLayout CssClass="empty_tick"></c:VerticalLayout>
 				</s:Else>								
-				<c:TextView Text="#recentOrders#"></c:TextView>				
+				<c:TextView Text="#mostPopular#"></c:TextView>				
 			</c:HorizontalLayout>
 		</c:HorizontalLayout>
 		<c:HorizontalLine CssClass="b_line" />
@@ -95,12 +95,16 @@
 						<c:VerticalLayout>
 							<c:HorizontalLayout CssClass="hl_right">							
 								<c:Button Text="+1" CssClass="add_button" OnClick="$AddToOrder(editText{$index})" />
-								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId)" />
+								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId, textMiniCnt{$index})" />
 							</c:HorizontalLayout>							
 						</c:VerticalLayout>
 					</c:HorizontalLayout>
 					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId)" CssClass="grid">
+											
 						<c:Image />
+						
+						<c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$CheckVisiblity($item.qty)"/>
+																		
 						<c:VerticalLayout>
 							<c:DockLayout>
 								<s:If Test="@doRecommend">
@@ -119,6 +123,7 @@
 								<c:TextView Text="$item.Description" CssClass="main_row"></c:TextView>
 							</c:DockLayout>
 							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock} #brand#: {$item.Brand}" CssClass="description_row"></c:TextView>
+							<!-- <c:TextView Id="textView{$index}" Text="{$item.CommonStock};  {$FormatValue($item.Price)} #currency#; {$item.Brand}" CssClass="description_row"></c:TextView>  -->
 						</c:VerticalLayout>
 					</c:DockLayout>
 				</c:SwipeHorizontalLayout>

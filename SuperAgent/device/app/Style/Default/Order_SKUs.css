@@ -1,5 +1,5 @@
 .bottom_btn_left {
-	width: 34%;
+	width: 48%;
 	height: 100%;
 	dock-align: bottom;
 	selected-color: #bacdce;
@@ -9,14 +9,15 @@
 .bottom_btn_left TextView {
 	width: 100%;
 	height: 100%;
-	text-align: center;
+	text-align: left;
 	padding-top: 25%;
 	color: #2d89cf;
 	font: 37% arial;	
+	margin-left: 1.7mm;
 }
 
 .bottom_btn_right {
-	width: 64%;
+	width: 48%;
 	height: 100%;
 	dock-align: bottom;
 	selected-color: #bacdce;
@@ -24,9 +25,9 @@
 }
 
 .bottom_btn_right TextView {
-	width: 80%;
+	width: 50%;
 	height: 100%;
-	text-align: center;
+	text-align: right;
 	padding-top: 25%;
 	color: #2d89cf;
 	font: 37% arial;
@@ -35,7 +36,7 @@
 
 .tick {
 	width: 2.1mm;
-	margin-left: 1.7mm;
+	margin-left: 7.7mm;
 	margin-right: 0%;
 	margin-top: 35%;
 	background-image: url(tick.png);
@@ -43,7 +44,7 @@
 }
 
 .empty_tick {
-	width: 3.8mm;
+	width: 9.8mm;
 	height: 100%;
 	dock-align: right;
 }
@@ -114,12 +115,25 @@
 	selected-color: #bacdce;
 }
 
+.miniCnt {
+	width: 3.6mm;
+	height: 100%;
+	dock-align: left;	
+	background-color: #4dd865;	
+	white-space: normal;
+	font: 20% Arial;
+	color: #ffffff;
+	text-align: center; 
+	padding-top: 40%;
+	padding-bottom: 15%;
+}
+
 .grid vl {
-	width: 100%;
+	width: 85%;
 	height: 100%;
 	dock-align: left;
 	padding-top: 6%;
-	padding-left: 2.4mm;	
+	padding-left: 0.5mm;	
 }
 
 .grid vl dl{

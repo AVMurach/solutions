@@ -35,7 +35,15 @@ function WarMupFunction() {
 
 }
 
-function GetSKUAndGroups(searchText, priceList, stock) {
+function Test(perper){
+	Dialog.Debug(perper);
+}
+
+function CheckVisiblity(qty){
+	return qty > 0;
+}
+
+function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 
     var filterString = "";
     filterString += AddFilter(filterString, "group_filter", "G.Id", " AND ");
@@ -88,9 +96,12 @@ function GetSKUAndGroups(searchText, priceList, stock) {
 	    recentOrders = " AND S.Id IN (SELECT DISTINCT OSKU.SKU " +
 	    				"				FROM Document_Order_SKUs OSKU " +
 	    				"				WHERE OSKU.Ref In (SELECT Id	" +
-	    				"										FROM Document_Order" +
+	    				"										FROM Document_Order " +
+	    				"										WHERE Outlet = @outlet " +
 	    				"										ORDER BY Date DESC LIMIT 5)) "
     }
+    
+       
     //Murach A-
 
     if ($.workflow.order.Stock.EmptyRef()==true){
@@ -101,7 +112,7 @@ function GetSKUAndGroups(searchText, priceList, stock) {
             var stockCondition = " S.CommonStock > 0 AND ";
     	}
 
-	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, " +
+	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, IfNull(O.Qty, 0) AS Qty, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
@@ -109,6 +120,11 @@ function GetSKUAndGroups(searchText, priceList, stock) {
 	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
 	            groupJoin +
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
+	            
+	          //Murach A+
+	            "LEFT JOIN Document_Order_SKUs O ON O.Ref=@order AND O.SKU = S.Id " +                               
+	          //Murach A-
+	            
 	            groupParentJoin +
 	            recOrderStr +
 	            " WHERE " + stockCondition + " PL.Ref = @Ref " + searchString + recentOrders + filterString +
@@ -122,7 +138,8 @@ function GetSKUAndGroups(searchText, priceList, stock) {
             var stockCondition = " SS.StockValue > 0 AND ";
     	}
 
-    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
+    	    	
+    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, IfNull(O.Qty, 0) AS Qty, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
@@ -130,6 +147,11 @@ function GetSKUAndGroups(searchText, priceList, stock) {
 	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
 	            groupJoin +
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
+	            
+	          //Murach A+
+	            "LEFT JOIN Document_Order_SKUs O ON O.Ref=@order AND O.SKU = S.Id " +                               
+	          //Murach A-
+	            	            
 	            groupParentJoin +
 	            recOrderStr +
 	            " WHERE PL.Ref = @Ref " + searchString + recentOrders + filterString +
@@ -140,6 +162,8 @@ function GetSKUAndGroups(searchText, priceList, stock) {
     }
 
     query.AddParameter("Ref", priceList);
+    query.AddParameter("order", order);
+    query.AddParameter("outlet", outlet);
     
     if (TickOnTest() == false){
 	    if(IsNullOrEmpty(filterString)){	    	
@@ -208,7 +232,7 @@ function AddToOrder(control, editFieldName) {
     Variables[editFieldName].Text = editText + parseInt(1);
 }
 
-function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, price, swiped_rowName, recOrder, recUnitId) {
+function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, price, swiped_rowName, recOrder, recUnitId, textMiniCnt) {
 
 	if (swipedRow!=Variables[swiped_rowName])
 		GetQuickOrder(Variables[swiped_rowName], sku, price, packField, editFieldName, textViewField, recOrder, recUnitId, recUnit);
@@ -239,6 +263,8 @@ function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, 
 
             Variables[editFieldName].Text = 0;
             Variables[textFieldName].Text = qty + " " + packDescription + " " + Translate["#alreadyOrdered#"];
+            Variables[textMiniCnt].Text = qty;
+            Variables[textMiniCnt].Visible = qty != "0";
         }
     }
 }
