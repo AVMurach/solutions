@@ -264,3 +264,4 @@ logoutQuery		При выходе будут удалены все данные
 cancel			Отменить
 logoutConfirm	Выйти
 recentOrders	Из последних заказов
+mostPopular	Популярное

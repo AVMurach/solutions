@@ -264,3 +264,4 @@ logoutQuery		When you exit will delete all data
 cancel			Cancel
 logoutConfirm	Logout
 recentOrders	Recent orders
+mostPopular	Most popular
