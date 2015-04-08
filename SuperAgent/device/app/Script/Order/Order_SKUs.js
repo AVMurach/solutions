@@ -97,7 +97,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	    				"				FROM Document_Order_SKUs OSKU " +
 	    				"				WHERE OSKU.Ref In (SELECT Id	" +
 	    				"										FROM Document_Order " +
-	    				"										WHERE Outlet = @outlet AND Number is not null " +
+	    				"										WHERE Outlet = @outlet AND Id != @order " +
 	    				"										ORDER BY Date DESC LIMIT 5)) "
     }
     
