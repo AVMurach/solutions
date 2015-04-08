@@ -140,7 +140,8 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     	}
 
     	    	
-    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, IfNull(O.Qty, 0) AS Qty, " +
+    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
+    			"IfNull(O.Qty, 0) AS Qty, CASE WHEN IfNull(O.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
