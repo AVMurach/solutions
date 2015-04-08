@@ -351,19 +351,19 @@ function SetFilter() {
         return Variables["filterType"];
 }
 
-function AskAndBack() {
+function AskAndBack(search) {
 
 	del = new Query("DELETE FROM USR_Filters");
 
 	del.Execute();
 
-	Workflow.Refresh([$.screenContext]);
+	Workflow.Refresh([$.screenContext, search]);
 
 }
 
-function CheckFilterAndForward() {
+function CheckFilterAndForward(search) {
 
-	 Workflow.Forward([null, true]);
+	 Workflow.Forward([search, true]);
 
 }
 

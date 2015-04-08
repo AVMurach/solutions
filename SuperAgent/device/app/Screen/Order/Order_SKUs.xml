@@ -32,7 +32,7 @@
 
 		<c:DockLayout CssClass="search">
 			
-			<c:Button Id="btnfilter" CssClass="ButtonLeft" Text="#filter#" OnClickAction="$Workflow.DoAction(SetFilter, Order)"></c:Button>
+			<c:Button Id="btnfilter" CssClass="ButtonLeft" Text="#filter#" OnClickAction="$Workflow.DoAction(SetFilter, Order, $edtSearch.Text)"></c:Button>
 			
 			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 			<c:DockLayout>
@@ -92,7 +92,7 @@
 							<c:TextView Id="textView{$index}" Text="0 {#alreadyOrdered#}" />
 						</c:VerticalLayout>
 					</c:HorizontalLayout>
-					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId)" CssClass="grid">
+					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId, $edtSearch.Text)" CssClass="grid">
 						<c:Image />
 						
 						<c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$CheckVisiblity($item.qty)"/>

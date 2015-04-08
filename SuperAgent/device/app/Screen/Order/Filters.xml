@@ -2,6 +2,7 @@
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Filter.css">
 
 	<s:Push Id="screenContext" Value="$param1"></s:Push>
+	<s:Push Id="search" Value="$param2"></s:Push>
 	<s:Push Id="screenFilter" Value="$SetFilter()"></s:Push>
 
 	<c:DockLayout Id="DLayout">
@@ -15,10 +16,10 @@
 		</c:DockLayout>
 
 		<c:HorizontalLayout CssClass="bottom_btn">
-			<c:VerticalLayout OnEvent="Back" OnClickAction="$AskAndBack()">
+			<c:VerticalLayout OnEvent="Back" OnClickAction="$AskAndBack($search)">
 				<c:TextView Text="#discard#" CssClass="left_tv"></c:TextView>
 			</c:VerticalLayout>
-			<c:VerticalLayout OnEvent="Forward" OnClickAction="$CheckFilterAndForward()">
+			<c:VerticalLayout OnEvent="Forward" OnClickAction="$CheckFilterAndForward($search)">
 				<c:TextView Text="#apply#" CssClass="right_tv"></c:TextView>
 			</c:VerticalLayout>
 		</c:HorizontalLayout>
