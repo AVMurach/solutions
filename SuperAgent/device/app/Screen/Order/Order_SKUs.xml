@@ -95,7 +95,8 @@
 					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId, $edtSearch.Text)" CssClass="grid">
 						<c:Image />
 						
-						<c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$CheckVisiblity($item.qty)"/>
+						<!-- <c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$CheckVisiblity($item.qty)"/>  -->
+						<c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$item.Vis"/>
 																		
 						<c:VerticalLayout>
 							<c:DockLayout>

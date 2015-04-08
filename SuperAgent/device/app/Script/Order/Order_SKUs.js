@@ -97,7 +97,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	    				"				FROM Document_Order_SKUs OSKU " +
 	    				"				WHERE OSKU.Ref In (SELECT Id	" +
 	    				"										FROM Document_Order " +
-	    				"										WHERE Outlet = @outlet AND Number is not null " +
+	    				"										WHERE Outlet = @outlet AND Id != @order " +
 	    				"										ORDER BY Date DESC LIMIT 5)) "
     }
     
@@ -112,7 +112,8 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
             var stockCondition = " S.CommonStock > 0 AND ";
     	}
 
-	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, IfNull(O.Qty, 0) AS Qty, " +
+	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, " +
+	    		"IfNull(O.Qty, 0) AS Qty, CASE WHEN IfNull(O.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
@@ -139,7 +140,8 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     	}
 
     	    	
-    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, IfNull(O.Qty, 0) AS Qty, " +
+    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
+    			"IfNull(O.Qty, 0) AS Qty, CASE WHEN IfNull(O.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
