@@ -103,7 +103,9 @@
 											
 						<c:Image />
 						
-						<c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$CheckVisiblity($item.qty)"/>
+						<!-- <c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$CheckVisiblity($item.qty)"/>  -->
+						
+						<c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$item.Vis"/>
 																		
 						<c:VerticalLayout>
 							<c:DockLayout>
