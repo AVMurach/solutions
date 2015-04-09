@@ -1,4 +1,5 @@
 var swipedRow;
+var discountChange = false;
 
 function GetMultiplier(sku, orderitem) {
 
@@ -106,8 +107,29 @@ function GetDiscountDescription(orderitem) {
         return Translate["#markUp#"];
 }
 
+
+function ApplyPrice(sender, orderitem) {
+	if (discountChange){
+		discountChange = false;
+		return;
+	}
+		
+	
+	if (IsNullOrEmpty(sender.Text))
+        sender.Text = parseFloat(0);
+    
+    orderitem = orderitem.GetObject();
+    orderitem.Price = parseFloat($.orderItemTotalId.Text);
+    orderitem.Save();
+    
+    discountChange = true;
+    CountPrice(orderitem.Id);
+}
+
+
 function ApplyDiscount(sender, orderitem) {
-    if (IsNullOrEmpty(sender.Text))
+		
+	if (IsNullOrEmpty(sender.Text))
         sender.Text = parseFloat(0);
     else {
         if ($.discountDescr.Text == Translate["#discount#"]

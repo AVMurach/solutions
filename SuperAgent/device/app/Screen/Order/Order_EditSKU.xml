@@ -72,7 +72,7 @@
 
 			<c:DockLayout CssClass="parameter_grid">
 				<c:TextView Text="#price#" CssClass="description_row"></c:TextView>
-				<c:TextView Id="orderItemTotalId" Text="$FormatValue($orderitem.Total)" CssClass="value"></c:TextView>
+				<c:EditText Id="orderItemTotalId" Text="$FormatValue($orderitem.Total)" CssClass="value" Keyboard="numeric" OnChange="$ApplyPrice($orderitem)" OnGetFocus="$HideSwiped()"></c:EditText>
 			</c:DockLayout>
 			<c:HorizontalLine />
 
