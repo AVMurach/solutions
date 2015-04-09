@@ -15,7 +15,7 @@
 		</c:DockLayout>
 
 		<c:HorizontalLine />
-		
+
 		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$Workflow.DoBack()">
 			<c:TextView Text="#ready#" />
 		</c:HorizontalLayout>
@@ -33,7 +33,7 @@
 			<c:HorizontalLine />
 
 			<s:If Test="$workflow.name!='Visit'">
-				<c:DockLayout CssClass="parameter_grid" OnClickAction="$SetDeliveryDateDialog($workflow.order, $deliveryDate, $executedOrder)">
+				<c:DockLayout CssClass="parameter_grid" OnClickAction="$SetDeliveryDateDialog($workflow.order, $deliveryDate, $executedOrder, #deliveryDate#)">
 					<c:TextView Text="#deliveryDate#" />
 					<c:TextView Id="deliveryDate" Text="$workflow.order.DeliveryDate" CssClass="value" />
 				</c:DockLayout>
@@ -84,6 +84,3 @@
 	</c:DockLayout>
 
 </c:Screen>
-
-
-

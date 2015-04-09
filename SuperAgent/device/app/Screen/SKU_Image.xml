@@ -13,7 +13,7 @@
 		<s:If Test="$sku.DefaultPicture != null">
 
 			<c:ScrollView CssClass="StockSKU">
-				<c:Image Source="$Facade.GetSharedImagePath(Catalog.SKU, $sku.Id, $sku.DefaultPicture, $sku.DefaultPictureExtension)" />
+				<c:Image Source="$Facade.GetSharedImagePath(catalog.sku, $sku.Id, $sku.DefaultPicture, $sku.DefaultPictureExtension)" />
 			</c:ScrollView>
 			<c:HorizontalLine />
 

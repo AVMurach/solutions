@@ -116,6 +116,23 @@ function EmptyRef(ref) {
     return ref.EmptyRef();
 }
 
+function IsEmptyValue(value) {		
+	//Dialog.Debug(value);
+	
+	if (String.IsNullOrEmpty(value))
+		return true;
+	else{
+		if (getType(value)=="System.String" || getType(value)=="System.DateTime" || getType(value)=="System.Boolean")
+			return false;
+		else{
+			if (value.EmptyRef())
+	            return true;
+	        else
+	            return false;
+		}			
+	}	
+}
+
 function NotEmptyRef(ref) {
     if (ref.EmptyRef())
         return false;
@@ -160,6 +177,13 @@ function FocusOnEditText(editFieldName, isInputField) {
   }
 }
 
+function FormatOutput(value) {
+	if (String.IsNullOrEmpty(value) || IsEmptyValue(value))
+		return "—";
+	else
+		return value;
+}
+
 //--------------------Clear Button part----------------------
 
 function ShowClearButton(source, button) {
@@ -177,6 +201,8 @@ function ClearField(source, field, objectRef, attribute) {
 	object.Save();
 	source.Visible = false;
 }
+
+//-------------------------Dialogs----------------------------
 
 function AssignDialogValue(state, args) {
 	var entity = state[0];

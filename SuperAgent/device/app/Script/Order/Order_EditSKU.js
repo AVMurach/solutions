@@ -128,8 +128,7 @@ function ApplyPrice(sender, orderitem) {
 
 
 function ApplyDiscount(sender, orderitem) {
-		
-	if (IsNullOrEmpty(sender.Text))
+    if (IsNullOrEmpty(sender.Text))
         sender.Text = parseFloat(0);
     else {
         if ($.discountDescr.Text == Translate["#discount#"]
@@ -276,7 +275,9 @@ function CalculateSKUAndForward(outlet, orderitem, search) {
 
     if ($.Exists("itemFields"))
     	$.Remove("itemFields");
-
+    if ($.Exists("AlreadyAdded"))
+    	$.Remove("AlreadyAdded");
+    
     Workflow.Forward([search]);
 }
 

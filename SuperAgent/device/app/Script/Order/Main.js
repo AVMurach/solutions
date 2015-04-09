@@ -28,6 +28,7 @@ function GetOutlets(searchText) {
 		var query = new Query("SELECT O.Id, T.Outlet, O.Description, O.Address FROM Catalog_Territory_Outlets T JOIN Catalog_Outlet O ON O.Id=T.Outlet ORDER BY O.Description LIMIT 500");
 		return query.Execute();
 	} else {
+		searchText = StrReplace(searchText, "'", "''");
 		searchText = "'" + searchText + "'";
 		var query = new Query("SELECT O.Id, T.Outlet, O.Description, O.Address FROM Catalog_Territory_Outlets T JOIN Catalog_Outlet O ON O.Id=T.Outlet WHERE Contains(O.Description, " + searchText + ") ORDER BY O.Description LIMIT 500");
 		return query.Execute();
@@ -147,7 +148,7 @@ function SelectStock(order, attr, control) {
 		while (res.Next()) {
 			table.push([ res.Id, res.Description ]);
 		}
-		Dialogs.DoChoose(table, order, attr, control, StockSelectHandler);
+		Dialogs.DoChoose(table, order, attr, control, StockSelectHandler, Translate["#stockPlace#"]);
 	}
 }
 
@@ -212,9 +213,9 @@ function SaveOrder(order) {
 	Workflow.Forward([]);
 }
 
-function SetDeliveryDateDialog(order, control, executedOrder) {
+function SetDeliveryDateDialog(order, control, executedOrder, title) {
 	if (IsNew(order) && NotEmptyRef(order.PriceList))
-		Dialogs.ChooseDateTime(order, "DeliveryDate", control, null);
+		Dialogs.ChooseDateTime(order, "DeliveryDate", control, null, title);
 }
 
 //function DialogCallBack(control, key) {
@@ -333,7 +334,7 @@ function SelectPriceList(order, priceLists, executedOrder) {
 }
 
 function PriceListSelect(entity, attribute, table, control) {
-	Dialogs.DoChoose(table, entity, attribute, control, DoPriceListCallback);
+	Dialogs.DoChoose(table, entity, attribute, control, DoPriceListCallback, Translate["#priceList#"]);
 	return;
 }
 

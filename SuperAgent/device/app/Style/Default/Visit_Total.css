@@ -1,3 +1,23 @@
 .parameter_grid TextView {
 	color: #000000;
 }
+
+.main_row{
+	color: #2d89cf;
+	height: 16.8%;
+	font: 100% Arial;
+}
+
+.required_side_wh{
+	height: 100%;
+	width: 1.2mm;
+	background-image: url(required_side_wh.png);	
+	dock-align: right;
+}
+
+.answered_side_wh{
+	height: 100%;
+	width: 1.2mm;
+	background-image: url(answered_side_wh.png);	
+	dock-align: right;
+}

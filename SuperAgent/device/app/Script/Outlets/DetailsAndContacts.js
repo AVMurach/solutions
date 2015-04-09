@@ -63,10 +63,10 @@ function SelectOwnership(control) {
 	var ownDictionary = CreateOwnershipDictionary();
 	var q = new Query();
 	q.Text = "SELECT Id, Description FROM Enum_OwnershipType";// UNION SELECT NULL, '—' ORDER BY Description";
-	var res = q.Execute().Unload();	
-		
-	Dialogs.DoChoose(q.Execute().Unload(), $.outlet, "OwnershipType", control, null);
-	
+	var res = q.Execute().Unload();
+
+	Dialogs.DoChoose(q.Execute().Unload(), $.outlet, "OwnershipType", control, null, Translate["#ownership#"]);
+
 }
 
 

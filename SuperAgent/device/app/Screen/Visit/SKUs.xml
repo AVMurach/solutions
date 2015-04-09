@@ -111,7 +111,7 @@
 					<c:TextView Text="$sku.SKUDescription" CssClass="main_row"></c:TextView>
 				</c:DockLayout>
 				<c:HorizontalLine />
-				
+
 				<s:If Test="$sku.ShowChild">
 					<s:Push Id="childs" Value="$GetChilds($sku.SKU)"></s:Push>
 					<s:Iterator Id="child" Value="$childs" Status="statusCountCh">
@@ -125,7 +125,7 @@
 									<c:HorizontalLayout CssClass="required_side_gr"></c:HorizontalLayout>
 								</s:If>
 							</s:Else>
-							<c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput)">
+							<c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)">
 								<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
 								<s:If Test="$child.IsInputField==1">
 									<c:EditText Id="control{$indexCh}" Text="$child.Answer" Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)" OnLostFocus="$RefreshScreen($search)" Keyboard="$child.KeyboardType" CssClass="answer_main_row"></c:EditText>

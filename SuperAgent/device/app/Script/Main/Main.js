@@ -4,8 +4,17 @@ function OnLoad() {
 
 	if ($.Exists("finishedWorkflow") && ($.finishedWorkflow == "Sync" || $.finishedWorkflow == "Visits" || $.finishedWorkflow == "Order" || $.finishedWorkflow == "Outlets")) {
 		$.swipe_layout.Index = 0;
-	} else
+	} else {
 		$.swipe_layout.Index = 1;
+	}
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_QSKU ON _Document_Questionnaire_SKUs(IsTombstone, Ref, SKU)");
+	indexQuery.Execute();
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_AQ " +
+				"ON _Catalog_Outlet_AnsweredQuestions(IsTombstone, Ref, Questionaire, Question, AnswerDate)");
+	indexQuery.Execute();
+
 }
 
 function GetLastSyncTime() {
@@ -45,24 +54,24 @@ function GetCameraObject() {
 }
 
 function LogoutQuery() {
-	
+
 	Dialog.Alert("#logoutQuery#"
 		    , LogoutCallback
 		    , null
 		    , "#cancel#"
 		    , "#logoutConfirm#"
 		    , null);
-	
+
 }
 
 function LogoutCallback(state, args) {
-	
+
 	if (args.Result == 1) {
-		
+
 		Application.Logout();
-	
+
 	}
-		
+
 }
 
 // --------------------------------------------------------------------------------

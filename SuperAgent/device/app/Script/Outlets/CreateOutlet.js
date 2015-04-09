@@ -14,9 +14,9 @@ function DeleteAndBack(entity) {
 function SaveNewOutlet(outlet) {
 
 	outlet = outlet.GetObject();
-	
+
 	if (outlet.Description != null && outlet.Address != null){
-		if (TrimAll(outlet.Description) != "" && TrimAll(outlet.Address) != "" && outlet.Class!=DB.EmptyRef("Catalog_OutletClass") 
+		if (TrimAll(outlet.Description) != "" && TrimAll(outlet.Address) != "" && outlet.Class!=DB.EmptyRef("Catalog_OutletClass")
 				&& outlet.Type!=DB.EmptyRef("Catalog_OutletType") && outlet.Distributor!=DB.EmptyRef("Catalog_Distributor")) {
 			var q = new Query("SELECT Ref FROM Catalog_Territory_SRs WHERE SR = @userRef LIMIT 1");+
 			q.AddParameter("userRef", $.common.UserRef);
@@ -33,13 +33,13 @@ function SaveNewOutlet(outlet) {
 			Variables.AddGlobal("outlet", outlet.Id);
 
 			DoAction("Open");
-			
+
 			return null;
 		}
-	}		
+	}
 	Dialog.Message("#messageNulls#");
 }
 
-function DoSelect(source, outlet, attribute, control) {
-	Dialogs.DoChoose(null, outlet, attribute, control, null);
+function DoSelect(source, outlet, attribute, control, title) {
+	Dialogs.DoChoose(null, outlet, attribute, control, null, title);
 }

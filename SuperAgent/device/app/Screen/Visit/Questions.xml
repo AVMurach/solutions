@@ -91,7 +91,7 @@
 							<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
 						</s:Else>
 					</s:If>
-					<c:VerticalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer)">
+					<c:VerticalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
 						<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
 						<s:If Test="$question.IsInputField=='1'">
 							<c:MemoEdit Id="control{$index}" Text="$question.Answer" Placeholder="—" OnChange="$AssignAnswer($question.Question)" OnLostFocus="$Workflow.DoRefresh()" Keyboard="$question.KeyboardType" CssClass="answer_main_row"></c:MemoEdit>

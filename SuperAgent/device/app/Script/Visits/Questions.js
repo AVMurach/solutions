@@ -139,15 +139,14 @@ function CreateVisitQuestionValueIfNotExists(question, answer, dialogInput) {
 
 }
 
-function GoToQuestionAction(answerType, visit, control, questionItem, currAnswer) {
-
+function GoToQuestionAction(answerType, visit, control, questionItem, currAnswer, questionDescription) {
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.ValueList).ToString()) {
 		var q = new Query();
 		q.Text = "SELECT Value, Value FROM Catalog_Question_ValueList WHERE Ref=@ref";
 		q.AddParameter("ref", questionItem);
 
 		//Dialogs.DoChoose(q.Execute(), questionItem, null, Variables[control], DialogCallBack);
-		DoChoose(q.Execute(), questionItem, null, Variables[control], DialogCallBack);
+		DoChoose(q.Execute(), questionItem, null, Variables[control], DialogCallBack, questionDescription);
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.Snapshot).ToString()) {
@@ -163,18 +162,18 @@ function GoToQuestionAction(answerType, visit, control, questionItem, currAnswer
 			listChoice.Add([0, Translate["#addFromGallery#"]]);
 		if (String.IsNullOrEmpty(currAnswer)==false)
 			listChoice.Add([2, Translate["#clearValue#"]]);
-		AddSnapshot(visit, null, GalleryCallBack, listChoice, "document.visit");
+		AddSnapshot(visit, null, GalleryCallBack, listChoice, "document.visit", questionDescription);
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.DateTime).ToString()) {
 		//Dialogs.ChooseDateTime(questionItem, null, Variables[control], DialogCallBack); //(question, "Answer", question.Answer, Variables[control]);
-		ChooseDateTime(questionItem, null, Variables[control], DialogCallBack); //(question, "Answer", question.Answer, Variables[control]);
+		ChooseDateTime(questionItem, null, Variables[control], DialogCallBack, questionDescription); //(question, "Answer", question.Answer, Variables[control]);
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.Boolean).ToString()) {
 		bool_answer = currAnswer;
 		//Dialogs.ChooseBool(questionItem, null, Variables[control], DialogCallBack);
-		ChooseBool(questionItem, null, Variables[control], DialogCallBack);
+		ChooseBool(questionItem, null, Variables[control], DialogCallBack, questionDescription);
 	}
 
 }
@@ -193,7 +192,7 @@ function AssignAnswer(control, question, answer) {
 	}
 	if (answer == "—")
 		answer = null;
-	
+
 	var answerString;
 	if (String.IsNullOrEmpty(answer))
 		answerString = "HistoryAnswer ";
@@ -214,8 +213,10 @@ function DialogCallBack(state, args) {
 }
 
 function GalleryCallBack(state, args) {
-	AssignAnswer(null, questionGl, state[1]);
-	Workflow.Refresh([]);
+	if (args.Result) {
+		AssignAnswer(null, questionGl, state[1]);
+		Workflow.Refresh([]);
+	}
 }
 
 
@@ -248,8 +249,9 @@ function ObligatedAnswered(answer, obligatoriness) {
 
 //--------------------------------Gallery handlers----------------
 
-function AddSnapshot(objectRef, valueRef, func, listChoice, objectType) {
-	Dialog.Choose(Translate["#choose_action#"], listChoice, AddSnapshotHandler, [objectRef,func,valueRef,objectType]);
+function AddSnapshot(objectRef, valueRef, func, listChoice, objectType, title) {
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+	Dialog.Choose(title, listChoice, AddSnapshotHandler, [objectRef,func,valueRef,objectType]);
 }
 
 function AddSnapshotHandler(state, args) {
@@ -279,7 +281,10 @@ function AddSnapshotHandler(state, args) {
 
 //------------------------------Temporary, from dialogs----------------
 
-function DoChoose(listChoice, entity, attribute, control, func) {
+function DoChoose(listChoice, entity, attribute, control, func, title) {
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
 	if (attribute==null)
 		var startKey = control.Text;
 	else
@@ -295,11 +300,13 @@ function DoChoose(listChoice, entity, attribute, control, func) {
 	if (func == null)
 		func = CallBack;
 
-	Dialog.Choose("#select_answer#", listChoice, startKey, func, [entity, attribute, control]);
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
 }
 
-function ChooseDateTime(entity, attribute, control, func) {
+function ChooseDateTime(entity, attribute, control, func, title) {
 	var startKey;
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
 
 	if (attribute==null)
 		startKey = control.Text;
@@ -311,10 +318,13 @@ function ChooseDateTime(entity, attribute, control, func) {
 
 	if (func == null)
 		func = CallBack;
-	Dialog.DateTime("#enterDateTime#", startKey, func, [entity, attribute, control]);
+	Dialog.DateTime(title, startKey, func, [entity, attribute, control]);
 }
 
-function ChooseBool(entity, attribute, control, func) {
+function ChooseBool(entity, attribute, control, func, title) {
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
 	if (attribute==null)
 		var startKey = control.Text;
 	else
@@ -323,7 +333,7 @@ function ChooseBool(entity, attribute, control, func) {
 	var listChoice = [[ "—", "—" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
-	Dialog.Choose("#select_answer#", listChoice, startKey, func, [entity, attribute, control]);
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
 }
 
 function CallBack(state, args) {

@@ -1,12 +1,25 @@
 ﻿
+var checkOrderReason;
+var checkVisitReason;
+
+function OnLoading() {
+	checkOrderReason = false;
+	checkVisitReason = false;
+
+	if ($.sessionConst.NOR && NotEmptyRef($.workflow.visit.Plan) && OrderExists($.workflow.visit)==false)
+		checkOrderReason = true;
+	if ($.sessionConst.UVR && IsEmptyValue($.workflow.visit.Plan))
+		checkVisitReason = true;
+}
+
 function GetNextVisit(outlet){
 	var q = new Query("SELECT Id, PlanDate FROM Document_MobileAppPlanVisit WHERE Outlet=@outlet AND DATE(PlanDate)>=DATE(@date) AND Transformed=0 LIMIT 1");
 	q.AddParameter("outlet", outlet);
 	q.AddParameter("date", DateTime.Now.Date);
 	var res = q.Execute();
-	res.Next();	
+	res.Next();
 	return res;
-	
+
 }
 
 function OrderCheckRequired(visit, wfName) {
@@ -28,11 +41,25 @@ function OrderExists(visit) {
 }
 
 function SetDeliveryDate(order, control) {
-    Dialogs.ChooseDateTime(order, "DeliveryDate", control, null);
+    Dialogs.ChooseDateTime(order, "DeliveryDate", control, null, Translate["#deliveryDate#"]);
 }
 
-function DoSelect(outlet, attribute, control) {
-	Dialogs.DoChoose(null, outlet, attribute, control, null);
+function FormatDate(value) {
+	if (value != null)
+		value = value.ToString();
+	if (String.IsNullOrEmpty(value) || IsEmptyValue(value))
+		return "—";
+	else
+		return value;
+}
+
+function DoSelect(outlet, attribute, control, title) {
+	Dialogs.DoChoose(null, outlet, attribute, control, SelectCallBack, title);
+}
+
+function SelectCallBack(state, args) {
+	AssignDialogValue(state, args);
+	Workflow.Refresh([]);
 }
 
 function SetnextVisitDate(nextVisit, control){
@@ -40,7 +67,7 @@ function SetnextVisitDate(nextVisit, control){
 		var nextDate = DateTime.Now;
 	else
 		var nextDate = nextVisit.PlanDate;
-	Dialogs.ChooseDateTime(nextVisit, "PlanDate", control, NextDateHandler); //nextDate, NextDateHandler, [nextVisit, control]);
+	Dialogs.ChooseDateTime(nextVisit, "PlanDate", control, NextDateHandler, Translate["#nextVisitDate#"]); //nextDate, NextDateHandler, [nextVisit, control]);
 }
 
 function GetOrderControlValue() {
@@ -48,27 +75,6 @@ function GetOrderControlValue() {
     var q = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NOR'");
     var uvr = q.ExecuteScalar();
 
-    if (uvr == null)
-        return false;
-    else {
-        if (parseInt(uvr) == parseInt(0))
-            return false
-        else
-            return true;
-    }
-}
-
-function VisitReasonCheckrequired(wfName, visit) {
-    if (visit.Plan.EmptyRef() && GetUVRvalue())
-        return true
-    else
-        return false;
-}
-
-function GetUVRvalue() {
-    //var uvr = DB.Current.Catalog.MobileApplicationSettings.SelectBy("Code", "UVR").First();
-    var q = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='UVR'");
-    var uvr = q.ExecuteScalar();
     if (uvr == null)
         return false;
     else {
@@ -102,21 +108,23 @@ function GetOrderSUM(order) {
 
 function CheckAndCommit(order, visit, wfName) {
 
-	if (VisitIsChecked(visit, order, wfName)) {
+	var check = VisitIsChecked(visit, order, wfName);
+
+	if (check.Checked) {
         visit = visit.GetObject();
     	visit.EndTime = DateTime.Now;
 
         if (OrderExists(visit.Id)) {
             order.GetObject().Save();
         }
-        
+
         CreateQuestionnaireAnswers();
-        
+
         visit.Save();
         Workflow.Commit();
     }
     else
-        Dialog.Message(Translate["#messageNulls#"]);
+        Dialog.Message(check.Message);//Translate["#messageNulls#"]);
 
 }
 
@@ -130,7 +138,7 @@ function NextDateHandler(state, args){
 
 	if (newVistPlan.Id==null){
 		newVistPlan = DB.Create("Document.MobileAppPlanVisit");
-		newVistPlan.SR = $.common.UserRef;	
+		newVistPlan.SR = $.common.UserRef;
 		newVistPlan.Outlet = $.workflow.outlet;
 		newVistPlan.Transformed = false;
 		newVistPlan.Date = DateTime.Now;
@@ -139,20 +147,26 @@ function NextDateHandler(state, args){
 		newVistPlan = newVistPlan.Id.GetObject();
 	newVistPlan.PlanDate = args.Result;
 	newVistPlan.Save();
+
+	$.nextVisitControl.Text = newVistPlan.PlanDate;
 	
-	Workflow.Refresh([]);
 }
 
-
 function VisitIsChecked(visit, order, wfName) {
-    if (OrderCheckRequired(visit, wfName) && visit.ReasonForNotOfTakingOrder.EmptyRef())
-        return false;
+	
+	var result = new Dictionary();
+	result.Add("Checked", false);
+	
+    if (checkOrderReason && visit.ReasonForNotOfTakingOrder.EmptyRef())
+    	result.Add("Message", Translate["#noOrder#"]);
     else {
-        if (VisitReasonCheckrequired(wfName, visit) && visit.ReasonForVisit.EmptyRef())
-            return false;
+        if (checkVisitReason && visit.ReasonForVisit.EmptyRef())
+        	result.Add("Message", Translate["#visitReasonMessage#"]);
         else
-            return true;
+            result.Checked = true;
     }
+    
+    return result;
 }
 
 function DialogCallBack(control, key){
@@ -177,32 +191,34 @@ function NoTasks(skipTasks) {
 //------------------------------Questionnaires handlers------------------
 
 
-function CreateQuestionnaireAnswers() {	
-	var q = new Query("SELECT DISTINCT Q.Question, Q.SKU AS SKU, Q.Description, Q.Answer, MAX(Q.HistoryAnswer) AS HistoryAnswer, Q.AnswerDate " +
+function CreateQuestionnaireAnswers() {
+	var q = new Query("SELECT DISTINCT Q.Question, Q.SKU AS SKU, Q.Description, Q.Answer, Q.HistoryAnswer, Q.AnswerDate " +
 			", D.Number, D.Id AS Questionnaire, D.Single, A.Id AS AnswerId " +
 			"FROM USR_SKUQuestions Q " +
 			"JOIN Document_Questionnaire_SKUs DS ON Q.SKU=DS.SKU " +
 			"JOIN Document_Questionnaire_SKUQuestions DQ ON Q.Question=DQ.ChildQuestion AND DS.Ref=DQ.Ref " +
-			"JOIN USR_Questionnaires D ON DQ.Ref=D.Id " +
+			"JOIN USR_Questionnaires D ON DQ.Ref=D.Id AND D.Single=Q.Single " +
 			"LEFT JOIN Catalog_Outlet_AnsweredQuestions A ON A.Question=Q.Question AND A.Questionaire=DQ.Ref " +
 			"AND A.SKU=Q.SKU " +
 			"AND A.Ref=@outlet " +
 			"WHERE Q.Answer!='' AND RTRIM(Q.Answer) IS NOT NULL " +
-			"GROUP BY Q.Question, Q.SKU, Q.Description, Q.Answer, Q.AnswerDate, D.Number, D.Id, D.Single, A.Id " +
+			"AND (Q.ParentQuestion='@ref[Catalog_Question]:00000000-0000-0000-0000-000000000000' " +
+			"OR Q.ParentQuestion IN (SELECT Question FROM USR_SKUQuestions WHERE (Answer='Yes' OR Answer='Да')))" +
 			"UNION " +
-			"SELECT DISTINCT Q.Question, NULL AS SKU, Q.Description, Q.Answer, MAX(Q.HistoryAnswer) AS HistoryAnswer, Q.AnswerDate" +
+			"SELECT DISTINCT Q.Question, NULL AS SKU, Q.Description, Q.Answer, Q.HistoryAnswer, Q.AnswerDate" +
 			", D.Number, D.Id AS Questionnaire, D.Single, A.Id AS AnswerId " +
 			"FROM USR_Questions Q " +
 			"JOIN Document_Questionnaire_Questions DQ ON Q.Question=DQ.ChildQuestion " +
-			"JOIN USR_Questionnaires D ON DQ.Ref=D.Id " +
+			"JOIN USR_Questionnaires D ON DQ.Ref=D.Id AND D.Single=Q.Single " +
 			"LEFT JOIN Catalog_Outlet_AnsweredQuestions A ON A.Question=Q.Question AND A.Questionaire=DQ.Ref " +
 			"AND A.SKU='@ref[Catalog_SKU]:00000000-0000-0000-0000-000000000000'" +
 			"AND A.Ref=@outlet " +
 			"WHERE Q.Answer!='' AND RTRIM(Q.Answer) IS NOT NULL " +
-			"GROUP BY Q.Question,  Q.Description, Q.Answer, Q.AnswerDate, D.Number, D.Id, D.Single, A.Id");
+			"AND (Q.ParentQuestion='@ref[Catalog_Question]:00000000-0000-0000-0000-000000000000' " +
+			"OR Q.ParentQuestion IN (SELECT Question FROM USR_Questions WHERE (Answer='Yes' OR Answer='Да')))");
 	q.AddParameter("outlet", $.workflow.outlet);
 	var answers = q.Execute();
-	
+
 	while (answers.Next()) {
 		if (answers.Answer!=answers.HistoryAnswer){
 			if (answers.SKU!=null){
@@ -225,7 +241,7 @@ function CreateQuestionnaireAnswers() {
 					a.Questionaire = answers.Questionnaire;
 					a.Question = answers.Question;
 					if (answers.SKU!=null)
-						a.SKU = answers.SKU;									
+						a.SKU = answers.SKU;
 				}
 				else{
 					a = answers.AnswerId;
@@ -235,8 +251,6 @@ function CreateQuestionnaireAnswers() {
 				a.AnswerDate = answers.AnswerDate;
 				a.Save();
 			}
-		}		
+		}
 	}
 }
-
-
