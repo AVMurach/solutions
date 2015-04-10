@@ -109,10 +109,10 @@ function GetDiscountDescription(orderitem) {
 
 
 function ApplyPrice(sender, orderitem) {
-	if (discountChange){
-		discountChange = false;
-		return;
-	}
+//	if (discountChange){
+//		discountChange = false;
+//		return;
+//	}
 		
 	
 	if (IsNullOrEmpty(sender.Text))
@@ -122,8 +122,15 @@ function ApplyPrice(sender, orderitem) {
     orderitem.Price = parseFloat($.orderItemTotalId.Text);
     orderitem.Save();
     
-    discountChange = true;
-    CountPrice(orderitem.Id);
+//    discountChange = true;
+    
+    var discount = $.discountEdit.Text;
+    if (String.IsNullOrEmpty(discount))
+        discount = parseInt(0);
+    p = CalculatePrice(orderitem.Price, discount, 1);
+    // orderitem.Discount = Converter.ToDecimal(discount);
+    orderitem.Total = p;
+    orderitem.Save();
 }
 
 
