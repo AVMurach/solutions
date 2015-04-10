@@ -266,3 +266,4 @@ logoutConfirm	Logout
 visitReason		"Visit reason" field should be filled
 noOrder			"No order reason" field should be filled
 notAvailableShort	N/A
+mostPopular	Most popular
