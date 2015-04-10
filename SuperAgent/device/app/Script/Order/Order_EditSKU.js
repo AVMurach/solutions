@@ -109,10 +109,10 @@ function GetDiscountDescription(orderitem) {
 
 
 function ApplyPrice(sender, orderitem) {
-//	if (discountChange){
-//		discountChange = false;
-//		return;
-//	}
+	if (discountChange){
+		discountChange = false;
+		return;
+	}
 		
 	
 	if (IsNullOrEmpty(sender.Text))
@@ -121,9 +121,7 @@ function ApplyPrice(sender, orderitem) {
     orderitem = orderitem.GetObject();
     orderitem.Price = parseFloat($.orderItemTotalId.Text);
     orderitem.Save();
-    
-//    discountChange = true;
-    
+            
     var discount = $.discountEdit.Text;
     if (String.IsNullOrEmpty(discount))
         discount = parseInt(0);
@@ -135,7 +133,8 @@ function ApplyPrice(sender, orderitem) {
 
 
 function ApplyDiscount(sender, orderitem) {
-    if (IsNullOrEmpty(sender.Text))
+		
+	if (IsNullOrEmpty(sender.Text))
         sender.Text = parseFloat(0);
     else {
         if ($.discountDescr.Text == Translate["#discount#"]
@@ -185,7 +184,7 @@ function GetImagePath(objectType, objectID, pictID, pictExt) {
 }
 
 function CountPrice(orderitem) {
-
+	
     orderitem = orderitem.GetObject();
 
     var discount = $.discountEdit.Text;
@@ -195,7 +194,8 @@ function CountPrice(orderitem) {
     // orderitem.Discount = Converter.ToDecimal(discount);
     orderitem.Total = p;
     orderitem.Save();
-
+    
+    discountChange = true;
     $.orderItemTotalId.Text = p;
 
     return orderitem;
