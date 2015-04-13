@@ -8,6 +8,8 @@
 
 	<s:Push Id="items" Value="$GetOrderedSKUs($workflow.order)"></s:Push>
 	<s:Push Id="sum" Value="$GetOrderSUM($workflow.order)"></s:Push>
+	
+	<s:Push Id="percentMargin" Value="$GetPercentMargin($workflow.order)"></s:Push>
 
 	<c:DockLayout>
 
@@ -48,7 +50,7 @@
 				<c:VerticalLayout>
 					<c:TextView Text="$GetDescription($workflow.order.PriceList)" CssClass="description_row"></c:TextView>
 					<c:TextView Text="#orderSum#:" CssClass="description_row"></c:TextView>
-					<c:TextView Text="$FormatValue($sum)" CssClass="main_row"></c:TextView>
+					<c:TextView Text="{$FormatValue($sum)} {$percentMargin}" CssClass="main_row"></c:TextView>
 				</c:VerticalLayout>
 			</c:DockLayout>
 			<c:HorizontalLine />

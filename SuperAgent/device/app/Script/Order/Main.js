@@ -121,6 +121,22 @@ function GetOrderSUM(order) {
 		return String.Format("{0:F2}", sum);
 }
 
+//Murach A+
+function GetPercentMargin(order) {
+	var query = new Query("SELECT AVG(ROUND((OSKU.Total - IfNull(PLZ.Price, 0)) * 100 / OSKU.Total, 0)) AS PercentMargin " +
+			"FROM Document_Order_SKUs OSKU " +
+			"LEFT JOIN Document_PriceList_Prices PLZ ON OSKU.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
+			"WHERE OSKU.Ref = @Ref");
+	query.AddParameter("Ref", order);
+	query.AddParameter("numPZ", '000000002');
+	var sum = query.ExecuteScalar();
+	if (sum == null)
+		return 0;
+	else
+		return sum;
+}
+//Murach A+
+
 function CreateOrderStatusVariables() {
 	var canc = DB.Current.Constant.OrderSatus.Canceled;
 	Variables.Add("workflow.canc", canc);
