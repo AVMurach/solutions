@@ -135,6 +135,10 @@ function GetPercentMargin(order) {
 	else
 		return sum;
 }
+
+function FormatPercent(value) {
+    return String.Format("{0:F0}", value || 0);
+}
 //Murach A+
 
 function CreateOrderStatusVariables() {

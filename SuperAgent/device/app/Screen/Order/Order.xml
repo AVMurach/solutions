@@ -49,8 +49,8 @@
 				<c:Image />
 				<c:VerticalLayout>
 					<c:TextView Text="$GetDescription($workflow.order.PriceList)" CssClass="description_row"></c:TextView>
-					<c:TextView Text="#orderSum#:" CssClass="description_row"></c:TextView>
-					<c:TextView Text="{$FormatValue($sum)} {$percentMargin}" CssClass="main_row"></c:TextView>
+					<c:TextView Text="#orderSum#: {$FormatValue($sum)}" CssClass="description_row"></c:TextView>
+					<c:TextView Text="#markUp#: {$FormatPercent($percentMargin)} %" CssClass="description_row"></c:TextView>
 				</c:VerticalLayout>
 			</c:DockLayout>
 			<c:HorizontalLine />
