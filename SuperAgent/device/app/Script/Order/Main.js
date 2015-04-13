@@ -341,7 +341,11 @@ function GetStock(userRef) {
 
 function SelectPriceList(order, priceLists, executedOrder) {
 	if (parseInt(priceLists) != parseInt(1) && parseInt(priceLists) != parseInt(0) && executedOrder == null) {
-		var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
+		//var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
+		//Murach A +
+		var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref AND D.Number != @numDZ ORDER BY O.LineNumber");
+		query.AddParameter("numDZ", '000000002');
+		//Murach A +
 		query.AddParameter("Ref", order.Outlet);
 		var pl = query.ExecuteCount();
 		if (parseInt(pl) == parseInt(0)) {
