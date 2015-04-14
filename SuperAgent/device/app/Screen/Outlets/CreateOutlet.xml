@@ -12,7 +12,7 @@
 		</c:DockLayout>
 
 		<c:HorizontalLine />
-		
+
 		<c:HorizontalLayout Id="btnCancel" CssClass="bottom_btn">
 			<c:VerticalLayout OnEvent="Back" OnClickAction="$DeleteAndBack($outlet)">
 				<c:TextView CssClass="left_tv" Text="#cancel#" />
@@ -24,10 +24,10 @@
 		<c:HorizontalLine CssClass="b_line" />
 
 		<c:ScrollView Id="grScrollView">
-			
+
 			<c:HorizontalLayout CssClass="margin_top" />
 			<c:HorizontalLine />
-			
+
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(outletName, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_description#" CssClass="description_row"></c:TextView>
@@ -44,7 +44,7 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Class,$outletClass)">
+			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Class,$outletClass,#outlet_class#)">
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_class#" CssClass="description_row"></c:TextView>
 					<c:TextView Id="outletClass" Text="$outlet.Class.Description" CssClass="main_row" />
@@ -52,7 +52,7 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Type,$outletType)">
+			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Type,$outletType,#outlet_type#)">
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_type#" CssClass="description_row"></c:TextView>
 					<c:TextView Id="outletType" Text="$outlet.Type.Description" CssClass="main_row" />
@@ -60,7 +60,7 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Distributor,$outletDistr)">
+			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Distributor,$outletDistr,#distributor#)">
 				<c:VerticalLayout>
 					<c:TextView Text="#distributor#" CssClass="description_row"></c:TextView>
 					<c:TextView Id="outletDistr" Text="$outlet.Distributor.Description" CssClass="main_row" />

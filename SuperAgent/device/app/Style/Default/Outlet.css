@@ -77,21 +77,21 @@
 	margin-top: 16%;
 	margin-right: 2.4mm;
 	dock-align: right;
-	background-image: url(geo_set.png);	
+	background-image: url(geo_set.png);
 }
 
 .grid img{
 	width: 10.3mm;
-	height: 9mm;	
+	height: 9mm;
 	dock-align: right;
-	background-image: url(geo_empty.png);	
+	background-image: url(geo_empty.png);
 }
 
 .coordButton {
 	width: 15mm;
 	height: 4.1mm;
 	vertical-align: central;
-	margin-top: 10%; 
+	margin-top: 10%;
 	border-style : solid;
 	border-width: 1px;
 	border-color: #43acfd;
@@ -105,7 +105,7 @@
 	width: 13.5mm;
 	height: 4.1mm;
 	vertical-align: central;
-	margin-top: 10%; 
+	margin-top: 10%;
 	border-style : solid;
 	border-width: 1px;
 	border-color: #43acfd;
@@ -140,7 +140,7 @@
 	horizontal-align: central;
 	border-style: solid;
 	border-width: 1px;
-	border-color: #000000;	
+	border-color: #000000;
 	padding-top: 35%;
 	padding-left: 2mm;
 	padding-right: 2mm;
@@ -164,7 +164,7 @@
 	margin-bottom: 2.3mm;
 	border-style: solid;
 	border-width: 1px;
-	border-color: #000000;	
+	border-color: #000000;
 	padding-top: 35%;
 	white-space: normal;
 	padding-left: 2mm;
@@ -211,10 +211,40 @@
 	font: 60% arial;
 }
 
+.parameter_image{
+	height: 100%;
+	width: 0%;
+	margin-right: 2.4mm;
+	margin-top: 1.5%;
+	margin-bottom: 1.5%;
+	dock-align: right;
+}
+
+.not_available {
+	height: 100%;
+	color: #8e8e93;
+	text-align: center;
+	horizontal-align: central;
+	dock-align: right;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #000000;
+	margin-top: 1.5%;
+	margin-bottom: 1.5%;
+	margin-right:2.4mm;
+	padding-left: 1mm;
+	padding-right: 1mm;
+	font: 36% arial
+}
+
 .clear{
 	height: 2.2mm;
 	width: 2.2mm;
 	margin-top: 45%;
 	dock-align: right;
 	background-image: url(clear_field.png);
+}
+
+.value{
+	placeholder-color: #8e8e93;
 }

@@ -52,7 +52,7 @@
 		
 
 		<!-- <s:If Test="@doGroupping">
-		</s:If>	
+		</s:If>
 		<s:Else>
 			<c:HorizontalLayout Id="Orderadd" CssClass="caption_grid">
 				<c:TextView Text="#skuList#:"></c:TextView>
@@ -109,19 +109,17 @@
 																		
 						<c:VerticalLayout>
 							<c:DockLayout>
-								<s:If Test="@doRecommend">
-									<s:If Test="$ShowRecommendedQty($item.OrderRecOrder, $item.RecOrder)">
-										<c:VerticalLayout>
-											<c:TextView Text="{$item.RecOrder} {$item.RecUnit}" CssClass="rec_order" />
-											<c:TextView Text="#recommended#" CssClass="rec_comment" />
-										</c:VerticalLayout>
-									</s:If>
-									<s:Else>
-										<s:If Test="$item.OrderRecOrder>0">
-											<c:TextView Text="#recommended#" CssClass="single_rec" />
-										</s:If>
-									</s:Else>
+								<s:If Test="$ShowRecommendedQty($item.OrderRecOrder, $item.RecOrder)">
+									<c:VerticalLayout>
+										<c:TextView Text="{$item.RecOrder} {$item.RecUnit}" CssClass="rec_order" />
+										<c:TextView Text="#recommended#" CssClass="rec_comment" />
+									</c:VerticalLayout>
 								</s:If>
+								<s:Else>
+									<s:If Test="$item.OrderRecOrder>0">
+										<c:TextView Text="#recommended#" CssClass="single_rec" />
+									</s:If>
+								</s:Else>
 								<c:TextView Text="$item.Description" CssClass="main_row"></c:TextView>
 							</c:DockLayout>
 							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock} #brand#: {$item.Brand}" CssClass="description_row"></c:TextView>

@@ -254,7 +254,9 @@ function CalculateSKUAndForward(outlet, orderitem) {
 
     if ($.Exists("itemFields"))
     	$.Remove("itemFields");
-
+    if ($.Exists("AlreadyAdded"))
+    	$.Remove("AlreadyAdded");
+    
     Workflow.Forward([]);
 }
 

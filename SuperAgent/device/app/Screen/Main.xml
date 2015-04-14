@@ -59,7 +59,7 @@
 			<c:HorizontalLine />
 
 			<c:DockLayout OnClickAction="$DoAction(About)">
-				<c:TextView CssClass="menu_text" Text="ver. 2.4" />
+				<c:TextView CssClass="menu_text" Text="ver. 2.5" />
 				<c:HorizontalLayout>
 					<c:Image CssClass="btn_info" />
 					<c:TextView Text="#info#" />

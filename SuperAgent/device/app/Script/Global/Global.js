@@ -9,18 +9,22 @@ function S4() {
 	return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 }
 
-function SetSessionConstants() { 
+function SetSessionConstants() {
 	var planEnbl = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='PlanEnbl'");
 	var multStck = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='MultStck'");
 	var stckEnbl = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NoStkEnbl'");
 	var orderCalc = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='OrderCalc'");
-	
+	var UVR = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='UVR'");
+	var NOR = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NOR'");
+
 	$.AddGlobal("sessionConst", new Dictionary());
 	$.sessionConst.Add("PlanEnbl", EvaluateBoolean(planEnbl.ExecuteScalar()));
 	$.sessionConst.Add("MultStck", EvaluateBoolean(multStck.ExecuteScalar()));
 	$.sessionConst.Add("NoStkEnbl", EvaluateBoolean(stckEnbl.ExecuteScalar()));
 	$.sessionConst.Add("OrderCalc", EvaluateBoolean(orderCalc.ExecuteScalar()));
-	
+	$.sessionConst.Add("UVR", EvaluateBoolean(UVR.ExecuteScalar()));
+	$.sessionConst.Add("NOR", EvaluateBoolean(NOR.ExecuteScalar()));
+
 	var q = new Query("SELECT U.AccessRight, A.Id, A.Code FROM Catalog_MobileAppAccessRights A " +
 		" LEFT JOIN Catalog_User_UserRights U ON U.AccessRight=A.Id ");
 	var rights = q.Execute();
@@ -36,7 +40,7 @@ function SetSessionConstants() {
 				$.sessionConst.Add("galleryChoose", false);
 			else
 				$.sessionConst.Add("galleryChoose", true);
-		}			
+		}
 		if (rights.Code=='000000004'){
 			if (rights.AccessRight==null)
 				$.sessionConst.Add("encashEnabled", false);
@@ -104,12 +108,12 @@ function CreateUserTableIfNotExists(name) {
 	var q = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=@name");
 	q.AddParameter("name", name);
 	var check = q.ExecuteScalar();
-	
-	if (parseInt(check) == parseInt(1)) {	
-		var dropQS = new Query("DELETE FROM " + name);		 
-		dropQS.Execute();		
-		return "INSERT INTO " + name + " ";na				
-	} 
-	else 		
-		return "CREATE TABLE " + name + " AS ";		
+
+	if (parseInt(check) == parseInt(1)) {
+		var dropQS = new Query("DELETE FROM " + name);
+		dropQS.Execute();
+		return "INSERT INTO " + name + " ";
+	}
+	else
+		return "CREATE TABLE " + name + " AS ";
 }

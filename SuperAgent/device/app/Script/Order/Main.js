@@ -28,6 +28,7 @@ function GetOutlets(searchText) {
 		var query = new Query("SELECT O.Id, T.Outlet, O.Description, O.Address FROM Catalog_Territory_Outlets T JOIN Catalog_Outlet O ON O.Id=T.Outlet ORDER BY O.Description LIMIT 500");
 		return query.Execute();
 	} else {
+		searchText = StrReplace(searchText, "'", "''");
 		searchText = "'" + searchText + "'";
 		var query = new Query("SELECT O.Id, T.Outlet, O.Description, O.Address FROM Catalog_Territory_Outlets T JOIN Catalog_Outlet O ON O.Id=T.Outlet WHERE Contains(O.Description, " + searchText + ") ORDER BY O.Description LIMIT 500");
 		return query.Execute();
@@ -50,6 +51,137 @@ function GetPriceListQty(outlet) {
 	} else
 		return pl;
 
+}
+
+function HasOrderParameters() {
+
+	var query = new Query("SELECT DISTINCT Id From Catalog_OrderParameters WHERE Visible = 1");
+	orderParametersCount = query.ExecuteCount();
+	return orderParametersCount > 0;
+
+}
+
+function GetOrderParameters(outlet) {
+	var query = new Query("                                                      \
+		SELECT 																																		 \
+			P.Id,																																		 \
+			P.Description, 																													 \
+			P.DataType, 																														 \
+			DT.Description AS TypeDescription, 																			 \
+			OP.Id AS ParameterValue, 																								 \
+			OP.Value, 																															 \
+			P.Visible, 																															 \
+			P.Editable, 																														 \
+			CASE 																																		 \
+				WHEN P.DataType=@integer OR P.DataType=@decimal OR P.DataType=@string	 \
+					THEN 1 																															 \
+					ELSE 0 																															 \
+				END AS IsInputField, 																									 \
+			CASE 																																		 \
+				WHEN P.DataType=@integer OR P.DataType=@decimal 											 \
+					THEN 'numeric' 																											 \
+					ELSE 'auto' 																												 \
+				END AS KeyboardType, 																									 \
+			CASE 																																		 \
+				WHEN P.DataType=@integer OR P.DataType=@decimal OR P.DataType=@string  \
+					THEN OP.Value 																											 \
+				ELSE 																																	 \
+					CASE 																													 			 \
+						WHEN OP.Value IS NULL OR RTRIM(OP.Value)='' 											 \
+							THEN '—'																												 \
+						ELSE																								 							 \
+							OP.Value 																												 \
+					END 																																 \
+			END AS AnswerOutput 																										 \
+		FROM 																																			 \
+			Catalog_OrderParameters P 																						   \
+				JOIN Enum_DataType DT On DT.Id=P.DataType 														 \
+				LEFT JOIN Document_Order_Parameters OP ON OP.Parameter = P.Id AND OP.Ref = @outlet WHERE NOT P.DataType=@snapshot");
+	query.AddParameter("integer", DB.Current.Constant.DataType.Integer);
+	query.AddParameter("decimal", DB.Current.Constant.DataType.Decimal);
+	query.AddParameter("string", DB.Current.Constant.DataType.String);
+	query.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
+	query.AddParameter("outlet", outlet);
+	query.AddParameter("attached", Translate["#snapshotAttached#"]);
+	result = query.Execute();
+	return result;
+}
+
+function GoToParameterAction(typeDescription, parameterValue, value, order, parameter, control, parameterDescription, editable) {
+	if (IsNew(order)) {
+		if (editable) {
+
+			parameterValue = CreateOrderParameterValue(order, parameter, parameterValue, parameterValue);
+
+			if (typeDescription == "ValueList") {  //--------ValueList-------
+				var q = new Query();
+				q.Text = "SELECT Value, Value FROM Catalog_OrderParameters_ValueList WHERE Ref=@ref UNION SELECT '', '—' ORDER BY Value";
+				q.AddParameter("ref", parameter);
+				Dialogs.DoChoose(q.Execute(), parameterValue, "Value", Variables[control], null, parameterDescription);
+			}
+			if (typeDescription == "DateTime") {  //---------DateTime-------
+				if (String.IsNullOrEmpty(parameterValue.Value))
+					Dialogs.ChooseDateTime(parameterValue, "Value", Variables[control], DateHandler, parameterDescription);
+				else
+					Dialog.Choose(parameterDescription, [[0, Translate["#clearValue#"]], [1, Translate["#setDate#"]]], DateHandler, [parameterValue, control]);
+			}
+			if (typeDescription == "Boolean") {  //----------Boolean--------
+				Dialogs.ChooseBool(parameterValue, "Value", Variables[control], null, parameterDescription);
+			}
+			if (typeDescription == "String" || typeDescription == "Integer" || typeDescription == "Decimal") {
+				FocusOnEditText(control, '1');
+			}
+		}
+	}
+}
+
+function CreateOrderParameterValue(order, parameter, value, parameterValue) {
+	var q = new Query("SELECT Id FROM Document_Order_Parameters WHERE Ref=@ref AND Parameter = @parameter");
+	q.AddParameter("ref", order);
+	q.AddParameter("parameter", parameter);
+	parameterValue = q.ExecuteScalar();
+	if (parameterValue == null) {
+		parameterValue = DB.Create("Document.Order_Parameters");
+		parameterValue.Ref = order;
+		parameterValue.Parameter = parameter;
+	} else
+		parameterValue = parameterValue.GetObject();
+	parameterValue.Value = value;
+	parameterValue.Save();
+	return parameterValue.Id;
+}
+
+function AssignParameterValue(control, typeDescription, parameterValue, value, order, parameter) {
+	CreateOrderParameterValue(order, parameter, control.Text, parameterValue)
+}
+
+
+function DateHandler(state, args) {
+	var parameterValue = state[0];
+	var control = state[1];
+	if(getType(args.Result)=="System.DateTime"){
+		parameterValue = parameterValue.GetObject();
+		parameterValue.Value = args.Result;
+		parameterValue.Save();
+		Workflow.Refresh([]);
+	}
+	if (parseInt(args.Result)==parseInt(0)){
+		parameterValue = parameterValue.GetObject();
+		parameterValue.Value = "";
+		parameterValue.Save();
+		Workflow.Refresh([]);
+	}
+	if (parseInt(args.Result)==parseInt(1)){
+		ChooseDateTime(parameterValue, "Value", Variables[control]);
+	}
+}
+
+function IsEditText(isInputField, editable, order) {
+	if (isInputField && editable && IsNew(order)) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function CreateOrderIfNotExists(order, outlet, userRef, visitId, executedOrder) {
@@ -152,7 +284,7 @@ function SelectStock(order, attr, control) {
 		while (res.Next()) {
 			table.push([ res.Id, res.Description ]);
 		}
-		Dialogs.DoChoose(table, order, attr, control, StockSelectHandler);
+		Dialogs.DoChoose(table, order, attr, control, StockSelectHandler, Translate["#stockPlace#"]);
 	}
 }
 
@@ -258,9 +390,9 @@ function SaveOrder(order) {
 	Workflow.Forward([]);
 }
 
-function SetDeliveryDateDialog(order, control, executedOrder) {
+function SetDeliveryDateDialog(order, control, executedOrder, title) {
 	if (IsNew(order) && NotEmptyRef(order.PriceList))
-		Dialogs.ChooseDateTime(order, "DeliveryDate", control, null);
+		Dialogs.ChooseDateTime(order, "DeliveryDate", control, null, title);
 }
 
 //function DialogCallBack(control, key) {
@@ -379,7 +511,7 @@ function SelectPriceList(order, priceLists, executedOrder) {
 }
 
 function PriceListSelect(entity, attribute, table, control) {
-	Dialogs.DoChoose(table, entity, attribute, control, DoPriceListCallback);
+	Dialogs.DoChoose(table, entity, attribute, control, DoPriceListCallback, Translate["#priceList#"]);
 	return;
 }
 

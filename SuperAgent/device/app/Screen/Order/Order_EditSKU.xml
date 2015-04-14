@@ -57,7 +57,7 @@
 			<s:If Test="$sku.DefaultPicture != null">
 				<s:If Test="$showimage == 'Show'">
 					<c:HorizontalLine />
-					<c:Image CssClass="60" Source="$GetImagePath(Catalog.SKU, $sku.Id, $sku.DefaultPicture, $sku.DefaultPictureExtension)" />
+					<c:Image CssClass="60" Source="$GetImagePath(catalog.sku, $sku.Id, $sku.DefaultPicture, $sku.DefaultPictureExtension)" />
 					<c:HorizontalLine />
 					<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
 				</s:If>

@@ -6,10 +6,25 @@ function WarMupFunction() {
 
 }
 
+function OnLoading() {
+	var primaryParametersSettings = new Dictionary();
+	primaryParametersSettings.Add("description", "000000001");
+	primaryParametersSettings.Add("address", "000000002");
+	primaryParametersSettings.Add("coordinates", "000000003");
+	primaryParametersSettings.Add("type", "000000004");
+	primaryParametersSettings.Add("class", "000000005");
+	primaryParametersSettings.Add("distributor", "000000006");
+	primaryParametersSettings.Add("status", "000000007");
+	primaryParametersSettings.Add("snapshots", "000000008");
+	$.Add("primaryParametersSettings", primaryParametersSettings);
+}
+
 function GetOutlets(searchText) {
 	var search = "";
-	if (String.IsNullOrEmpty(searchText)==false)
+	if (String.IsNullOrEmpty(searchText)==false) {
+		searchText = StrReplace(searchText, "'", "''");
 		search = "WHERE Contains(O.Description, '" + searchText + "') ";
+	}
 	var q = new Query("SELECT O.Id, O.Description, O.Address," +
 			"(SELECT CASE WHEN COUNT(DISTINCT D.Overdue) = 2 THEN 2	WHEN COUNT(DISTINCT D.Overdue) = 0 THEN 3 " +
 			"ELSE (SELECT D1.Overdue FROM Document_AccountReceivable_ReceivableDocuments D1 " +
@@ -43,11 +58,35 @@ function CreateVisitEnable() {
 		return false;
 
 }
+function Debug(val) {
+	Dialog.Debug(val);
+	return true;
+}
+
 
 function GetOutletParameters(outlet) {
 	var query = new Query();
-	query.Text = "SELECT P.Id, P.Description, P.DataType, DT.Description AS TypeDescription, OP.Id AS ParameterValue, OP.Value FROM Catalog_OutletParameter P JOIN Enum_DataType DT ON DT.Id=P.DataType LEFT JOIN Catalog_Outlet_Parameters OP ON OP.Parameter = P.Id AND OP.Ref = @outlet";
+	query.Text = "SELECT P.Id, P.Description, P.DataType, DT.Description AS TypeDescription, OP.Id AS ParameterValue, OP.Value, P.Visible, P.Editable, OP.Unavailable " +
+
+			", CASE WHEN P.DataType=@integer OR P.DataType=@decimal OR P.DataType=@string THEN 1 ELSE 0 END AS IsInputField " + //IsInputField
+			", CASE WHEN P.DataType=@integer OR P.DataType=@decimal THEN 'numeric' ELSE 'auto' END AS KeyboardType " +
+
+			", CASE WHEN P.DataType=@integer OR P.DataType=@decimal OR P.DataType=@string THEN OP.Value " +
+			"ELSE CASE " +
+			"WHEN OP.Value IS NULL OR RTRIM(OP.Value)='' THEN '—' " +
+			"WHEN OP.Value IS NOT NULL AND P.DataType=@snapshot THEN @attached " +
+			"WHEN OP.Value IS NOT NULL AND P.DataType!=@snapshot THEN OP.Value " +
+			"END END AS AnswerOutput " +
+
+			"FROM Catalog_OutletParameter P " +
+			"JOIN Enum_DataType DT ON DT.Id=P.DataType " +
+			"LEFT JOIN Catalog_Outlet_Parameters OP ON OP.Parameter = P.Id AND OP.Ref = @outlet";
+	query.AddParameter("integer", DB.Current.Constant.DataType.Integer);
+	query.AddParameter("decimal", DB.Current.Constant.DataType.Decimal);
+	query.AddParameter("string", DB.Current.Constant.DataType.String);
+	query.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
 	query.AddParameter("outlet", outlet);
+	query.AddParameter("attached", Translate["#snapshotAttached#"]);
 	return query.Execute();
 }
 
@@ -107,13 +146,16 @@ function ReviseParameters(outlet, save) {
 //---------------------------header parameters dialog.choose--------------------
 
 
-function SelectIfNotAVisit(outlet, attribute, control) {
-	if ($.workflow.name != "Visit")
-		DoSelect(outlet, attribute, control);
+function SelectIfNotAVisit(outlet, attribute, control, title, editOutletParameters, primaryParameterName) {
+	if ($.workflow.name != "Visit") {
+		DoSelect(outlet, attribute, control, title, editOutletParameters, primaryParameterName);
+	}
 }
 
-function DoSelect(outlet, attribute, control) {
-	DoChoose(null, outlet, attribute, control, null);
+function DoSelect(outlet, attribute, control, title, editOutletParameters, primaryParameterName) {
+	if (IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName)) {
+		DoChoose(null, outlet, attribute, control, null, title);
+	}
 }
 
 
@@ -142,44 +184,83 @@ function AssignParameterValue(control, typeDescription, parameterValue, value, o
 	CreateOutletParameterValue(outlet, parameter, control.Text, parameterValue)
 }
 
+function GoToParameterAction(typeDescription, parameterValue, value, outlet, parameter, control, parameterDescription, editable) {
 
-function GoToParameterAction(typeDescription, parameterValue, value, outlet, parameter, control) {
+	if (editable) {
 
-	if ($.sessionConst.editOutletParameters){
+		if ($.sessionConst.editOutletParameters) {
+			parameterValue = CreateOutletParameterValue(outlet, parameter, parameterValue, parameterValue);
 
-		parameterValue = CreateOutletParameterValue(outlet, parameter, Variables[control].Text, parameterValue);
-
-		if (typeDescription == "ValueList") {  //--------ValueList-------
-			var q = new Query();
-			q.Text = "SELECT Value, Value FROM Catalog_OutletParameter_ValueList WHERE Ref=@ref UNION SELECT '', '—' ORDER BY Value";
-			q.AddParameter("ref", parameter);
-			DoChoose(q.Execute(), parameterValue, "Value", Variables[control], null);
-		}
-		if (typeDescription == "DateTime") {  //---------DateTime-------
-			if (String.IsNullOrEmpty(parameterValue.Value))
-				ChooseDateTime(parameterValue, "Value", Variables[control], DateHandler);
-			else
-				Dialog.Choose(Translate["#valueList#"], [[0, Translate["#clearValue#"]], [1, Translate["#setDate#"]]], DateHandler, [parameterValue, control]);
-		}
-		if (typeDescription == "Boolean") {  //----------Boolean--------
-			ChooseBool(parameterValue, "Value", Variables[control]);
-		}
-		if (typeDescription == "Snapshot") { //----------Snapshot-------
-			var listChoice = new List;
-			listChoice.Add([1, Translate["#makeSnapshot#"]]);
-			if ($.sessionConst.galleryChoose)
-				listChoice.Add([0, Translate["#addFromGallery#"]]);
-			if (String.IsNullOrEmpty(parameterValue.Value)==false)
-				listChoice.Add([2, Translate["#clearValue#"]]);
-			AddSnapshotGlobal(outlet, parameterValue, SaveAtOutelt, listChoice, "catalog.outlet");
-			parameterValueC = parameterValue;
-		}
-		if (typeDescription == "String" || typeDescription == "Integer" || typeDescription == "Decimal") {
-			FocusOnEditText(control, '1');
+			if (typeDescription == "ValueList") {  //--------ValueList-------
+				var q = new Query();
+				q.Text = "SELECT Value, Value FROM Catalog_OutletParameter_ValueList WHERE Ref=@ref UNION SELECT '', '—' ORDER BY Value";
+				q.AddParameter("ref", parameter);
+				DoChoose(q.Execute(), parameterValue, "Value", Variables[control], null, parameterDescription);
+			}
+			if (typeDescription == "DateTime") {  //---------DateTime-------
+				if (String.IsNullOrEmpty(parameterValue.Value))
+					ChooseDateTime(parameterValue, "Value", Variables[control], DateHandler, parameterDescription);
+				else
+					Dialog.Choose(parameterDescription, [[0, Translate["#clearValue#"]], [1, Translate["#setDate#"]]], DateHandler, [parameterValue, control]);
+			}
+			if (typeDescription == "Boolean") {  //----------Boolean--------
+				ChooseBool(parameterValue, "Value", Variables[control], null, parameterDescription);
+			}
+			if (typeDescription == "Snapshot") { //----------Snapshot-------
+				var listChoice = new List;
+				listChoice.Add([1, Translate["#makeSnapshot#"]]);
+				if ($.sessionConst.galleryChoose)
+					listChoice.Add([0, Translate["#addFromGallery#"]]);
+				if (String.IsNullOrEmpty(parameterValue.Value)==false)
+					listChoice.Add([2, Translate["#clearValue#"]]);
+				AddSnapshotGlobal(outlet, parameterValue, SaveAtOutelt, listChoice, "catalog.outlet", parameterDescription);
+				parameterValueC = parameterValue;
+			}
+			if (typeDescription == "String" || typeDescription == "Integer" || typeDescription == "Decimal") {
+				FocusOnEditText(control, '1');
+			}
 		}
 	}
 }
 
+function IsEmptyString(value) {
+	return String.IsNullOrEmpty(value);
+}
+
+function IsUnavailable(value) {
+	if (value == 1 || value == null) {
+		result = true;
+	} else {
+		result = false;
+	}
+	return result;
+}
+
+function IsEditText(editOutletParameters, isInputField, editable) {
+	if (editOutletParameters && isInputField && editable) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName) {
+	query = new Query("SELECT Editable FROM Catalog_OutletsprimaryParametersSettings WHERE Code = @Code");
+	query.AddParameter("Code", $.primaryParametersSettings[primaryParameterName]);
+	isParameterEditable = query.ExecuteScalar();
+	if (editOutletParameters && isParameterEditable) {
+		result =  true;
+	} else {
+		result = false;
+	};
+	return result;
+}
+
+function FocusIfHasEditText(fieldName, editOutletParameters, primaryParameterName) {
+	if (IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName)) {
+		FocusOnEditText(fieldName, 1);
+	}
+}
 
 function DateHandler(state, args) {
 	var parameterValue = state[0];
@@ -225,13 +306,14 @@ function NoSnapshots() {
 
 function GetImagePath(objectType, objectID, pictID, pictExt) {
 	var s = GetSharedImagePath(objectType, objectID, pictID, pictExt);
-    return s;
+  return s;
 }
 
 
 function ImageActions(control, id) {
-	if ($.sessionConst.editOutletParameters)
+	if (IsOutletPrimaryParameterEditable($.sessionConst.editOutletParameters, "snapshots")) {
 		Dialog.Ask(Translate["#deleteImage#"], DeleteImage, id); //Translate["#deleteImage#"]
+	}
 }
 
 
@@ -246,7 +328,7 @@ function DeleteImage(state, args) {
 
 function AddSnapshot(control, outlet) {
 	if ($.sessionConst.galleryChoose)
-		AddSnapshotGlobal(outlet, null, GalleryHandler, [[0, Translate["#addFromGallery#"]], [1, Translate["#makeSnapshot#"]]], "catalog.outlet");
+		AddSnapshotGlobal(outlet, null, GalleryHandler, [[0, Translate["#addFromGallery#"]], [1, Translate["#makeSnapshot#"]]], "catalog.outlet", Translate["#outletSnapshots#"]);
 	else{
 		var pictId = GetCameraObject(outlet);
 		var path = GetPrivateImagePath("catalog.outlet", outlet, pictId, ".jpg");
@@ -361,8 +443,10 @@ function NoLocationHandler(descriptor) {
 	Dialog.Message("#locationSetFailed#");
 }
 
-function ShowCoordOptions(control, outlet) {
-	Dialog.Choose("#select_answer#", [[0,Translate["#clear_coord#"]], [1,Translate["#refresh#"]], [2,Translate["#copy#"]]], ChooseHandler, outlet);
+function ShowCoordOptions(control, outlet, editOutletParameters, primaryParameterName) {
+	if (IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName)) {
+		Dialog.Choose("#coordinates#", [[0,Translate["#clear_coord#"]], [1,Translate["#refresh#"]], [2,Translate["#copy#"]]], ChooseHandler, outlet);
+	}
 }
 
 function ChooseHandler(state, args) {
@@ -418,6 +502,7 @@ function SaveAtOutelt(arr, args) {
 		var path = arr[1];
 		var question = paramValue.GetObject();
 		question.Value = path;
+		question.Unavailable = 1;
 		question.Save();
 		Workflow.Refresh([]);
 	}
@@ -461,7 +546,10 @@ function CommitAndBack(){
 
 //------------------------------Temporary, from dialogs----------------
 
-function DoChoose(listChoice, entity, attribute, control, func) {
+function DoChoose(listChoice, entity, attribute, control, func, title) {
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
 	if (attribute==null)
 		var startKey = control.Text;
 	else
@@ -477,11 +565,13 @@ function DoChoose(listChoice, entity, attribute, control, func) {
 	if (func == null)
 		func = CallBack;
 
-	Dialog.Choose("#select_answer#", listChoice, startKey, func, [entity, attribute, control]);
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
 }
 
-function ChooseDateTime(entity, attribute, control, func) {
+function ChooseDateTime(entity, attribute, control, func, title) {
 	var startKey;
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
 
 	if (attribute==null)
 		startKey = control.Text;
@@ -493,10 +583,13 @@ function ChooseDateTime(entity, attribute, control, func) {
 
 	if (func == null)
 		func = CallBack;
-	Dialog.DateTime("#enterDateTime#", startKey, func, [entity, attribute, control]);
+	Dialog.DateTime(title, startKey, func, [entity, attribute, control]);
 }
 
-function ChooseBool(entity, attribute, control, func) {
+function ChooseBool(entity, attribute, control, func, title) {
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
 	if (attribute==null)
 		var startKey = control.Text;
 	else
@@ -505,7 +598,7 @@ function ChooseBool(entity, attribute, control, func) {
 	var listChoice = [[ "—", "—" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
-	Dialog.Choose("#select_answer#", listChoice, startKey, func, [entity, attribute, control]);
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
 }
 
 function CallBack(state, args) {
@@ -541,9 +634,10 @@ function S4() {
 
 //------------------------------Temporary, from images----------------
 
-function AddSnapshotGlobal(objectRef, valueRef, func, listChoice, objectType) {
+function AddSnapshotGlobal(objectRef, valueRef, func, listChoice, objectType, title) {
 //	if ($.sessionConst.galleryChoose)
-		Dialog.Choose(Translate["#choose_action#"], listChoice, AddSnapshotHandler, [objectRef,func,valueRef,objectType]);
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+	Dialog.Choose(Translate[title], listChoice, AddSnapshotHandler, [objectRef,func,valueRef,objectType]);
 //	else{
 //		var pictId = GetCameraObject(objectRef);
 //		var path = GetPrivateImagePath("catalog.outlet", objectRef, pictId, ".jpg");

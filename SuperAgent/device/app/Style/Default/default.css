@@ -90,7 +90,7 @@ MemoEdit {
 	width: 100%;
 	height: 100%;
 	dock-align: top;
-	horizontal-align: central;	
+	horizontal-align: central;
 }
 
 .top_navigator hl TextView {
@@ -111,13 +111,13 @@ MemoEdit {
 
 .top_navigator dl {
 	width: 16.3mm;
-	height: 100%;	
+	height: 100%;
 }
 
 .btn_forward {
 	width: 16.3mm;
 	height: 100%;
-	dock-align: right;	
+	dock-align: right;
 }
 
 .btn_forward TextView {
@@ -612,7 +612,7 @@ MemoEdit {
 	padding-top: 30%;
 	dock-align: left;
 	font: 37% arial;
-	placeholder-color: #2d89cf; 
+	placeholder-color: #2d89cf;
 }
 
 .parameter_grid hl {
@@ -627,6 +627,15 @@ MemoEdit {
 	padding-top: 30%;
 	color: #2d89cf;
 	font: 36% arial;
+}
+
+.parameter_image {
+	height: 100%;
+	margin-right: 2.4mm;
+	margin-top: 1.5%;
+	margin-bottom: 1.5%;
+	background-image: url(arrow.png);
+	dock-align: right;
 }
 
 .tick {

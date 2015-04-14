@@ -78,7 +78,7 @@
 
 			<s:If Test="@snapshotsExists">
 				<c:DockLayout CssClass="snapshot_grid">
-					<s:If Test="$sessionConst.editOutletParameters">
+					<s:If Test="$IsOutletPrimaryParameterEditable($sessionConst.editOutletParameters, snapshots)">
 						<c:Button Text="#add#" OnClick="$AddSnapshot($outlet)" />
 					</s:If>
 					<c:TextView Text="#outletSnapshots#" />
@@ -114,26 +114,38 @@
 					<c:DockLayout CssClass="grid">
 						<c:VerticalLayout>
 							<c:TextView Text="#outletSnapshots#" CssClass="description_row" />
-							<c:Button OnClick="$AddSnapshot($outlet)" Text="#add#" CssClass="add_button" />
+							<s:If Test="$IsOutletPrimaryParameterEditable($sessionConst.editOutletParameters, snapshots)">
+								<c:Button OnClick="$AddSnapshot($outlet)" Text="#add#" CssClass="add_button" />
+							</s:If>
 						</c:VerticalLayout>
 					</c:DockLayout>
 					<c:HorizontalLine />
 				</s:If>
 			</s:Else>
 
-			<c:HorizontalLayout CssClass="grid">
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusIfHasEditText(outletDescr, $sessionConst.editOutletParameters, description)">
 				<c:VerticalLayout>
 					<c:TextView Text="#description#" CssClass="description_row"></c:TextView>
-					<c:TextView Id="outletDescr" Text="$outlet.Description" CssClass="main_row"></c:TextView>
+					<s:If Test="$IsOutletPrimaryParameterEditable($sessionConst.editOutletParameters, description)">
+						<c:EditText Id="outletDescr" Value="$outlet.Description" CssClass="main_row"></c:EditText>
+					</s:If>
+					<s:Else>
+						<c:TextView Id="outletDescr" Text="$outlet.Description" CssClass="main_row"></c:TextView>
+					</s:Else>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="grid" OnClickAction="$FocusOnEditText(outletAddress, 1)">
+			<c:DockLayout CssClass="grid" OnClickAction="$FocusIfHasEditText(outletAddress, $sessionConst.editOutletParameters, address)">
 				<c:Button Id="clearButton" CssClass="clear" Visible="false" OnClick="$ClearField($outletAddress, $outlet, Address)"/>
 				<c:VerticalLayout>
 					<c:TextView Text="#address#" CssClass="description_row"></c:TextView>
-					<c:MemoEdit Id="outletAddress" Value="$outlet.Address" OnGetFocus="$ShowClearButton($clearButton)" OnLostFocus="$HideClearButton($clearButton)" OnChange="$SaveValue($outlet)"></c:MemoEdit>
+					<s:If Test="$IsOutletPrimaryParameterEditable($sessionConst.editOutletParameters, address)">
+						<c:MemoEdit Id="outletAddress" Value="$outlet.Address" OnGetFocus="$ShowClearButton($clearButton)" OnLostFocus="$HideClearButton($clearButton)" OnChange="$SaveValue($outlet)"></c:MemoEdit>
+					</s:If>
+					<s:Else>
+						<c:TextView Id="outletAddress" Text="$outlet.Address" CssClass="main_row"></c:TextView>
+					</s:Else>
 				</c:VerticalLayout>
 			</c:DockLayout>
 			<c:HorizontalLine />
@@ -149,12 +161,14 @@
 				<c:VerticalLayout>
 					<c:TextView Text="#coordinates#" CssClass="description_row"></c:TextView>
 					<s:If Test="$HasCoordinates($outlet)">
-						<c:HorizontalLayout OnClick="$ShowCoordOptions($outlet)">
+						<c:HorizontalLayout OnClick="$ShowCoordOptions($outlet, $sessionConst.editOutletParameters, coordinates)">
 							<c:TextView Id="outletCoord" Text="{$outlet.Lattitude}; {$outlet.Longitude}" CssClass="main_row"></c:TextView>
 						</c:HorizontalLayout>
 					</s:If>
 					<s:Else>
-						<c:Button OnClick="$SetLocation($outlet)" Text="#set#" CssClass="coordButton" />
+						<s:If Test="$IsOutletPrimaryParameterEditable($sessionConst.editOutletParameters, coordinates)">
+							<c:Button OnClick="$SetLocation($outlet)" Text="#set#" CssClass="coordButton" />
+						</s:If>
 					</s:Else>
 				</c:VerticalLayout>
 			</c:DockLayout>
@@ -165,19 +179,19 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet,Class,$outletClass)">
+			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet,Class,$outletClass,#outlet_class#, $sessionConst.editOutletParameters, class)">
 				<c:TextView Text="#outlet_class#"></c:TextView>
 				<c:TextView Id="outletClass" Text="$outlet.Class.Description" CssClass="value"></c:TextView>
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet,Type,$outletType)">
+			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet,Type,$outletType,#outlet_type#, $sessionConst.editOutletParameters, type)">
 				<c:TextView Text="#outlet_type#"></c:TextView>
 				<c:TextView Id="outletType" Text="$outlet.Type.Description" CssClass="value"></c:TextView>
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoSelect($outlet,Distributor,$outletDistr)">
+			<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoSelect($outlet,Distributor,$outletDistr,#distributor#, $sessionConst.editOutletParameters, distributor)">
 				<c:TextView Text="#distributor#"></c:TextView>
 				<c:TextView Id="outletDistr" Text="$outlet.Distributor.Description" CssClass="value"></c:TextView>
 			</c:DockLayout>
@@ -185,26 +199,36 @@
 
 			<s:Iterator Id="parameter" Value="$GetOutletParameters($outlet)" Status="statusCount">
 
-				<s:Push Id="valueStr" Value="$GetOutletParameterValue($outlet,$parameter.Id,$parameter.ParameterValue, $parameter.TypeDescription)" />
-				<s:Push Id="editText" Value="$UseInput($parameter.TypeDescription)" />
 				<s:Push Id="index" Value="$statusCount.Index"></s:Push>
-				<c:DockLayout CssClass="parameter_grid" OnClickAction="$GoToParameterAction($parameter.TypeDescription, $parameterValue, Value, $outlet, $parameter.Id, control{$index})">
-					<s:If Test="$editText">
-						<s:If Test="$sessionConst.editOutletParameters">
-							<c:EditText Id="control{$index}" Text="$valueStr" OnChange="$AssignParameterValue($parameter.TypeDescription, $parameterValue, Value, $outlet, $parameter.Id)" CssClass="value" Keyboard="$keyboardType"></c:EditText>
+				<s:Push Id="visible" Value="$parameter.Visible"></s:Push>
+				<s:Push Id="editable" Value="$parameter.Editable"></s:Push>
+				<s:If Test="$visible">
+					<c:DockLayout CssClass="parameter_grid" OnClickAction="$GoToParameterAction($parameter.TypeDescription, $parameter.Value, Value, $outlet, $parameter.Id, control{$index}, $parameter.Description, $editable)">
+						<s:If Test="$IsEditText($sessionConst.editOutletParameters, $parameter.IsInputField, $editable)">
+							<c:EditText Id="control{$index}" Text="$parameter.Value" Placeholder="—" OnChange="$AssignParameterValue($parameter.TypeDescription, $parameterValue, Value, $outlet, $parameter.Id)" CssClass="value" Keyboard="$parameter.KeyboardType"></c:EditText>
 						</s:If>
 						<s:Else>
-							<c:TextView Id="control{$index}" Text="$valueStr" CssClass="value"></c:TextView>
+							<s:If Test="$parameter.TypeDescription == 'Snapshot'">
+								<s:If Test="$IsEmptyString($parameter.Value)">
+									<c:TextView Text="#noSnapshot#" CssClass="value"></c:TextView>
+								</s:If>
+								<s:Else>
+									<s:If Test="$IsUnavailable($parameter.Unavailable)">
+										<c:TextView Text="#notAvailableShort#" CssClass="not_available" />
+									</s:If>
+									<s:Else>
+										<c:Image Source="$GetImagePath(catalog.outlet, $outlet, $parameter.Value, .jpg)" CssClass="parameter_image" />
+									</s:Else>
+								</s:Else>
+							</s:If>
+							<s:Else>
+								<c:TextView Id="control{$index}" Text="$parameter.AnswerOutput" CssClass="value"></c:TextView>
+							</s:Else>
 						</s:Else>
-					</s:If>
-					<s:Else>
-						<c:TextView Id="control{$index}" Text="$valueStr" CssClass="value"></c:TextView>
-					</s:Else>
-					<c:TextView Text="$parameter.Description"></c:TextView>
-				</c:DockLayout>
-
-				<c:HorizontalLine />
-
+						<c:TextView Text="$parameter.Description"></c:TextView>
+					</c:DockLayout>
+					<c:HorizontalLine />
+				</s:If>
 			</s:Iterator>
 
 		</c:ScrollView>

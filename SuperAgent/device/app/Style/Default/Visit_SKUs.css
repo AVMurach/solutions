@@ -17,7 +17,7 @@
 	padding-left: 2.4mm;
 }
 
-.description_row {	
+.description_row {
 	width: 60%;
 	height: 40%;
 	font: 2.2mm Arial;
@@ -104,7 +104,7 @@
 	white-space: normal;
 	font: 42% Arial;
 	color: #2D89CF;
-	placeholder-color: #2D89CF; 
+	placeholder-color: #2D89CF;
 }
 
 .required_grid {
@@ -137,29 +137,41 @@
 .required_side_wh{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(required_side_wh.png);	
-	dock-align: right;
+	background-image: url(required_side_wh.png);
+	dock-align: left;
 }
 
 .answered_side_wh{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(answered_side_wh.png);	
-	dock-align: right;
+	background-image: url(answered_side_wh.png);
+	dock-align: left;
 }
 
 .required_side_gr{
 	height: 100%;
 	width: 1.2mm;
 	background-image: url(required_side_gr.png);
-	dock-align: right;	
+	dock-align: left;
+}
+
+.empty_side_wh{
+	height: 100%;
+	width: 1.2mm;
+	dock-align: left;
+}
+
+.empty_side_gr{
+	height: 100%;
+	width: 1.2mm;
+	dock-align: left;
 }
 
 .answered_side_gr{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(answered_side_gr.png);	
-	dock-align: right;
+	background-image: url(answered_side_gr.png);
+	dock-align: left;
 }
 
 .single_rec{
@@ -182,5 +194,5 @@
 
 .search_filter{
 	height: 15.4sp;
-	width: 100%;	
+	width: 100%;
 }
