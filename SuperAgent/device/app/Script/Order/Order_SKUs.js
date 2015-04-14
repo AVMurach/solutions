@@ -134,7 +134,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     	}
 
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, " +
-	    		"IfNull(O.Qty, 0) AS Qty, CASE WHEN IfNull(O.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
+	    		"IfNull(OSKU.Qty, 0) AS Qty, CASE WHEN IfNull(OSKU.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
@@ -144,7 +144,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            
 	          //Murach A+
-	            "LEFT JOIN Document_Order_SKUs O ON O.Ref=@order AND O.SKU = S.Id " +                               
+	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +                               
 	          //Murach A-
 	            
 	            groupParentJoin +
@@ -162,7 +162,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 
     	    	
     	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
-    			"IfNull(O.Qty, 0) AS Qty, CASE WHEN IfNull(O.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
+    			"IfNull(OSKU.Qty, 0) AS Qty, CASE WHEN IfNull(OSKU.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
@@ -172,7 +172,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            
 	          //Murach A+
-	            "LEFT JOIN Document_Order_SKUs O ON O.Ref=@order AND O.SKU = S.Id " +                               
+	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +                               
 	          //Murach A-
 	            	            
 	            groupParentJoin +
