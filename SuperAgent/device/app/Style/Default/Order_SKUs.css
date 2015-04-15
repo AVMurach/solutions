@@ -171,12 +171,12 @@
 }*/
 
 .miniCnt {
-	width: 4.6mm;
+	width: 5.6mm;
 	height: 100%;
 	dock-align: left;	
 	background-color: #4dd865;	
 	white-space: normal;
-	font: 15% Arial;
+	font: 13% Arial;
 	color: #ffffff;
 	text-align: center; 
 	padding-top: 40%;
