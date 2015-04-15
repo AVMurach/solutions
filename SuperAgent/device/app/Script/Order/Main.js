@@ -41,12 +41,15 @@ function AddGlobalAndAction(name, value, actionName) {
 }
 
 function GetPriceListQty(outlet) {
-	var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
+	//var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
+	var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id AND D.Number != @numPZ WHERE O.Ref = @Ref ORDER BY O.LineNumber");
 	query.AddParameter("Ref", outlet);
+	query.AddParameter("numPZ", '000000002');
 	var pl = query.ExecuteCount();
 	if (parseInt(pl) == parseInt(0)) {
-		var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true");
+		var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true AND Number != @numPZ");
 		query.AddParameter("true", true);
+		query.AddParameter("numPZ", '000000002');
 		return query.ExecuteCount();
 	} else
 		return pl;
@@ -91,13 +94,15 @@ function CreateOrderIfNotExists(order, outlet, userRef, visitId, executedOrder) 
 }
 
 function GetPriceListRef(outlet) {
-	var query = new Query("SELECT PriceList FROM Catalog_Outlet_Prices WHERE Ref = @Ref ORDER BY LineNumber LIMIT 1");
+	var query = new Query("SELECT O.PriceList FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id AND D.Number != @numPZ WHERE O.Ref = @Ref ORDER BY O.LineNumber LIMIT 1");
 	query.AddParameter("Ref", outlet);
+	query.AddParameter("numPZ", '000000002');
 	var pl = query.ExecuteScalar();
 	if (pl != null)
 		return pl;
-	var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true LIMIT 1");
+	var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true AND Number != @numPZ LIMIT 1");
 	query.AddParameter("true", true);
+	query.AddParameter("numPZ", '000000002');
 	return query.ExecuteScalar();
 }
 
