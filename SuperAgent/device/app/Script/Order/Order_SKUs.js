@@ -134,7 +134,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     	}
 
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, " +
-	    		"IfNull(OSKU.Qty, 0) AS Qty, CASE WHEN IfNull(OSKU.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
+	    		"SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) AS Qty, CASE WHEN SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
 	    		"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
@@ -150,12 +150,15 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            
 	          //Murach A+
-	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +                               
+	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +
+	            "LEFT JOIN Catalog_SKU_Packing SKUP ON SKUP.Ref = S.Id AND SKUP.Pack = OSKU.Units " +                               
 	          //Murach A-
 	            
 	            groupParentJoin +
 	            recOrderStr +
 	            " WHERE " + stockCondition + " PL.Ref = @Ref " + searchString + recentOrders + filterString +
+	            //" GROUP BY S.Id, S.Description, PL.Price, CommonStock, PercentMargin "
+	            " GROUP BY S.Description "
 	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 1000";
 
     } else {
@@ -168,7 +171,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 
     	    	
     	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
-    			"IfNull(OSKU.Qty, 0) AS Qty, CASE WHEN IfNull(OSKU.Qty, 0) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
+    			"SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) AS Qty, CASE WHEN SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
     			"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
@@ -184,13 +187,17 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            
 	          //Murach A+
-	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +                               
+	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +  
+	            "LEFT JOIN Catalog_SKU_Packing SKUP ON SKUP.Ref = S.Id AND SKUP.Pack = OSKU.Units " +
 	          //Murach A-
 	            	            
 	            groupParentJoin +
 	            recOrderStr +
 	            " WHERE PL.Ref = @Ref " + searchString + recentOrders + filterString +
-	            ") INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
+	            ") INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock " +
+	            //" GROUP BY S.Id, S.Description, PL.Price, CommonStock, PercentMargin " +
+	            " GROUP BY S.Description " +
+	            "ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
 
     	query.AddParameter("stock", stock);
 
