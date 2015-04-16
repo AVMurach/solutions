@@ -196,7 +196,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	            " WHERE PL.Ref = @Ref " + searchString + recentOrders + filterString +
 	            ") INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock " +
 	            //" GROUP BY S.Id, S.Description, PL.Price, CommonStock, PercentMargin " +
-	            " GROUP BY S.Description " +
+	            " GROUP BY INQ.Description " +
 	            "ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
 
     	query.AddParameter("stock", stock);
