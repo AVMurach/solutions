@@ -206,7 +206,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     query.AddParameter("Ref", priceList);
     query.AddParameter("order", order);
     query.AddParameter("outlet", outlet);
-    query.AddParameter("numPZ", '000000002');
+    query.AddParameter("numPZ", '000000004');
     
     return query.Execute();
 
