@@ -194,6 +194,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 	            groupParentJoin +
 	            recOrderStr +
 	            " WHERE PL.Ref = @Ref " + searchString + recentOrders + filterString +
+	            " GROUP BY S.Description " +
 	            ") INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock " +
 	            //" GROUP BY S.Id, S.Description, PL.Price, CommonStock, PercentMargin " +
 	            " GROUP BY INQ.Description " +
@@ -206,7 +207,9 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     query.AddParameter("Ref", priceList);
     query.AddParameter("order", order);
     query.AddParameter("outlet", outlet);
-    query.AddParameter("numPZ", '000000004');
+    query.AddParameter("numPZ", '000000002');
+    
+    //Console.WriteLine(query.text);
     
     return query.Execute();
 
