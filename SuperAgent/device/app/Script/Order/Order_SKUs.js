@@ -135,14 +135,16 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, " +
 	    		"SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) AS Qty, CASE WHEN SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
-	    		"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
+	    		//"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
+	    		"(ROUND(0)) AS PercentMargin, " +
+	    		
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
 	            "FROM Document_PriceList_Prices PL " +
 	            
 	          //Murach A+
-	            "LEFT JOIN Document_PriceList_Prices PLZ ON PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
+	            //"LEFT JOIN Document_PriceList_Prices PLZ ON PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
 	          //Murach A-
 	            
 	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
@@ -172,14 +174,16 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     	    	
     	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
     			"SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) AS Qty, CASE WHEN SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
-    			"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
+    			//"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
+    			"(ROUND(0)) AS PercentMargin, " +
+    			
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
 	            "FROM Document_PriceList_Prices PL " +
 	            
 	          //Murach A+
-	            "LEFT JOIN Document_PriceList_Prices PLZ ON PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
+	            //"LEFT JOIN Document_PriceList_Prices PLZ ON PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
 	          //Murach A-
 	            
 	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
@@ -209,7 +213,7 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     query.AddParameter("outlet", outlet);
     query.AddParameter("numPZ", '000000004');
     
-    //Console.WriteLine(query.text);
+    Console.WriteLine(query.text);
     
     return query.Execute();
 
