@@ -225,7 +225,6 @@ contactName		Contact name
 position		Position
 visitdate		Visit date
 alreadyOrdered	already in order
-dyOrdered	In order
 repeat		Repeat
 nonregular	Non-regular
 regular		Regular
@@ -266,4 +265,3 @@ logoutConfirm	Logout
 visitReason		"Visit reason" field should be filled
 noOrder			"No order reason" field should be filled
 notAvailableShort	N/A
-mostPopular	Most popular

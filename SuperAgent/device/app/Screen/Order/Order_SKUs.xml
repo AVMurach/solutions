@@ -4,36 +4,24 @@
 	<s:Push Id="order" Value="$workflow.order"></s:Push>
 	<s:Push Id="search" Value="$param1"></s:Push>
 
-	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $order.PriceList, $order.Stock, $order, $order.Outlet)"></s:Push>
-	
-	<s:Push Id="tickOn" Value="$TickOnTest()"></s:Push>
+	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $order.PriceList, $order.Stock)"></s:Push>
 
 	<c:DockLayout>
 
-		<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
+		<c:DockLayout CssClass="top_navigator">
+			<c:HorizontalLayout>
+				<c:TextView Text="#skuAdd#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
 
-		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn">
-			<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn_left" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
-				<c:TextView Text="#ready#"></c:TextView>
-			</c:HorizontalLayout>
-			<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn_right" OnClickAction="$TickOnOff($tickOn, $edtSearch.Text)">				
-				<s:If Test="$tickOn">
-					<c:Image CssClass="tick" />
-				</s:If>
-				<s:Else>
-					<c:VerticalLayout CssClass="empty_tick"></c:VerticalLayout>
-				</s:Else>								
-				<c:TextView Text="#mostPopular#"></c:TextView>				
-			</c:HorizontalLayout>
+		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
+			<c:TextView Text="#ready#"></c:TextView>
 		</c:HorizontalLayout>
 		<c:HorizontalLine CssClass="b_line" />
 
 		<c:HorizontalLine />
 
 		<c:DockLayout CssClass="search">
-			
-			<c:Button Id="btnfilter" CssClass="ButtonLeft" Text="#filter#" OnClickAction="$Workflow.DoAction(SetFilter, Order, $edtSearch.Text)"></c:Button>
-			
 			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 			<c:DockLayout>
 				<c:Image />
@@ -42,13 +30,12 @@
 		</c:DockLayout>
 		<c:HorizontalLine />
 
-		<!-- <c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order)">
+		<c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order, $edtSearch.Text)">
 			<c:TextView Text="#filter#"></c:TextView>
 			<c:Image></c:Image>
-		</c:DockLayout> -->
+		</c:DockLayout>
 		<c:HorizontalLine />
-		<c:HorizontalLine /> 
-		
+
 		<s:If Test="@doGroupping">
 		</s:If>
 		<s:Else>
@@ -87,17 +74,13 @@
 									<c:TextView Id="pack{$index}" Text=""/>
 								</c:HorizontalLayout>
 								<c:Button Text="+1" CssClass="add_button" OnClick="$AddToOrder(editText{$index})" />
-								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId, textMiniCnt{$index})" />
+								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId)" />
 							</c:HorizontalLayout>
 							<c:TextView Id="textView{$index}" Text="0 {#alreadyOrdered#}" />
 						</c:VerticalLayout>
 					</c:HorizontalLayout>
 					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId, $edtSearch.Text)" CssClass="grid">
 						<c:Image />
-						
-						<!-- <c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$CheckVisiblity($item.qty)"/>  -->
-						<c:TextView Id="textMiniCnt{$index}" CssClass="miniCnt" Text="$item.qty" Visible="$item.Vis"/>
-																		
 						<c:VerticalLayout>
 							<c:DockLayout>
 								<s:If Test="$ShowRecommendedQty($item.OrderRecOrder, $item.RecOrder)">

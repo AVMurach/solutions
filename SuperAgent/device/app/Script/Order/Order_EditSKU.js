@@ -107,7 +107,7 @@ function GetDiscountDescription(orderitem) {
         return Translate["#markUp#"];
 }
 
-
+//Murach A+
 function ApplyPrice(sender, orderitem) {
 	if (discountChange){
 		discountChange = false;
@@ -131,10 +131,13 @@ function ApplyPrice(sender, orderitem) {
     orderitem.Save();
 }
 
+function Test(param){
+	Dialog.Debug(param);
+}
+//Murach A-
 
 function ApplyDiscount(sender, orderitem) {
-		
-	if (IsNullOrEmpty(sender.Text))
+    if (IsNullOrEmpty(sender.Text))
         sender.Text = parseFloat(0);
     else {
         if ($.discountDescr.Text == Translate["#discount#"]
@@ -184,7 +187,7 @@ function GetImagePath(objectType, objectID, pictID, pictExt) {
 }
 
 function CountPrice(orderitem) {
-	
+
     orderitem = orderitem.GetObject();
 
     var discount = $.discountEdit.Text;
@@ -194,8 +197,7 @@ function CountPrice(orderitem) {
     // orderitem.Discount = Converter.ToDecimal(discount);
     orderitem.Total = p;
     orderitem.Save();
-    
-    discountChange = true;
+
     $.orderItemTotalId.Text = p;
 
     return orderitem;

@@ -12,38 +12,11 @@ function OnLoading() {
     doRecommend = DoRecommend();
 }
 
-//Murach A+
-function TickOnTest() {
-	if (Variables.Exists("tickOnGlob") == false){
-        return false;
-	}else{
-        return true;
-	}
-}
-
-function TickOnOff(tickOn, searchText) {
-	if (tickOn){
-		Variables.Remove("tickOnGlob");	    
-	}else{
-		Variables.AddGlobal("tickOnGlob", true)
-	}
-	Workflow.Refresh([searchText]);	
-}
-//Murach A-
-
 function WarMupFunction() {
 
 }
 
-function Test(perper){
-	Dialog.Debug(perper);
-}
-
-function CheckVisiblity(qty){
-	return qty > 0;
-}
-
-function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
+function GetSKUAndGroups(searchText, priceList, stock) {
 
     var filterString = "";
     filterString += AddFilter(filterString, "group_filter", "G.Id", " AND ");
@@ -111,20 +84,6 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
 
     }
 
-    //Murach A+
-    var recentOrders = "";
-    if (TickOnTest()){
-	    recentOrders = " AND S.Id IN (SELECT DISTINCT OSKU.SKU " +
-	    				"				FROM Document_Order_SKUs OSKU " +
-	    				"				WHERE OSKU.Ref In (SELECT Id	" +
-	    				"										FROM Document_Order " +
-	    				"										WHERE Outlet = @outlet AND Id != @order " +
-	    				"										ORDER BY Date DESC LIMIT 5)) "
-    }
-    
-       
-    //Murach A-
-
     if ($.workflow.order.Stock.EmptyRef()==true){
 
     	if ($.sessionConst.NoStkEnbl) {
@@ -134,34 +93,24 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
     	}
 
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, " +
-	    		"SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) AS Qty, CASE WHEN SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
-	    		//"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
-	    		"(ROUND(0)) AS PercentMargin, " +
-	    		
-	            groupFields +
+	    		"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +	    
+	    
+	    		groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
-	            "FROM Document_PriceList_Prices PL " +
+	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLP " +
 	            
 	          //Murach A+
-	            //"LEFT JOIN Document_PriceList_Prices PLZ ON PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
+	            "LEFT JOIN _Document_PriceList_Prices PLZ INDEXED BY IND_PLP ON PLZ.IsTombstone = 0 AND PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
 	          //Murach A-
 	            
 	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
 	            groupJoin +
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
-	            
-	          //Murach A+
-	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +
-	            "LEFT JOIN Catalog_SKU_Packing SKUP ON SKUP.Ref = S.Id AND SKUP.Pack = OSKU.Units " +                               
-	          //Murach A-
-	            
 	            groupParentJoin +
 	            recOrderStr +
-	            " WHERE " + stockCondition + " PL.Ref = @Ref " + searchString + recentOrders + filterString +
-	            //" GROUP BY S.Id, S.Description, PL.Price, CommonStock, PercentMargin "
-	            " GROUP BY S.Description "
-	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 1000";
+	            " WHERE " + stockCondition + " PL.IsTombstone = 0 AND PL.Ref = @Ref " + searchString + filterString +
+	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 100";
 
     } else {
 
@@ -171,52 +120,34 @@ function GetSKUAndGroups(searchText, priceList, stock, order, outlet) {
             var stockCondition = " SS.StockValue > 0 AND ";
     	}
 
-    	    	
     	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
-    			"SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) AS Qty, CASE WHEN SUM(IfNull(OSKU.Qty, 0)*SKUP.Multiplier) > 0 THEN 'true' ELSE 'false' END AS Vis, " +
-    			//"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
-    			"(ROUND(0)) AS PercentMargin, " +
-    			
-	            groupFields +
+    			"(ROUND((PL.Price - IfNull(PLZ.Price, 0)) * 100 / PL.Price, 0)) AS PercentMargin, " +
+    	
+    			groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
-	            "FROM Document_PriceList_Prices PL " +
-	            
+	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLP " +
+	            //"JOIN _Document_Questionnaire_SKUs S INDEXED BY IND_QSKU ON S.IsTombstone = 0 AND Q.Ref=S.Ref " +
 	          //Murach A+
-	            //"LEFT JOIN Document_PriceList_Prices PLZ ON PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
+	            "LEFT JOIN _Document_PriceList_Prices PLZ INDEXED BY IND_PLP ON PLZ.IsTombstone = 0 AND PL.SKU = PLZ.SKU AND PLZ.Ref in (SELECT Id FROM Document_PriceList WHERE Number = @numPZ) AND IfNull(PLZ.Price, 0) > 0 " +
 	          //Murach A-
 	            
 	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
 	            groupJoin +
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
-	            
-	          //Murach A+
-	            "LEFT JOIN Document_Order_SKUs OSKU ON OSKU.Ref=@order AND OSKU.SKU = S.Id " +  
-	            "LEFT JOIN Catalog_SKU_Packing SKUP ON SKUP.Ref = S.Id AND SKUP.Pack = OSKU.Units " +
-	          //Murach A-
-	            	            
 	            groupParentJoin +
 	            recOrderStr +
-	            " WHERE PL.Ref = @Ref " + searchString + recentOrders + filterString +
-	            " GROUP BY S.Description " +
-	            ") INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock " +
-	            //" GROUP BY S.Id, S.Description, PL.Price, CommonStock, PercentMargin " +
-	            " GROUP BY INQ.Description " +
-	            "ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
+	            " WHERE PL.IsTombstone = 0 AND PL.Ref = @Ref " + searchString + filterString +
+	            ") INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
 
     	query.AddParameter("stock", stock);
 
     }
 
     query.AddParameter("Ref", priceList);
-    query.AddParameter("order", order);
-    query.AddParameter("outlet", outlet);
     query.AddParameter("numPZ", '000000004');
-    
-    Console.WriteLine(query.text);
-    
-    return query.Execute();
 
+    return query.Execute();
 
 }
 
@@ -273,7 +204,7 @@ function AddToOrder(control, editFieldName) {
     Variables[editFieldName].Text = editText + parseInt(1);
 }
 
-function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, price, swiped_rowName, recOrder, recUnitId, textMiniCnt) {
+function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, price, swiped_rowName, recOrder, recUnitId) {
 
 	if (swipedRow!=Variables[swiped_rowName])
 		GetQuickOrder(Variables[swiped_rowName], sku, price, packField, editFieldName, textViewField, recOrder, recUnitId, recUnit);
@@ -304,8 +235,6 @@ function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, 
 
             Variables[editFieldName].Text = 0;
             Variables[textFieldName].Text = qty + " " + packDescription + " " + Translate["#alreadyOrdered#"];
-            Variables[textMiniCnt].Text = qty;
-            Variables[textMiniCnt].Visible = qty != "0";
         }
     }
 }

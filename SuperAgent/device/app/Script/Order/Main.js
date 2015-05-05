@@ -41,15 +41,12 @@ function AddGlobalAndAction(name, value, actionName) {
 }
 
 function GetPriceListQty(outlet) {
-	//var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
-	var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id AND D.Number != @numPZ WHERE O.Ref = @Ref ORDER BY O.LineNumber");
+	var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
 	query.AddParameter("Ref", outlet);
-	query.AddParameter("numPZ", '000000004');
 	var pl = query.ExecuteCount();
 	if (parseInt(pl) == parseInt(0)) {
-		var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true AND Number != @numPZ");
+		var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true");
 		query.AddParameter("true", true);
-		query.AddParameter("numPZ", '000000004');
 		return query.ExecuteCount();
 	} else
 		return pl;
@@ -94,15 +91,13 @@ function CreateOrderIfNotExists(order, outlet, userRef, visitId, executedOrder) 
 }
 
 function GetPriceListRef(outlet) {
-	var query = new Query("SELECT O.PriceList FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id AND D.Number != @numPZ WHERE O.Ref = @Ref ORDER BY O.LineNumber LIMIT 1");
+	var query = new Query("SELECT PriceList FROM Catalog_Outlet_Prices WHERE Ref = @Ref ORDER BY LineNumber LIMIT 1");
 	query.AddParameter("Ref", outlet);
-	query.AddParameter("numPZ", '000000004');
 	var pl = query.ExecuteScalar();
 	if (pl != null)
 		return pl;
-	var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true AND Number != @numPZ LIMIT 1");
+	var query = new Query("SELECT Id FROM Document_PriceList WHERE DefaultPriceList = @true LIMIT 1");
 	query.AddParameter("true", true);
-	query.AddParameter("numPZ", '000000004');
 	return query.ExecuteScalar();
 }
 
@@ -144,7 +139,7 @@ function GetPercentMargin(order) {
 function FormatPercent(value) {
     return String.Format("{0:F0}", value || 0);
 }
-//Murach A+
+//Murach A-
 
 function CreateOrderStatusVariables() {
 	var canc = DB.Current.Constant.OrderSatus.Canceled;
@@ -224,12 +219,6 @@ function CheckIfEmptyAndForward(order, wfName) {
 		else
 			Workflow.Action("SkipEncashment", []);
 	}
-	
-	//Murach A+
-	if (Variables.Exists("tickOnGlob")){
-		Variables.Remove("tickOnGlob");
-	}        
-	//Murach A-
 
 }
 
@@ -293,12 +282,6 @@ function OrderBack() {
 
 		}
 	}
-	
-	//Murach A+
-	if (Variables.Exists("tickOnGlob")){
-		Variables.Remove("tickOnGlob");
-	}        
-	//Murach A-
 
 }
 
@@ -346,11 +329,7 @@ function GetStock(userRef) {
 
 function SelectPriceList(order, priceLists, executedOrder) {
 	if (parseInt(priceLists) != parseInt(1) && parseInt(priceLists) != parseInt(0) && executedOrder == null) {
-		//var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
-		//Murach A +
-		var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref AND D.Number != @numDZ ORDER BY O.LineNumber");
-		query.AddParameter("numDZ", '000000004');
-		//Murach A +
+		var query = new Query("SELECT DISTINCT D.Id, D.Description FROM Catalog_Outlet_Prices O JOIN Document_PriceList D ON O.PriceList=D.Id WHERE O.Ref = @Ref ORDER BY O.LineNumber");
 		query.AddParameter("Ref", order.Outlet);
 		var pl = query.ExecuteCount();
 		if (parseInt(pl) == parseInt(0)) {

@@ -14,6 +14,9 @@ function OnLoad() {
 	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_AQ " +
 				"ON _Catalog_Outlet_AnsweredQuestions(IsTombstone, Ref, Questionaire, Question, AnswerDate)");
 	indexQuery.Execute();
+	
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_PLP ON _Document_PriceList_Prices(IsTombstone, Ref, SKU, Price)");
+	indexQuery.Execute();
 
 }
 

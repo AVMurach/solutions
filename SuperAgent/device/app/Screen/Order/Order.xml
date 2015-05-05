@@ -31,7 +31,7 @@
 
 		<s:If Test="$IsNew($workflow.order)">
 			<s:If Test="$NotEmptyRef($workflow.order.PriceList)">
-				<c:HorizontalLayout Id="btnAdd" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoAction(Add)">
+				<c:HorizontalLayout Id=" btnAdd" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoAction(Add)">
 					<c:TextView Text="#add#"></c:TextView>
 				</c:HorizontalLayout>
 				<c:HorizontalLine CssClass="b_line" />

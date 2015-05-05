@@ -225,7 +225,6 @@ contactName		Контактное лицо
 position		Должность
 visitdate		Дата визита
 alreadyOrdered	уже в заказе
-dyOrdered	В заказе
 repeat		Повторить
 nonregular	Единоразовые
 regular		Регулярные
@@ -266,4 +265,3 @@ logoutConfirm	Выйти
 visitReasonMessage		Поле "Причина визита" должно быть заполнено
 noOrder			Поле "Причина отсутствия заказа" должно быть заполнено
 notAvailableShort	Н/Д
-mostPopular	Популярное
