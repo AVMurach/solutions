@@ -119,16 +119,18 @@ function ApplyPrice(sender, orderitem) {
         sender.Text = parseFloat(0);
     
     orderitem = orderitem.GetObject();
-    orderitem.Price = parseFloat($.orderItemTotalId.Text);
+    
     orderitem.Save();
             
     var discount = $.discountEdit.Text;
     if (String.IsNullOrEmpty(discount))
         discount = parseInt(0);
-    p = CalculatePrice(orderitem.Price, discount, 1);
+    
+    p = CalculatePrice(parseFloat($.orderItemTotalId.Text), discount, 1);
     // orderitem.Discount = Converter.ToDecimal(discount);
+    orderitem.Price = parseFloat($.orderItemTotalId.Text);
     orderitem.Total = p;
-    orderitem.Save();
+    orderitem.Save();    
 }
 
 function Test(param){
@@ -144,11 +146,11 @@ function ApplyDiscount(sender, orderitem) {
                 && parseFloat(sender.Text) > parseFloat(0))
             $.discountEdit.Text = -1 * $.discountEdit.Text;
     }
-
+    
     orderitem = orderitem.GetObject();
     orderitem.Discount = parseFloat($.discountEdit.Text);
     orderitem.Save();
-
+    discountChange = true;
     CountPrice(orderitem.Id);
 }
 
@@ -161,7 +163,7 @@ function ChandeDiscount(orderitem) {
     orderitem = orderitem.GetObject();
     orderitem.Discount = -1 * orderitem.Discount;
     orderitem.Save();
-
+    
     $.discountEdit.Text = orderitem.Discount;
     CountPrice(orderitem.Id);
 
