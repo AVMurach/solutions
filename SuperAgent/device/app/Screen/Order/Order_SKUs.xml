@@ -8,6 +8,8 @@
 
 	<c:DockLayout>
 
+		<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
+		
 		<c:DockLayout CssClass="top_navigator">
 			<c:HorizontalLayout>
 				<c:TextView Text="#skuAdd#" />
@@ -22,6 +24,9 @@
 		<c:HorizontalLine />
 
 		<c:DockLayout CssClass="search">
+			
+			<c:Button Id="btnfilter" CssClass="ButtonLeft" Text="#filter#" OnClickAction="$Workflow.DoAction(SetFilter, Order, $edtSearch.Text)"></c:Button>
+			
 			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 			<c:DockLayout>
 				<c:Image />
@@ -29,12 +34,7 @@
 			</c:DockLayout>
 		</c:DockLayout>
 		<c:HorizontalLine />
-
-		<c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order, $edtSearch.Text)">
-			<c:TextView Text="#filter#"></c:TextView>
-			<c:Image></c:Image>
-		</c:DockLayout>
-		<c:HorizontalLine />
+		<c:HorizontalLine /> 
 
 		<s:If Test="@doGroupping">
 		</s:If>

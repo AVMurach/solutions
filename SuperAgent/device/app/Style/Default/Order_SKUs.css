@@ -1,4 +1,101 @@
 
+
+.margin_top {
+	height: 1.3mm;
+	selected-color: #bacdce;
+	background-color: #efeff4;
+	dock-align: top;
+}
+
+.searchfilter {
+	height: 7.7mm;
+	/*background-color: #d6d9dd;*/
+	dock-align: top;
+}
+
+.search {
+	height: 9.7mm;
+	/*background-color: #d6d9dd;*/
+	dock-align: top;
+}
+
+.search dl {
+	height: 64%;
+	width: 100%;
+	dock-align: left;
+	vertical-align: central;
+	margin-left: 1.7mm;
+	margin-top: 25%;
+	padding-top: 5%;
+	padding-bottom: 5%;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ffffff;
+	border-radius: 1mm;
+	background-color: #ffffff;
+}
+
+.search dl img {
+	background-image: url(search.png);
+	height: 36.4%;
+	margin-top: 20%;
+	margin-left: 2%;
+	margin-right: 1.5%;
+	background-color: #ffffff;
+	dock-align: left;
+}
+
+.search Button {
+	margin-left: 0.7mm;
+	margin-top: 18%;
+	margin-right: 0.7mm;
+	width: 9mm;
+	height: 70%;
+	dock-align: right;
+	background-color: #43acfd;
+	color: #f8f8f8;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #43acfd;
+	border-radius: 1mm;
+	font: 35% arial;
+}
+
+.ButtonLeft {
+	margin-left: 0.7mm;
+	margin-top: 18%;
+	margin-right: 0.7mm;
+	width: 9mm;
+	height: 70%;
+	dock-align: left;
+	background-color: #fff;
+	color: #43acfd;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #43acfd;
+	border-radius: 1mm;
+	font: 35% arial;
+	selected-color: #b2b2b7;	
+}
+
+.search dl EditText {
+	width: auto;
+	height: 70%;
+	margin-right: 2%;
+	padding-top: 10%;
+	background-color: #ffffff;
+	color: #000000;
+	border-style: none;
+	dock-align: right;
+	font: 60% arial;
+}
+
+.parameter_grid {
+	width: 100%;
+	height: 5.7mm;
+	dock-align: top;
+}
+
 .grid vl dl{
 	width: 100%;
 	height: 40%;
