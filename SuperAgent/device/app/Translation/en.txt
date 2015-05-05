@@ -234,7 +234,7 @@ developer	DEVELOPER
 bitMobile	BIT.MOBILE
 bitmobileDesc	BIT.MOBILE is a division of the First Bit. We are developing mobile solutions for business.
 about		ПОДРОБНЕЕ О ПРИЛОЖЕНИИ
-version		Версия 2.5.0.110
+version		Версия 2.5.1.110
 superDescription	СуперАгент — мобильное решение для сбора заказов, анкетирования и мерчандайзинга, контроля работы сотрудников.
 support		Тех.поддержка
 idea		Предложить идею
