@@ -49,7 +49,7 @@ function MakeSnapshot() {
 
 function GetCameraObject() {
 	FileSystem.CreateDirectory("/private/Document.Visit");
-	Camera.Size = 300;
+	Camera.Size = 800;
 	Camera.Path = "/private/Document.Visit/1.jpg";
 }
 

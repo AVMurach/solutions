@@ -332,7 +332,7 @@ function AddSnapshot(control, outlet) {
 	else{
 		var pictId = GetCameraObject(outlet);
 		var path = GetPrivateImagePath("catalog.outlet", outlet, pictId, ".jpg");
-		Camera.MakeSnapshot(path, 300, GalleryHandler, [ outlet, pictId ]);
+		Camera.MakeSnapshot(path, 800, GalleryHandler, [ outlet, pictId ]);
 	}
 }
 
@@ -513,7 +513,7 @@ function GetCameraObject(entity) {
 	var guid = GenerateGuid();
 	// Variables.Add("guid", guid);
 	var path = String.Format("/private/Catalog.Outlet/{0}/{1}.jpg", entity.Id, guid);
-	Camera.Size = 300;
+	Camera.Size = 800;
 	Camera.Path = path;
 	return guid;
 }
@@ -661,7 +661,7 @@ function AddSnapshotHandler(state, args) {
 	if (parseInt(args.Result)==parseInt(1)){
 		var pictId = GetCameraObject(objRef);
 		var path = GetPrivateImagePath(objectType, objRef, pictId, ".jpg");
-		Camera.MakeSnapshot(path, 300, func, [ objRef, pictId]);
+		Camera.MakeSnapshot(path, 800, func, [ objRef, pictId]);
 	}
 
 	if (parseInt(args.Result)==parseInt(2)){
@@ -695,7 +695,7 @@ function GetCameraObject(entity) {
 	FileSystem.CreateDirectory("/private/Catalog.Outlet");
 	var guid = GenerateGuid();
 	var path = String.Format("/private/Catalog.Outlet/{0}/{1}.jpg", entity.Id, guid);
-	Camera.Size = 300;
+	Camera.Size = 800;
 	Camera.Path = path;
 	return guid;
 }
