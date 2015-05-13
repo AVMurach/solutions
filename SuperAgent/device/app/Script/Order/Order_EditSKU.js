@@ -1,5 +1,6 @@
 var swipedRow;
 var discountChange = false;
+var discountChangeNull = false;
 
 function GetMultiplier(sku, orderitem) {
 
@@ -112,8 +113,7 @@ function ApplyPrice(sender, orderitem) {
 	if (discountChange){
 		discountChange = false;
 		return;
-	}
-		
+	}		
 	
 	if (IsNullOrEmpty(sender.Text))
         sender.Text = parseFloat(0);
@@ -123,14 +123,22 @@ function ApplyPrice(sender, orderitem) {
     orderitem.Save();
             
     var discount = $.discountEdit.Text;
-    if (String.IsNullOrEmpty(discount))
-        discount = parseInt(0);
+                
+    if (String.IsNullOrEmpty(discount)){
+    	discountChangeNull = true;    	        
+    }else{
+    	discountChangeNull = true;
+        $.discountEdit.Text = 0;
+    }
+    discount = parseInt(0);
     
     p = CalculatePrice(parseFloat($.orderItemTotalId.Text), discount, 1);
     // orderitem.Discount = Converter.ToDecimal(discount);
     orderitem.Price = parseFloat($.orderItemTotalId.Text);
     orderitem.Total = p;
     orderitem.Save();    
+    
+    discountChangeNull = false;
 }
 
 function Test(param){
@@ -139,7 +147,11 @@ function Test(param){
 //Murach A-
 
 function ApplyDiscount(sender, orderitem) {
-    if (IsNullOrEmpty(sender.Text))
+    if (discountChangeNull){
+    	discountChangeNull = false;
+    	return;
+    }
+	if (IsNullOrEmpty(sender.Text))
         sender.Text = parseFloat(0);
     else {
         if ($.discountDescr.Text == Translate["#discount#"]
