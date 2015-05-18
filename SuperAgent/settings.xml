@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
 	<resource>
-		<version version="102.5.1.113"></version>
+		<version version="102.5.1.114"></version>
 	</resource>
 	<client>
 		<supportedCore version="2.3.4.92" />

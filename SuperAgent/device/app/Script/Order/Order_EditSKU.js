@@ -175,7 +175,8 @@ function ChandeDiscount(orderitem) {
     orderitem = orderitem.GetObject();
     orderitem.Discount = -1 * orderitem.Discount;
     orderitem.Save();
-    
+    discountChange = true;
+    discountChangeNull = true;
     $.discountEdit.Text = orderitem.Discount;
     CountPrice(orderitem.Id);
 
