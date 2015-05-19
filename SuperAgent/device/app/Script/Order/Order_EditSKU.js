@@ -110,6 +110,7 @@ function GetDiscountDescription(orderitem) {
 
 //Murach A+
 function ApplyPrice(sender, orderitem) {
+	
 	if (discountChange){
 		discountChange = false;
 		return;
@@ -120,7 +121,7 @@ function ApplyPrice(sender, orderitem) {
     
     orderitem = orderitem.GetObject();
     
-    orderitem.Save();
+    //orderitem.Save();
             
     var discount = $.discountEdit.Text;
                 
@@ -135,7 +136,7 @@ function ApplyPrice(sender, orderitem) {
     p = CalculatePrice(parseFloat($.orderItemTotalId.Text), discount, 1);
     // orderitem.Discount = Converter.ToDecimal(discount);
     orderitem.Price = parseFloat($.orderItemTotalId.Text);
-    orderitem.Discount = $.discountEdit.Text;
+    orderitem.Discount = discount;
     orderitem.Total = p;
     orderitem.Save();    
     
@@ -274,9 +275,7 @@ function ChangeUnit(sku, orderitem, price) {
     orderitem.Units = selectedUnit.Pack;
     Variables["itemUnits"].Text = selectedUnit.Pack.Description;
     orderitem.Save();
-
     discountChange = true;
-    discountChangeNull = true;
     orderitem = CountPrice(orderitem.Id, price)
 
 }
