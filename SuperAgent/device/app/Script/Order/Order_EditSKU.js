@@ -135,6 +135,7 @@ function ApplyPrice(sender, orderitem) {
     p = CalculatePrice(parseFloat($.orderItemTotalId.Text), discount, 1);
     // orderitem.Discount = Converter.ToDecimal(discount);
     orderitem.Price = parseFloat($.orderItemTotalId.Text);
+    orderitem.Discount = $.discountEdit.Text;
     orderitem.Total = p;
     orderitem.Save();    
     
@@ -274,6 +275,8 @@ function ChangeUnit(sku, orderitem, price) {
     Variables["itemUnits"].Text = selectedUnit.Pack.Description;
     orderitem.Save();
 
+    discountChange = true;
+    discountChangeNull = true;
     orderitem = CountPrice(orderitem.Id, price)
 
 }
