@@ -24,7 +24,7 @@ function AddSnapshotHandler(state, args) {
 	if (parseInt(args.Result)==parseInt(1)){
 		var pictId = GetCameraObject(objRef);
 		var path = GetPrivateImagePath(objectType, objRef, pictId, ".jpg");
-		Camera.MakeSnapshot(path, 500, func, [ objRef, pictId]);
+		Camera.MakeSnapshot(path, 1280, func, [ objRef, pictId]);
 	}
 	
 	if (parseInt(args.Result)==parseInt(2)){
@@ -58,7 +58,7 @@ function GetCameraObject(entity) {
 	FileSystem.CreateDirectory("/private/Catalog.Outlet");
 	var guid = Global.GenerateGuid();
 	var path = String.Format("/private/Catalog.Outlet/{0}/{1}.jpg", entity.Id, guid);
-	Camera.Size = 500;
+	Camera.Size = 1280;
 	Camera.Path = path;
 	return guid;
 }
