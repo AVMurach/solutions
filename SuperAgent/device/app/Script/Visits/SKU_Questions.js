@@ -123,7 +123,8 @@ function GetSKUsFromQuesionnaires(search) {
 			", (SELECT MAX(AMS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs AMS " +
 				" JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet " +
 				" WHERE S.SKU=AMS.SKU) AS BaseUnitQty " +
-			", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 0 END AS ShowChild " +
+			//", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 0 END AS ShowChild " +
+			", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 1 END AS ShowChild " +
 
 			"FROM USR_SKUQuestions S " + filterJoin +
 
