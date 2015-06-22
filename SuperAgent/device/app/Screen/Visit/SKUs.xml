@@ -1,15 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Visit_SKUs.css">
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack"
+	StyleSheet="Visit_SKUs.css">
 
 	<s:Push Id="search" Value="$param1"></s:Push>
 	<s:Push Id="outlet" Value="$workflow.outlet"></s:Push>
 	<s:Push Id="visit" Value="$workflow.visit"></s:Push>
-	<s:Push Id="SKUs" Value="$GetSKUsFromQuesionnaires($search)"></s:Push>
+	<s:Push Id="SKUs_NTZ_m" Value="$GetSKUsFromQuesionnaires_NTZ_m($search)"></s:Push>
+	<s:Push Id="SKUs_not_NTZ_m" Value="$GetSKUsFromQuesionnaires_not_NTZ_m($search)"></s:Push>
 
 	<c:VerticalLayout>
 
 		<c:DockLayout CssClass="top_navigator">
-			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$GetActionAndBack()">
+			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back"
+				OnClickAction="$GetActionAndBack()">
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
@@ -22,7 +25,8 @@
 				</c:DockLayout>
 			</s:If>
 			<s:Else>
-				<c:DockLayout  CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CountResultAndForward()">
+				<c:DockLayout CssClass="btn_forward" OnEvent="Forward"
+					OnClickAction="$CountResultAndForward()">
 					<c:TextView Id="btnForward" Text="#forward#" />
 				</c:DockLayout>
 			</s:Else>
@@ -34,24 +38,28 @@
 		<c:HorizontalLayout CssClass="small_grid">
 			<s:If Test="@regularAnswers">
 				<c:HorizontalLayout CssClass="mode_left_button_on">
-					<c:HorizontalLayout Id="regular" CssClass="select_zone" OnClick="$ChangeListAndRefresh(1)">
+					<c:HorizontalLayout Id="regular" CssClass="select_zone"
+						OnClick="$ChangeListAndRefresh(1)">
 						<c:TextView Text="#regular# ({@regular_answ} #of# {@regular_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLayout CssClass="mode_right_button_off">
-					<c:HorizontalLayout Id="nonregular" CssClass="select_zone" OnClick="$ChangeListAndRefresh(0)">
+					<c:HorizontalLayout Id="nonregular" CssClass="select_zone"
+						OnClick="$ChangeListAndRefresh(0)">
 						<c:TextView Text="#nonregular# ({@single_answ} #of# {@single_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 			</s:If>
 			<s:Else>
 				<c:HorizontalLayout CssClass="mode_left_button_off">
-					<c:HorizontalLayout Id="regular" CssClass="select_zone" OnClick="$ChangeListAndRefresh(1)">
+					<c:HorizontalLayout Id="regular" CssClass="select_zone"
+						OnClick="$ChangeListAndRefresh(1)">
 						<c:TextView Text="#regular# ({@regular_answ} #of# {@regular_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLayout CssClass="mode_right_button_on">
-					<c:HorizontalLayout Id="nonregular" CssClass="select_zone" OnClick="$ChangeListAndRefresh(0)">
+					<c:HorizontalLayout Id="nonregular" CssClass="select_zone"
+						OnClick="$ChangeListAndRefresh(0)">
 						<c:TextView Text="#nonregular# ({@single_answ} #of# {@single_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
@@ -72,7 +80,8 @@
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(ShowFilters1, Questionnaire)">
+			<c:DockLayout CssClass="parameter_grid"
+				OnClickAction="$Workflow.DoAction(ShowFilters1, Questionnaire)">
 				<c:TextView Text="#filter#"></c:TextView>
 				<c:Image></c:Image>
 			</c:DockLayout>
@@ -90,12 +99,15 @@
 			</s:Else>
 			<c:HorizontalLine />
 
-			<s:Iterator Id="sku" Value="$SKUs" Status="statusCount">
+			<!-- AVMurach Получим данные по обязательной номенклатуре, по которой 
+				есть НТЗ в Ассортиментных матрицах (SKUs_NTZ_m) -->
+			
+			<s:Iterator Id="sku" Value="$SKUs_NTZ_m" Status="statusCount">
+				
 				<s:Push Id="index" Value="{$statusCount.Index}"></s:Push>
 
-				<!-- AVMurach -->
-				<c:HorizontalLayout CssClass="grid_answers_m">
-					<c:VerticalLayout>						
+				<c:HorizontalLayout CssClass="grid_m">
+					<c:VerticalLayout>
 						<s:If Test="$sku.Obligatoriness=='1'">
 							<s:If Test="$ConvertToBoolean1($sku.ObligateredLeft)">
 								<c:HorizontalLayout CssClass="required_side_wh_m"></c:HorizontalLayout>
@@ -103,95 +115,92 @@
 							<s:Else>
 								<c:HorizontalLayout CssClass="answered_side_wh_m"></c:HorizontalLayout>
 							</s:Else>
-						</s:If>					
+						</s:If>
 						<c:DockLayout>
 							<s:If Test="$sku.BaseUnitQty != NULL">
-								<c:TextView Text="#recommended#" CssClass="single_rec"/>
+								<c:TextView Text="#recommended#" CssClass="single_rec" />
 							</s:If>
-							<c:TextView Text="{$sku.Answered} #of# {$sku.Total}" CssClass="description_row_m" />
+							<c:TextView Text="{$sku.Answered} #of# {$sku.Total}"
+								CssClass="description_row_m" />
 						</c:DockLayout>
 						<c:DockLayout>
 							<c:TextView Text="$sku.SKUDescription" CssClass="main_row_m"></c:TextView>
 						</c:DockLayout>
 					</c:VerticalLayout>
 					
-					<s:Push Id="childs" Value="$GetChilds($sku.SKU)"></s:Push>
-					<s:Iterator Id="child" Value="$childs" Status="statusCountCh">
-						<s:Push Id="indexCh" Value="{$statusCountCh.Index}"></s:Push>
+					<c:VerticalLayout CssClass="childs_vl_m">
+
+						<s:Push Id="childs_5" Value="$GetChilds($sku.SKU)"></s:Push>
+						<s:Iterator Id="childs" Value="$childs_5" Status="statusCountChII">
+						<s:Push Id="indexChII" Value="{$statusCount.Index}{$statusCountChII.Index}"></s:Push>
+							
+							<c:HorizontalLayout CssClass="childs_grid_answers_m">	
+							
+								<s:Iterator Id="child" Value="$childs" Status="statusCountChIII">
+									<s:Push Id="indexCh" Value="{$statusCount.Index}{$statusCountChII.Index}{$statusCountChIII.Index}"></s:Push>
+			
+									<c:VerticalLayout CssClass="vl_answers_m">
+										<s:If Test="$ObligatedAnswered($child.Answer, $child.Obligatoriness)">
+											<c:HorizontalLayout CssClass="answered_side_gr_m"></c:HorizontalLayout>
+										</s:If>
+										<s:Else>
+											<s:If Test="$child.Obligatoriness">
+												<c:HorizontalLayout CssClass="required_side_gr_m"></c:HorizontalLayout>
+											</s:If>
+										</s:Else>
+			
+										<c:DockLayout
+											OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)"
+											CssClass="dl_answers_m">
+											<c:TextView Text="$child.Description" CssClass="description_answered_m"></c:TextView>
+											<s:If Test="$child.IsInputField==1">
+												<c:EditText Id="control{$indexCh}" Text="$child.Answer"
+													Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)"
+													Keyboard="$child.KeyboardType"
+													CssClass="answer_editText_m"></c:EditText>
+													<!-- OnLostFocus="$RefreshScreen($search)" -->
+											</s:If>
+											<s:Else>
+												<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput"
+													CssClass="answer_textView_m"></c:TextView>
+											</s:Else>
+										</c:DockLayout>
+			
+									</c:VerticalLayout>
+								</s:Iterator>
+							</c:HorizontalLayout>
+						</s:Iterator>
 						
-						<c:VerticalLayout CssClass="vl_answers_m">
-							<s:If Test="$ObligatedAnswered($child.Answer, $child.Obligatoriness)">
-								<c:HorizontalLayout CssClass="answered_side_gr_m"></c:HorizontalLayout>
-							</s:If>
-							<s:Else>
-								<s:If Test="$child.Obligatoriness">
-									<c:HorizontalLayout CssClass="required_side_gr_m"></c:HorizontalLayout>
-								</s:If>
-							</s:Else>
-					
-							<c:DockLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)" CssClass="dl_answers_m" >
-								<c:TextView Text="$child.Description" CssClass="description_answered_m"></c:TextView>
-								<s:If Test="$child.IsInputField==1">
-									<c:EditText Id="control{$indexCh}" Text="$child.Answer" Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)" OnLostFocus="$RefreshScreen($search)" Keyboard="$child.KeyboardType" CssClass="answer_editText_m"></c:EditText>
-								</s:If>
-								<s:Else>
-									<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput" CssClass="answer_textView_m"></c:TextView>
-								</s:Else>
-							</c:DockLayout>
-					
-						</c:VerticalLayout>
-					</s:Iterator>
-										
+					</c:VerticalLayout>
+
 				</c:HorizontalLayout>
 				<c:HorizontalLine />
-				
-				<!-- <c:DockLayout CssClass="grid" OnClick="$CreateItemAndShow($sku.SKU, $index, $sku.ShowChild)">
-					<s:If Test="$sku.Obligatoriness=='1'">
-						<s:If Test="$ConvertToBoolean1($sku.ObligateredLeft)">
-							<c:HorizontalLayout CssClass="required_side_wh"></c:HorizontalLayout>
-						</s:If>
-						<s:Else>
-							<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
-						</s:Else>
-					</s:If>
-					<c:DockLayout>
-						<s:If Test="$sku.BaseUnitQty != NULL">
-							<c:TextView Text="#recommended#" CssClass="single_rec"/>
-						</s:If>
-						<c:TextView Text="{$sku.Answered} #of# {$sku.Total}" CssClass="description_row" />
-					</c:DockLayout>
-					<c:TextView Text="$sku.SKUDescription" CssClass="main_row"></c:TextView>
-				</c:DockLayout>
-				<c:HorizontalLine />
 
-				<s:If Test="$sku.ShowChild">
-					<s:Push Id="childs" Value="$GetChilds($sku.SKU)"></s:Push>
-					<s:Iterator Id="child" Value="$childs" Status="statusCountCh">
-						<s:Push Id="indexCh" Value="{$statusCountCh.Index}"></s:Push>
-						<c:DockLayout CssClass="child_grid">
-							<s:If Test="$ObligatedAnswered($child.Answer, $child.Obligatoriness)">
-								<c:HorizontalLayout CssClass="answered_side_gr"></c:HorizontalLayout>
-							</s:If>
-							<s:Else>
-								<s:If Test="$child.Obligatoriness">
-									<c:HorizontalLayout CssClass="required_side_gr"></c:HorizontalLayout>
-								</s:If>
-							</s:Else>
-							<c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)">
-								<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
-								<s:If Test="$child.IsInputField==1">
-									<c:EditText Id="control{$indexCh}" Text="$child.Answer" Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)" OnLostFocus="$RefreshScreen($search)" Keyboard="$child.KeyboardType" CssClass="answer_main_row"></c:EditText>
-								</s:If>
-								<s:Else>
-									<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput" CssClass="answer_main_row"></c:TextView>
-								</s:Else>
-							</c:VerticalLayout>
-						</c:DockLayout>
-						<c:HorizontalLine />
-					</s:Iterator>
-				</s:If> -->
-
+				<!-- <c:DockLayout CssClass="grid" OnClick="$CreateItemAndShow($sku.SKU, 
+					$index, $sku.ShowChild)"> <s:If Test="$sku.Obligatoriness=='1'"> <s:If Test="$ConvertToBoolean1($sku.ObligateredLeft)"> 
+					<c:HorizontalLayout CssClass="required_side_wh"></c:HorizontalLayout> </s:If> 
+					<s:Else> <c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout> 
+					</s:Else> </s:If> <c:DockLayout> <s:If Test="$sku.BaseUnitQty != NULL"> <c:TextView 
+					Text="#recommended#" CssClass="single_rec"/> </s:If> <c:TextView Text="{$sku.Answered} 
+					#of# {$sku.Total}" CssClass="description_row" /> </c:DockLayout> <c:TextView 
+					Text="$sku.SKUDescription" CssClass="main_row"></c:TextView> </c:DockLayout> 
+					<c:HorizontalLine /> <s:If Test="$sku.ShowChild"> <s:Push Id="childs" Value="$GetChilds($sku.SKU)"></s:Push> 
+					<s:Iterator Id="child" Value="$childs" Status="statusCountCh"> <s:Push Id="indexCh" 
+					Value="{$statusCountCh.Index}"></s:Push> <c:DockLayout CssClass="child_grid"> 
+					<s:If Test="$ObligatedAnswered($child.Answer, $child.Obligatoriness)"> <c:HorizontalLayout 
+					CssClass="answered_side_gr"></c:HorizontalLayout> </s:If> <s:Else> <s:If 
+					Test="$child.Obligatoriness"> <c:HorizontalLayout CssClass="required_side_gr"></c:HorizontalLayout> 
+					</s:If> </s:Else> <c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, 
+					$child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)"> 
+					<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView> 
+					<s:If Test="$child.IsInputField==1"> <c:EditText Id="control{$indexCh}" Text="$child.Answer" 
+					Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)" OnLostFocus="$RefreshScreen($search)" 
+					Keyboard="$child.KeyboardType" CssClass="answer_main_row"></c:EditText> </s:If> 
+					<s:Else> <c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput" CssClass="answer_main_row"></c:TextView> 
+					</s:Else> </c:VerticalLayout> </c:DockLayout> <c:HorizontalLine /> </s:Iterator> 
+					</s:If> -->
 			</s:Iterator>
+		
 
 		</c:ScrollView>
 

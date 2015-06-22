@@ -1,24 +1,36 @@
-.grid_answers_m {
-	height: 13.8mm;
+.grid_m {
+	height: 13.8mm auto;
 	width: 100%;
 	background-color: #ffffff;	
 }
 
-.grid_answers_m vl {
+.grid_m vl {
 	height: 100%;
 	width: 30%;
 	dock-align: right;	
 }
 
-.vl_answers_m {
-	height: 100%;
-	width: 13.6%;
+.grid_m vl dl {
+	width: 100%;
+	height: 30%;			
+}
+
+.childs_vl_m {
+	height: 100% auto;
+	width: 68%;
 	dock-align: right;	
 }
 
-.grid_answers_m vl dl {
+.childs_grid_answers_m {
+	height: 45%;
 	width: 100%;
-	height: 30%;			
+	background-color: #ffffff;	
+}
+
+.vl_answers_m {
+	height: 100%;
+	width: 20%;
+	dock-align: right;	
 }
 
 .dl_answers_m {
