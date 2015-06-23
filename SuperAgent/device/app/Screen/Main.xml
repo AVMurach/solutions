@@ -131,7 +131,7 @@
 				</c:DockLayout>
 
 
-				<c:DockLayout CssClass="short_panel">
+				<!-- <c:DockLayout CssClass="short_panel">
 					<c:DockLayout CssClass="grid">
 						<c:VerticalLayout>
 							<c:TextView Text="{$FormatValue($orderSum)} #currency#" CssClass="main_row"></c:TextView>
@@ -156,7 +156,7 @@
 							</c:VerticalLayout>
 						</c:DockLayout>
 					</c:DockLayout>
-				</s:If>
+				</s:If>-->
 
 			</c:VerticalLayout>
 

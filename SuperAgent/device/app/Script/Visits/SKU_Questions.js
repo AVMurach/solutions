@@ -197,13 +197,22 @@ function GetSKUsFromQuesionnaires_NTZ_m(search) {
 			+ " WHERE S.SKU=AMS.SKU) AS BaseUnitQty "
 			+
 			// ", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 0 END AS ShowChild " +
-			", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 1 END AS ShowChild "
+			", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 1 END AS ShowChild " + 
+			
+			", Matrix_SKU.Qty AS MatrixQty "
 			+
 
 			"FROM USR_SKUQuestions S "
 			+ filterJoin
-			+
-
+			
+			+ "LEFT JOIN (SELECT Matrix_SKU.SKU, MAX(Matrix_SKU.Qty) AS Qty	" +
+				"FROM Catalog_AssortmentMatrix_SKUs Matrix_SKU " +
+				"WHERE Matrix_SKU.Ref IN (SELECT DISTINCT Ref " +
+				"FROM Catalog_AssortmentMatrix_Outlets " +
+				"WHERE Outlet = @outlet) " +
+				"GROUP BY Matrix_SKU.SKU) Matrix_SKU ON Matrix_SKU.SKU = S.SKU " +
+			
+			
 			"WHERE Single=@single AND "
 			+ searchString
 			+ filterString
