@@ -61,7 +61,8 @@ function GetQuestionsByQuestionnaires(outlet) {
 function GetQuestions(single, doCnt) {
 	var q = new Query("SELECT *, " +
 			"CASE WHEN IsInputField='1' THEN Answer ELSE " +
-				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput " +
+				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput, " +
+				"CASE WHEN AnswerType=@snapshot THEN '1' ELSE '0' END AS IsSnapshot " +
 			"FROM USR_Questions " +
 			"WHERE Single=@single AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_Questions " +
 			"WHERE (Answer='Yes' OR Answer='Да'))) " +
@@ -150,19 +151,11 @@ function GoToQuestionAction(answerType, visit, control, questionItem, currAnswer
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.Snapshot).ToString()) {
-		var controlText;
-		if (Variables[control].Text=="—")
-			controlText = null;
-		else
-			controlText = Variables[control].Text;
 		questionGl = questionItem;
-		var listChoice = new List;
-		listChoice.Add([1, Translate["#makeSnapshot#"]]);
-		if ($.sessionConst.galleryChoose)
-			listChoice.Add([0, Translate["#addFromGallery#"]]);
-		if (String.IsNullOrEmpty(currAnswer)==false)
-			listChoice.Add([2, Translate["#clearValue#"]]);
-		AddSnapshot(visit, null, GalleryCallBack, listChoice, "document.visit", questionDescription);
+		var path = null;
+//		if (String.IsNullOrEmpty(currAnswer)==false)
+//			path = Images.FindImage(visit, currAnswer, ".jpg");
+		Images.AddQuestionSnapshot("USR_Questions", questionItem, null, currAnswer, true, questionDescription, GalleryCallBack);
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.DateTime).ToString()) {
@@ -215,10 +208,22 @@ function DialogCallBack(state, args) {
 function GalleryCallBack(state, args) {
 	if (args.Result) {
 		AssignAnswer(null, questionGl, state[1]);
+
+		newFile = DB.Create("Document.Visit_Files");
+		newFile.Ref = state[0];
+		newFile.FileName = state[1];
+		newFile.FullFileName = state[2];
+		newFile.Save();
+
 		Workflow.Refresh([]);
 	}
 }
 
+function GetImagePath(visitID, outletID, pictID, pictExt) {
+	var pathFromVisit = Images.FindImage(visitID, pictID, pictExt, "Document_Visit_Files");
+	var pathFromOutlet = Images.FindImage(outletID, pictID, pictExt, "Catalog_Outlet_Files");
+	return (pathFromVisit == "/shared/result.jpg" ? pathFromOutlet : pathFromVisit);
+}
 
 function GetCameraObject(entity) {
 	FileSystem.CreateDirectory("/private/document.visit");
@@ -246,13 +251,18 @@ function ObligatedAnswered(answer, obligatoriness) {
 	return false;
 }
 
+function SnapshotExists(visit, outlet, filename) {
+	existsInVisit = Images.SnapshotExists(visit, filename, "Document_Visit_Files");
+	existsInOutlet = Images.SnapshotExists(outlet, filename, "Catalog_Outlet_Files");
+	return existsInVisit || existsInOutlet;
+}
 
 //--------------------------------Gallery handlers----------------
 
-function AddSnapshot(objectRef, valueRef, func, listChoice, objectType, title) {
-	title = typeof title !== 'undefined' ? title : "#select_answer#";
-	Dialog.Choose(title, listChoice, AddSnapshotHandler, [objectRef,func,valueRef,objectType]);
-}
+//function AddSnapshot(objectRef, valueRef, func, listChoice, objectType, title) {
+//	title = typeof title !== 'undefined' ? title : "#select_answer#";
+//	Dialog.Choose(title, listChoice, AddSnapshotHandler, [objectRef,func,valueRef,objectType]);
+//}
 
 function AddSnapshotHandler(state, args) {
 	var objRef = state[0];
@@ -330,7 +340,7 @@ function ChooseBool(entity, attribute, control, func, title) {
 	else
 		var startKey = entity[attribute];
 
-	var listChoice = [[ "—", "—" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
 	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);

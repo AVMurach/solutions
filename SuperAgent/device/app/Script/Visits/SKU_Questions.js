@@ -70,9 +70,6 @@ function CountResultAndForward() {
 	var a = regular_answ + single_answ;
 	$.workflow.Add("questions_answ_sku", a);
 
-	del = new Query("DELETE FROM USR_Filters");
-	del.Execute();
-
 	Workflow.Forward([]);
 }
 
@@ -152,8 +149,8 @@ function SetIndicators() {
 
 function CalculateTotal(single) {
 	var q = new Query("SELECT COUNT(U1.Question) FROM USR_SKUQuestions U1 WHERE U1.Single=@single " +
-	" AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions " +
-	" WHERE (Answer='Yes' OR Answer='Да')))");
+	" AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions U2 " +
+	" WHERE (Answer='Yes' OR Answer='Да') AND U1.SKU=U2.SKU))");
 	q.AddParameter("single", single);
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	return q.ExecuteScalar();
@@ -165,7 +162,7 @@ function CalculateQty(single) {
 			"WHERE U1.Single=@single " +
 			"AND RTRIM(U1.Answer)!='' AND U1.Answer IS NOT NULL " +
 			"AND (ParentQuestion=@emptyRef OR ParentQuestion IN " +
-				"(SELECT Question FROM USR_SKUQuestions WHERE (Answer='Yes' OR Answer='Да')))");
+				"(SELECT Question FROM USR_SKUQuestions U2 WHERE (Answer='Yes' OR Answer='Да') AND U2.SKU = U1.SKU))");
 	q.AddParameter("single", single);
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	return q.ExecuteScalar();
@@ -212,7 +209,8 @@ function GetChilds(sku) {
 
 	var q = new Query("SELECT *, " +
 			"CASE WHEN IsInputField='1' THEN Answer ELSE " +
-				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput " +
+				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput, " +
+				"CASE WHEN S.AnswerType=@snapshot THEN 1 END AS IsSnapshot " +
 			"FROM USR_SKUQuestions S " +
 			"WHERE SKU=@sku AND Single=@single AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions " +
 			"WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) " +
@@ -226,10 +224,21 @@ function GetChilds(sku) {
 	return q.Execute();
 }
 
+function GetImagePath(visitID, outletID, pictID, pictExt) {
+	var pathFromVisit = Images.FindImage(visitID, pictID, pictExt, "Document_Visit_Files");
+	var pathFromOutlet = Images.FindImage(outletID, pictID, pictExt, "Catalog_Outlet_Files");
+	return (pathFromVisit == "/shared/result.jpg" ? pathFromOutlet : pathFromVisit);
+}
+
 function RefreshScreen(control, search) {
 	Workflow.Refresh([search]);
 }
 
+function SnapshotExists(visit, outlet, filename) {
+	existsInVisit = Images.SnapshotExists(visit, filename, "Document_Visit_Files");
+	existsInOutlet = Images.SnapshotExists(outlet, filename, "Catalog_Outlet_Files");
+	return existsInVisit || existsInOutlet;
+}
 // ------------------------SKU----------------------
 
 function CreateItemAndShow(control, sku, index, showChild) {
@@ -268,20 +277,14 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.Snapshot).ToString()) {
-		var controlText;
-		if (editControl.Text=="—")
-			controlText = null;
-		else
-			controlText = editControl.Text;
 		skuValueGl = sku;
 		questionValueGl = question;
-		var listChoice = new List;
-		listChoice.Add([1, Translate["#makeSnapshot#"]]);
-		if ($.sessionConst.galleryChoose)
-			listChoice.Add([0, Translate["#addFromGallery#"]]);
-		if (currAnswer!="—")
-			listChoice.Add([2, Translate["#clearValue#"]]);
-		AddSnapshot($.workflow.visit, null, GalleryCallBack, listChoice, "document.visit", title);
+
+		//AddSnapshot($.workflow.visit, null, GalleryCallBack, listChoice, "document.visit", title);
+		var path = null;
+//		if (String.IsNullOrEmpty(currAnswer)==false)
+//			path = Images.FindImage($.visit, currAnswer, ".jpg");
+		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAnswer, true, title, GalleryCallBack);
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.DateTime).ToString()) {
@@ -349,13 +352,14 @@ function ObligatedAnswered(answer, obligatoriness) {
 }
 
 function GetActionAndBack() {
-	if ($.workflow.skipQuestions) {
-		if ($.workflow.skipTasks) {
-			Workflow.BackTo("Outlet");
-		} else
-			Workflow.BackTo("Visit_Tasks");
-	} else
-		Workflow.BackTo("Questions");
+	var q = new Query("SELECT NextStep " +
+		" FROM USR_WorkflowSteps" + 
+		" WHERE Value=0 AND StepOrder<'3' ORDER BY StepOrder DESC");
+	var step = q.ExecuteScalar();
+	if (step==null)
+		Workflow.BackTo("Outlet");
+	else
+		Workflow.BackTo(step);
 }
 
 function DoSearch(searcText) {
@@ -381,6 +385,13 @@ function DialogCallBack(state, args){
 function GalleryCallBack(state, args) {
 	if (args.Result) {
 		AssignAnswer(null, questionValueGl, skuValueGl, state[1]);
+
+		newFile = DB.Create("Document.Visit_Files");
+		newFile.Ref = state[0];
+		newFile.FileName = state[1];
+		newFile.FullFileName = state[2];
+		newFile.Save();
+
 		Workflow.Refresh([]);
 	}
 }
@@ -474,7 +485,7 @@ function ChooseBool(entity, attribute, control, func, title) {
 	else
 		var startKey = entity[attribute];
 
-	var listChoice = [[ "—", "—" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
 	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);

@@ -2,7 +2,7 @@
 
 function OnLoad() {
 
-	if ($.Exists("finishedWorkflow") && ($.finishedWorkflow == "Sync" || $.finishedWorkflow == "Visits" || $.finishedWorkflow == "Order" || $.finishedWorkflow == "Outlets")) {
+	if ($.Exists("finishedWorkflow") && ($.finishedWorkflow == "Sync" || $.finishedWorkflow == "Visits" || $.finishedWorkflow == "Order" || $.finishedWorkflow == "Outlets" || $.finishedWorkflow == "Return")) {
 		$.swipe_layout.Index = 0;
 	} else {
 		$.swipe_layout.Index = 1;
@@ -15,6 +15,27 @@ function OnLoad() {
 				"ON _Catalog_Outlet_AnsweredQuestions(IsTombstone, Ref, Questionaire, Question, AnswerDate)");
 	indexQuery.Execute();
 
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_SKUSSTOCK ON _Catalog_SKU_Stocks(Ref, Stock, IsTombstone)");
+	indexQuery.Execute();
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_PLREFSKU ON _Document_PriceList_Prices(Ref, SKU, IsTombstone)");
+	indexQuery.Execute();
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_SKUOWNERBRAND ON _Catalog_SKU(Id, Owner, Brand, IsTombstone)");
+	indexQuery.Execute();
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_SKUBRAND ON _Catalog_SKU(Id, Brand, IsTombstone)");
+	indexQuery.Execute();
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_SKUOWNER ON _Catalog_SKU(Id, Owner, IsTombstone)");
+	indexQuery.Execute();
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_SKUGROUPPARENT ON _Catalog_SKUGroup(Id, Parent, IsTombstone)");
+	indexQuery.Execute();
+
+	var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_AMREFOUTLET ON _Catalog_AssortmentMatrix_Outlets(Ref, Outlet, IsTombstone)");
+	indexQuery.Execute();
+
 }
 
 function GetLastSyncTime() {
@@ -22,6 +43,12 @@ function GetLastSyncTime() {
 		return DB.LastSyncTime.ToString("dd.MM HH:mm");
 	else
 		return Translate["#error#"];
+}
+
+function GetMainVersion(ver) {
+	if (ver==null)
+		ver = "";
+	return Left(ver, 3);
 }
 
 function CloseMenu() {
@@ -112,33 +139,10 @@ function GetReceivablesSumm() {
 	return Indicators.GetReceivablesSumm();
 }
 
-// ---------------------------Warm ups, temporary------------------
-
-function DoWarmUp() {
-	// RequestOutlets();
-	// RequestSKUs();
-	// RequestOrderList();
+function GetReturnQty(){
+	return Indicators.GetReturnQty();
 }
 
-function RequestOutlets() {
-	var q = new Query("SELECT P.Id, P.Description, P.DataType, DT.Description AS TypeDescription, OP.Id AS ParameterValue, OP.Value FROM Catalog_OutletParameter P JOIN Enum_DataType DT ON DT.Id=P.DataType LEFT JOIN Catalog_Outlet_Parameters OP ON OP.Parameter = P.Id");
-	var r = q.Execute();
-	while (r.Next()) {
-	}
-}
-
-function RequestSKUs() {
-	var q = new Query;
-	q.Text = "SELECT S.Id, S.Description, PL.Price, S.CommonStock, G.Description AS GroupDescription, G.Id AS GroupId, G.Parent AS GroupParent, CB.Description AS Brand FROM Catalog_SKU S JOIN Catalog_SKUGroup G ON G.Id = S.Owner JOIN Document_PriceList_Prices PL ON PL.SKU = S.Id JOIN Catalog_Brands CB ON CB.Id=S.Brand";
-	var r = q.Execute();
-	while (r.Next()) {
-	}
-}
-
-function RequestOrderList() {
-
-	var q = new Query("SELECT DO.Id, DO.Outlet, DO.Date AS Date, DO.Number, CO.Description AS OutletDescription, DO.Status FROM Document_Order DO JOIN Catalog_Outlet CO ON DO.Outlet=CO.Id");
-	var r = q.Execute();
-	while (r.Next()) {
-	}
+function GetReturnSum(){
+	return Indicators.GetReturnSum();
 }

@@ -50,7 +50,7 @@
 						<c:TextView Text="#encashmentAmount#:"></c:TextView>
 						<c:Button Text="#spread#" OnClickAction="$SpreadEncasmentAndRefresh($workflow.encashment, $visit.Outlet, $receivables)"></c:Button>
 					</c:DockLayout>
-					<c:EditText Id="encAmount" Text="$FormatSum(null, $workflow.encashment.EncashmentAmount)" CssClass="main_row" Keyboard="numeric" OnChange="$ValidateAmount()" Placeholder="—" OnLostFocus="$DoRefresh()"></c:EditText>
+					<c:EditText Id="encAmount" Text="$FormatSum(null, $workflow.encashment.EncashmentAmount)" CssClass="main_row" Keyboard="numeric" Placeholder="—" OnLostFocus="$SaveSum()"></c:EditText>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -105,7 +105,7 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(doc_number, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#docNumber#" CssClass="description_row"></c:TextView>
-					<c:MemoEdit Value="$workflow.encashment.DocNumber" Id="doc_number"></c:MemoEdit>
+					<c:MemoEdit Value="$workflow.encashment.DocNumber" Id="doc_number" Placeholder="—"></c:MemoEdit>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -113,7 +113,7 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(name_surname, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#nameSurname#" CssClass="description_row"></c:TextView>
-					<c:MemoEdit Value="$workflow.encashment.NameSurname" Id="name_surname"></c:MemoEdit>
+					<c:MemoEdit Value="$workflow.encashment.NameSurname" Id="name_surname" Placeholder="—"></c:MemoEdit>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -121,7 +121,7 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(commentary, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#commentary#" CssClass="description_row"></c:TextView>
-					<c:MemoEdit Value="$workflow.encashment.Commentary" Id="commentary"></c:MemoEdit>
+					<c:MemoEdit Value="$workflow.encashment.Commentary" Id="commentary" Placeholder="—"></c:MemoEdit>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />

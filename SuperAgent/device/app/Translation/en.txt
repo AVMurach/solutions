@@ -146,7 +146,7 @@ current		Current
 couldnt_be_cleaned	Field couldn't be cleaned
 priceList	Price list
 isntSelected	Isn't selected
-SKUWillRevised	SKU list has been revised
+OrderSKUWillRevised	SKU list has been revised
 features	Features
 noPriceLists	No Price Lists
 emptyList	List is empty
@@ -234,7 +234,7 @@ developer	DEVELOPER
 bitMobile	BIT.MOBILE
 bitmobileDesc	BIT.MOBILE is a division of the First Bit. We are developing mobile solutions for business.
 about		ПОДРОБНЕЕ О ПРИЛОЖЕНИИ
-version		Версия 2.5.1.110
+version		Версия
 superDescription	СуперАгент — мобильное решение для сбора заказов, анкетирования и мерчандайзинга, контроля работы сотрудников.
 support		Тех.поддержка
 idea		Предложить идею
@@ -257,7 +257,7 @@ choose_action	Choose action:
 skuAdd			Adding SKU
 skuDetail		Detail
 skuList			LIST OF SKUs
-skuWillBeDeleted	Part of SKUs will be removed from order. Continue?
+OrderskuWillBeDeleted	Part of SKUs will be removed from order. Continue?
 logout			Logout
 logoutQuery		When you exit will delete all data
 cancel			Cancel
@@ -265,3 +265,31 @@ logoutConfirm	Logout
 visitReason		"Visit reason" field should be filled
 noOrder			"No order reason" field should be filled
 notAvailableShort	N/A
+orderParameters	ORDER PARAMETERS:
+status	Статус
+Active	Active
+Potential	Potential
+Closed	Closed
+show			Show image
+snapshot			Snapshot
+reshot			Make another snapshot
+editChange		Edit
+returns			Returns
+return			Return
+returnInfo		RETURN INFORMATION
+returnSum		Return sum
+skuInReturn		Returning SKUs
+returnInfoSmall	Информация о заказе
+alreadyReturned	already in return
+ReturnskuWillBeDeleted	Part of SKUs will be removed from return. Continue?
+ReturnSKUWillRevised	SKU list has been revised
+send			Send log
+success			Данные успешно отправлены
+imageNotAvailable	Image not available now
+
+noSuccess		Произошла ошибка во время отправки. Данные не отправлены
+errorMessage	Error message
+sending			Sending..
+editSKU			Edit
+returnParameters	RETURN PARAMETERS
+returnHistory	RETURN HISTORY

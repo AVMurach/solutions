@@ -4,10 +4,11 @@
 	<s:Push Id="workflow.outlet" Value="$outlet"></s:Push>
 	<s:Push Id="executedOrder" Value="$param3"></s:Push>
 
-	<s:Push Id="workflow.order" Value="$CreateOrderIfNotExists($workflow.order, $outlet, $common.UserRef, $workflow.visit, $executedOrder)"></s:Push>
 
-	<s:Push Id="items" Value="$GetOrderedSKUs($workflow.order)"></s:Push>
-	<s:Push Id="sum" Value="$GetOrderSUM($workflow.order)"></s:Push>
+	<s:Push Id="thisDoc" Value="$CreateDocumentIfNotExists($executedOrder, $workflow.visit)"></s:Push>
+
+	<s:Push Id="items" Value="$GetOrderedSKUs($thisDoc)"></s:Push>
+	<s:Push Id="sum" Value="$GetOrderSUM($thisDoc)"></s:Push>
 
 	<c:DockLayout>
 
@@ -16,20 +17,20 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CheckIfEmptyAndForward($workflow.order, $workflow.name)">
+			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CheckIfEmptyAndForward($thisDoc, $workflow.name)">
 				<c:TextView Id="btnForward" Text="#forward#" />
 			</c:DockLayout>
 			<c:HorizontalLayout>
-				<c:TextView Text="#order#" />
+				<c:TextView Text="@mainTitle" />
 			</c:HorizontalLayout>
 		</c:DockLayout>
 
 		<c:Image CssClass="5_scroll"></c:Image>
 		<c:HorizontalLine />
 
-		<s:If Test="$IsNew($workflow.order)">
-			<s:If Test="$NotEmptyRef($workflow.order.PriceList)">
-				<c:HorizontalLayout Id="btnAdd" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoAction(Add)">
+		<s:If Test="$IsNew($thisDoc)">
+			<s:If Test="$NotEmptyRef($thisDoc.PriceList)">
+				<c:HorizontalLayout Id="btnAdd" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoAction(Add, null, $thisDoc)">
 					<c:TextView Text="#add#"></c:TextView>
 				</c:HorizontalLayout>
 				<c:HorizontalLine CssClass="b_line" />
@@ -39,15 +40,15 @@
 		<c:ScrollView Id="grScrollView">
 
 			<c:HorizontalLayout Id="Orderadd" CssClass="caption_grid">
-				<c:TextView Text="#orderInfo#:"></c:TextView>
+				<c:TextView Text="{@infoTitle}:"></c:TextView>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="grid" OnClickAction="$DoAction(ShowInfo,$sum,null)">
+			<c:DockLayout CssClass="grid" OnClickAction="$DoAction(ShowInfo,$sum,null,$thisDoc)">
 				<c:Image />
 				<c:VerticalLayout>
-					<c:TextView Text="$GetDescription($workflow.order.PriceList)" CssClass="description_row"></c:TextView>
-					<c:TextView Text="#orderSum#:" CssClass="description_row"></c:TextView>
+					<c:TextView Text="$GetDescription($thisDoc.PriceList)" CssClass="description_row"></c:TextView>
+					<c:TextView Text="{@sumTitle}:" CssClass="description_row"></c:TextView>
 					<c:TextView Text="$FormatValue($sum)" CssClass="main_row"></c:TextView>
 				</c:VerticalLayout>
 			</c:DockLayout>
@@ -56,7 +57,7 @@
 			<c:HorizontalLayout CssClass="end_of_block" />
 
 			<c:HorizontalLayout CssClass="caption_grid">
-				<c:TextView Text="#skuInOrder#:"></c:TextView>
+				<c:TextView Text="{@skuTitle}:"></c:TextView>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
@@ -65,8 +66,8 @@
 
 				<s:If Test="$orderitem != null">
 					<c:SwipeHorizontalLayout Id="swipe_layout2" CssClass="swipe_layout">
-						<c:DockLayout CssClass="grid" OnClickAction="$EditIfNew($workflow.order,$orderitem.SKU,null,$orderitem.Id)">
-							<s:If Test="$IsNew($workflow.order)">
+						<c:DockLayout CssClass="grid" OnClickAction="$EditIfNew($thisDoc,$orderitem.SKU,null,$orderitem.Id)">
+							<s:If Test="$IsNew($thisDoc)">
 								<c:Image />
 							</s:If>
 							<c:VerticalLayout>
@@ -75,7 +76,7 @@
 								<c:TextView Text="#quantity#: {$orderitem.Qty}   #amount#: {$FormatValue($orderitem.Amount)}" CssClass="description_row"></c:TextView>
 							</c:VerticalLayout>
 						</c:DockLayout>
-						<s:If Test="$IsNew($workflow.order)">
+						<s:If Test="$IsNew($thisDoc)">
 							<c:HorizontalLayout CssClass="red_swipe" OnClickAction="$DeleteItem($orderitem.Id, $executedOrder)">
 								<c:VerticalLayout>
 									<c:Image></c:Image>

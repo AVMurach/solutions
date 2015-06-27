@@ -6,7 +6,7 @@
 
 	<c:DockLayout>
 
-		<s:If Test="$workflow.name=='Order'">
+		<s:If Test="$BackMenu()">
 			<c:DockLayout CssClass="top_navigator">
 				<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$DoBack()">
 					<c:Image />

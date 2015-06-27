@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Image.css">
+
+	<s:Push Id="source" Value="$param1"></s:Push>
+	<s:Push Id="entity" Value="$param2"/>
+	<s:Push Id="attribute" Value="$param3"/>
+
+	<c:DockLayout>
+
+		<c:DockLayout CssClass="top_navigator">
+			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$DoBack()">
+				<c:Image />
+				<c:TextView Text="#back#" />
+			</c:DockLayout>
+			<c:DockLayout CssClass="btn_forward"></c:DockLayout>
+			<c:HorizontalLayout>
+				<c:TextView Text="#snapshot#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+
+		<s:If Test="@c_editable">
+			<c:DockLayout Id="btnDone" CssClass="bottom_btn">
+				<c:Button Id="delete"  OnClick="$Delete()" CssClass="delete"/>
+				<c:Button Id="reshoot" Text="#reshot#" CssClass="reshoot" OnClick="$Reshoot()"></c:Button>
+			</c:DockLayout>
+			<c:HorizontalLine CssClass="b_line" />
+		</s:If>		
+
+		<s:If Test="$source != null">
+			<c:ScrollView CssClass="image_output" >
+				<c:Image Source="$source"/>
+			</c:ScrollView>
+		</s:If>
+		<s:Else>
+			<c:TextView Text="#noImage#" />
+		</s:Else>
+
+	</c:DockLayout>
+
+</c:Screen>

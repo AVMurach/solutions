@@ -84,24 +84,33 @@
 					<c:TextView Text="#outletSnapshots#" />
 				</c:DockLayout>
 				<s:If Test="@singlePicture">
-					<c:VerticalLayout CssClass="single_picture" OnClick="$ImageActions($snapshots.Id)">
-						<s:If Test="$snapshots.Unavailable">
-							<c:TextView Text="#notAvailable#"/>
+					<c:VerticalLayout CssClass="single_picture" OnClick="$ImageActions($snapshots.Id, singleImage)">
+						<s:If Test="$SnapshotExists($outlet, $snapshots.FileName, Catalog_Outlet_Files)">
+							<c:Image Id="singleImage" Source="$GetImagePath($outlet, $snapshots.FileName, .jpg)" />
 						</s:If>
 						<s:Else>
-							<c:Image Source="$GetImagePath(catalog.outlet, $outlet, $snapshots.FileName, .jpg)" />
+							<c:VerticalLayout CssClass="no_single_image">
+								<c:VerticalLayout CssClass="no_image">
+									<c:Image Id="singleImage" />
+									<c:TextView Text="#imageNotAvailable#" CssClass="text"></c:TextView>
+								</c:VerticalLayout>
+							</c:VerticalLayout>
 						</s:Else>
 					</c:VerticalLayout>
 				</s:If>
 				<s:Else>
 					<c:SwipeHorizontalLayout Id="snapshotLayout" CssClass="carousel" Alignment="Center">
-						<s:Iterator Id="snapshot" Value="$snapshots">
-							<c:VerticalLayout OnClick="$ImageActions($snapshot.Id)">
-								<s:If Test="$snapshot.Unavailable">
-									<c:TextView Text="#notAvailable#"/>
+						<s:Iterator Id="snapshot" Value="$snapshots" Status="statusCount">
+							<s:Push Id="index" Value="$statusCount.Index" />
+							<c:VerticalLayout OnClick="$ImageActions($snapshot.Id, image{$index}, $outlet, $snapshot.FileName)">
+								<s:If Test="$SnapshotExists($outlet, $snapshot.FileName, Catalog_Outlet_Files)">
+									<c:Image Id="image{$index}" Source="$GetImagePath($outlet, $snapshot.FileName, .jpg)" />
 								</s:If>
 								<s:Else>
-									<c:Image Source="$GetImagePath(catalog.outlet, $outlet, $snapshot.FileName, .jpg)" />
+									<c:VerticalLayout CssClass="no_image">
+										<c:Image Id="image{$index}" />
+										<c:TextView Text="#imageNotAvailable#" CssClass="text"></c:TextView>
+									</c:VerticalLayout>
 								</s:Else>
 							</c:VerticalLayout>
 						</s:Iterator>
@@ -132,6 +141,14 @@
 					<s:Else>
 						<c:TextView Id="outletDescr" Text="$outlet.Description" CssClass="main_row"></c:TextView>
 					</s:Else>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$SelectIfNotAVisit($outlet,OutletStatus,$status,#status#,$sessionConst.editOutletParameters,status)">
+				<c:VerticalLayout>
+					<c:TextView Text="#status#" CssClass="description_row" />
+					<c:TextView Id="status" Text="$GetStatusDescription($outlet)" CssClass="main_row" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -191,7 +208,7 @@
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoSelect($outlet,Distributor,$outletDistr,#distributor#, $sessionConst.editOutletParameters, distributor)">
+			<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoSelect($sessionConst.editOutletParameters, distributor)">
 				<c:TextView Text="#distributor#"></c:TextView>
 				<c:TextView Id="outletDistr" Text="$outlet.Distributor.Description" CssClass="value"></c:TextView>
 			</c:DockLayout>
@@ -203,7 +220,7 @@
 				<s:Push Id="visible" Value="$parameter.Visible"></s:Push>
 				<s:Push Id="editable" Value="$parameter.Editable"></s:Push>
 				<s:If Test="$visible">
-					<c:DockLayout CssClass="parameter_grid" OnClickAction="$GoToParameterAction($parameter.TypeDescription, $parameter.Value, Value, $outlet, $parameter.Id, control{$index}, $parameter.Description, $editable)">
+					<c:DockLayout CssClass="parameter_grid" OnClickAction="$GoToParameterAction($parameter.TypeDescription, $parameter.Value, Value, $outlet, $parameter.Id, control{$index}, $parameter.Description, $editable, $index, $parameter.IsInputField)">
 						<s:If Test="$IsEditText($sessionConst.editOutletParameters, $parameter.IsInputField, $editable)">
 							<c:EditText Id="control{$index}" Text="$parameter.Value" Placeholder="—" OnChange="$AssignParameterValue($parameter.TypeDescription, $parameterValue, Value, $outlet, $parameter.Id)" CssClass="value" Keyboard="$parameter.KeyboardType"></c:EditText>
 						</s:If>
@@ -213,11 +230,13 @@
 									<c:TextView Text="#noSnapshot#" CssClass="value"></c:TextView>
 								</s:If>
 								<s:Else>
-									<s:If Test="$IsUnavailable($parameter.Unavailable)">
-										<c:TextView Text="#notAvailableShort#" CssClass="not_available" />
+									<s:If Test="$SnapshotExists($outlet, $parameter.Value, Catalog_Outlet_Files)">
+										<c:Image Id="parameterImage{$index}" Source="$GetImagePath($outlet, $parameter.Value, .jpg)" CssClass="parameter_image" />
 									</s:If>
 									<s:Else>
-										<c:Image Source="$GetImagePath(catalog.outlet, $outlet, $parameter.Value, .jpg)" CssClass="parameter_image" />
+										<c:VerticalLayout CssClass="no_image_small">
+											<c:Image Id="parameterImage{$index}" />
+										</c:VerticalLayout>
 									</s:Else>
 								</s:Else>
 							</s:If>

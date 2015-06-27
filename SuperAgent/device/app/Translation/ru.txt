@@ -146,7 +146,7 @@ current		Текущие
 couldnt_be_cleaned	Поле не может быть очищено
 priceList	Прайс-лист
 isntSelected	Не выбран
-SKUWillRevised	Заказ пересчитан
+OrderSKUWillRevised	Заказ пересчитан
 features	ХАРАКТЕРИСТИКИ
 noPriceLists	Нет прайс-листов
 emptyList	Список пуст
@@ -234,7 +234,7 @@ developer	РАЗРАБОТЧИК РЕШЕНИЯ
 bitMobile	БИТ.МОБАЙЛ
 bitmobileDesc	БИТ.Мобайл является подразделением компании Первый БИТ. Мы занимаемся разработкой мобильных решений для бизнеса.
 about		ПОДРОБНЕЕ О ПРИЛОЖЕНИИ
-version		Версия 2.5.1.110
+version		Версия
 superDescription	СуперАгент — мобильное решение для сбора заказов, анкетирования и мерчандайзинга, контроля работы сотрудников.
 support		Тех.поддержка
 idea		Предложить идею
@@ -257,7 +257,7 @@ choose_action	Выберите действие:
 skuAdd			Добавление номенклатуры
 skuDetail		Подробно
 skuList			СПИСОК ТОВАРОВ
-skuWillBeDeleted	Часть товаров из заказа будет удалена. Продолжить?
+OrderskuWillBeDeleted	Часть товаров из заказа будет удалена. Продолжить?
 logout			Выход
 logoutQuery		При выходе будут удалены все данные
 cancel			Отменить
@@ -265,3 +265,31 @@ logoutConfirm	Выйти
 visitReasonMessage		Поле "Причина визита" должно быть заполнено
 noOrder			Поле "Причина отсутствия заказа" должно быть заполнено
 notAvailableShort	Н/Д
+orderParameters	ПАРАМЕТРЫ ЗАКАЗА:
+status	Статус
+Active	Активная
+Potential	Потенциальная
+Closed	Закрытая
+show			Просмотреть
+snapshot			Фотография
+reshot			Переснять
+editChange		Изменить
+returns			Возвраты
+return			Возврат
+returnInfo		ИНФОРМАЦИЯ О ВОЗВРАТЕ
+returnSum		Сумма возврата
+skuInReturn		ВОЗВРАЩАЕМЫЕ ТОВАРЫ
+returnInfoSmall	Информация о возврате
+alreadyReturned	уже в возврате
+ReturnskuWillBeDeleted	Часть товаров из возврата будет удалена. Продолжить?
+ReturnSKUWillRevised	Возврат пересчитан
+send			Отправить логи
+success			Данные успешно отправлены
+imageNotAvailable	В данный момент изображение недоступно
+
+noSuccess		Произошла ошибка во время отправки. Данные не отправлены
+errorMessage	Сообщить об ошибке
+sending			Отправка..
+editSKU			Изменить
+returnParameters	ПАРАМЕТРЫ ВОЗВРАТА:
+returnHistory	ИСТОРИЯ ВОЗВРАТОВ

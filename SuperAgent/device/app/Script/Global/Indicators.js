@@ -7,6 +7,8 @@ var orderSum;
 var orderQty;
 var encashmentSumm;
 var receivablesSumm;
+var returnSum;
+var returnQty;
 
 function SetIndicators() {
 	SetCommitedScheduledVisits();
@@ -17,13 +19,12 @@ function SetIndicators() {
 	SetPlannedVisits();
 	SetReceivablesSumm();
 	SetUnscheduledVisits();
+	SetReturnSum();
+	SetReturnQty();
 }
 
-
-
-
 function SetOutletsCount() {
-	var q = new Query("SELECT COUNT(*) FROM Catalog_Outlet");
+	var q = new Query("SELECT COUNT(*) FROM Catalog_Outlet O JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus=OSS.Status AND OSS.ShowOutletInMA=1");
 	var cnt = q.ExecuteScalar();
 	if (cnt == null)
 		outletsCount = 0;
@@ -63,7 +64,7 @@ function GetUnscheduledVisits() {
 
 
 function SetPlannedVisits() {
-	var q = new Query("SELECT COUNT(*) FROM Document_VisitPlan_Outlets WHERE DATE(Date)=DATE(@date)");
+	var q = new Query("SELECT COUNT(*) FROM Document_VisitPlan_Outlets VPO JOIN Catalog_Outlet O ON VPO.Outlet=O.Id JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus=OSS.Status AND OSS.ShowOutletInMA=1 AND OSS.DoVisitInMA=1 WHERE DATE(Date)=DATE(@date) AND NOT OSS.Status IS NULL");
 	q.AddParameter("date", DateTime.Now.Date);
 	plannedVisits = q.ExecuteScalar();
 }
@@ -112,7 +113,31 @@ function GetOrderQty(){
 	return orderQty;
 }
 
+function SetReturnSum(){
+	var q = new Query("SELECT SUM(S.Qty * S.Total) FROM Document_Return_SKUs S LEFT JOIN Document_Return O ON (O.Id = S.Ref) WHERE O.Date >= @today AND O.Date < @tomorrow");
+	q.AddParameter("today", DateTime.Now.Date);
+	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
+	var cnt = q.ExecuteScalar();
+	if (cnt == null)
+		returnSum = 0;
+	else
+		returnSum = String.Format("{0:F2}", cnt || 0);
+}
 
+function GetReturnSum(){ return returnSum };
+
+function SetReturnQty() {
+	var q = new Query("SELECT COUNT(Id) FROM Document_Return WHERE Date >= @today AND Date < @tomorrow");
+	q.AddParameter("today", DateTime.Now.Date);
+	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
+	var cnt = q.ExecuteScalar();
+	if (cnt == null)
+		returnQty = 0;
+	else
+		returnQty = cnt;
+}
+
+function GetReturnQty(){ return returnQty; }
 
 function SetEncashmentSumm() {
 	var q = new Query("SELECT SUM(EncashmentAmount) FROM Document_Encashment WHERE Date >= @today AND Date < @tomorrow");
@@ -143,4 +168,3 @@ function SetReceivablesSumm() {
 function GetReceivablesSumm() {
 	return receivablesSumm;
 }
-

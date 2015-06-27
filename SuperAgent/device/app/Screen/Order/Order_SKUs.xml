@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Order_SKUs.css">
 
-	<s:Push Id="order" Value="$workflow.order"></s:Push>
+	<s:Push Id="thisDoc" Value="$GetCurrentDoc()"></s:Push>
 	<s:Push Id="search" Value="$param1"></s:Push>
 
-	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $order.PriceList, $order.Stock)"></s:Push>
+	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $thisDoc)"></s:Push>
 
 	<c:DockLayout>
 
@@ -14,7 +14,7 @@
 			</c:HorizontalLayout>
 		</c:DockLayout>
 
-		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
+		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$GoBackTo()">
 			<c:TextView Text="#ready#"></c:TextView>
 		</c:HorizontalLayout>
 		<c:HorizontalLine CssClass="b_line" />
@@ -76,27 +76,29 @@
 								<c:Button Text="+1" CssClass="add_button" OnClick="$AddToOrder(editText{$index})" />
 								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId)" />
 							</c:HorizontalLayout>
-							<c:TextView Id="textView{$index}" Text="0 {#alreadyOrdered#}" />
+							<c:TextView Id="textView{$index}" Text="0 {@alreadyOrdered}" />
 						</c:VerticalLayout>
 					</c:HorizontalLayout>
 					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId)" CssClass="grid">
 						<c:Image />
 						<c:VerticalLayout>
 							<c:DockLayout>
-								<s:If Test="$ShowRecommendedQty($item.OrderRecOrder, $item.RecOrder)">
-									<c:VerticalLayout>
-										<c:TextView Text="{$item.RecOrder} {$item.RecUnit}" CssClass="rec_order" />
-										<c:TextView Text="#recommended#" CssClass="rec_comment" />
-									</c:VerticalLayout>
-								</s:If>
-								<s:Else>
-									<s:If Test="$item.OrderRecOrder>0">
-										<c:TextView Text="#recommended#" CssClass="single_rec" />
+								<s:If Test="$workflow.currentDoc=='Order'">
+									<s:If Test="$item.OrderRecOrder==2">
+										<c:VerticalLayout>
+											<c:TextView Text="{$item.RecOrder} {$item.RecUnit}" CssClass="rec_order" />
+											<c:TextView Text="#recommended#" CssClass="rec_comment" />
+										</c:VerticalLayout>
 									</s:If>
-								</s:Else>
+									<s:Else>
+										<s:If Test="$item.OrderRecOrder>0">
+											<c:TextView Text="#recommended#" CssClass="single_rec" />
+										</s:If>
+									</s:Else>
+								</s:If>
 								<c:TextView Text="$item.Description" CssClass="main_row"></c:TextView>
 							</c:DockLayout>
-							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock} #brand#: {$item.Brand}" CssClass="description_row"></c:TextView>
+							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock}  #brand#: {$item.Brand}" CssClass="description_row"></c:TextView>
 						</c:VerticalLayout>
 					</c:DockLayout>
 				</c:SwipeHorizontalLayout>

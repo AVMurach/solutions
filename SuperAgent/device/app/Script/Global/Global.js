@@ -10,20 +10,27 @@ function S4() {
 }
 
 function SetSessionConstants() {
-	var planEnbl = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='PlanEnbl'");
-	var multStck = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='MultStck'");
-	var stckEnbl = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NoStkEnbl'");
-	var orderCalc = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='OrderCalc'");
-	var UVR = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='UVR'");
-	var NOR = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NOR'");
+
+	var solVersion = new Query("SELECT Value FROM ___SolutionInfo WHERE key='version'");
+	var planEnbl = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='PlanVisitEnabled'");
+	var multStck = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='MultistockEnabled'");
+	var stckEnbl = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='EmptyStockEnabled'");
+	var orderCalc = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='RecOrderEnabled'");
+	var UVR = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='ControlVisitReasonEnabled'");
+	var NOR = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='ControlOrderReasonEnabled'");
+	var SnapshotSize = new Query("SELECT NumericValue FROM Catalog_MobileApplicationSettings WHERE Description='SnapshotSize'");
+	var SKUFeaturesRegistration = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='SKUFeaturesRegistration'");
 
 	$.AddGlobal("sessionConst", new Dictionary());
+	$.sessionConst.Add("solVersion", solVersion.ExecuteScalar());
 	$.sessionConst.Add("PlanEnbl", EvaluateBoolean(planEnbl.ExecuteScalar()));
 	$.sessionConst.Add("MultStck", EvaluateBoolean(multStck.ExecuteScalar()));
 	$.sessionConst.Add("NoStkEnbl", EvaluateBoolean(stckEnbl.ExecuteScalar()));
 	$.sessionConst.Add("OrderCalc", EvaluateBoolean(orderCalc.ExecuteScalar()));
 	$.sessionConst.Add("UVR", EvaluateBoolean(UVR.ExecuteScalar()));
 	$.sessionConst.Add("NOR", EvaluateBoolean(NOR.ExecuteScalar()));
+	$.sessionConst.Add("SnapshotSize", SnapshotSize.ExecuteScalar());
+	$.sessionConst.Add("SKUFeaturesRegistration", SKUFeaturesRegistration.ExecuteScalar());
 
 	var q = new Query("SELECT U.AccessRight, A.Id, A.Code FROM Catalog_MobileAppAccessRights A " +
 		" LEFT JOIN Catalog_User_UserRights U ON U.AccessRight=A.Id ");
@@ -47,6 +54,20 @@ function SetSessionConstants() {
 			else
 				$.sessionConst.Add("encashEnabled", true);
 		}
+		if (rights.Code=='000000005') {
+			if (rights.AccessRight==null) {
+				$.sessionConst.Add("orderEnabled", false);
+			} else {
+				$.sessionConst.Add("orderEnabled", true);
+			}
+		}
+		if (rights.Code=='000000006') {
+			if (rights.AccessRight==null) {
+				$.sessionConst.Add("returnEnabled", false);
+			} else {
+				$.sessionConst.Add("returnEnabled", true);
+			}
+		}
 	}
 }
 
@@ -66,7 +87,7 @@ function ValidateEmail(string){
 }
 
 function ValidatePhoneNr(string){
-	return ValidateField(string, "([0-9()-+\s]{1,20})?", Translate["#phone#"]);
+	return true; // ValidateField(string, "([0-9()-+\s]{1,20})?", Translate["#phone#"]);
 }
 
 function ValidateField(string, regExp, fieldName){
@@ -82,8 +103,9 @@ function ValidateField(string, regExp, fieldName){
 //--------------------------------Order functionality----------------------------
 
 function FindTwinAndUnite(orderitem) {
+
 	var q = new Query(
-			"SELECT Id FROM Document_Order_SKUs WHERE Ref=@ref AND SKU=@sku AND Discount=@discount AND Units=@units AND Feature=@feature AND Id<>@id LIMIT 1"); // AND
+			"SELECT Id FROM Document_" + $.workflow.currentDoc + "_SKUs WHERE Ref=@ref AND SKU=@sku AND Discount=@discount AND Units=@units AND Feature=@feature AND Id<>@id LIMIT 1"); // AND
 																																								// Id<>@id
 	q.AddParameter("ref", orderitem.Ref);
 	q.AddParameter("sku", orderitem.SKU);
@@ -100,6 +122,16 @@ function FindTwinAndUnite(orderitem) {
 		DB.Delete(orderitem.Id);
 	} else
 		orderitem.Save();
+}
+
+function ClearFilter(){
+	var checkDropF = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_Filters'");
+	var checkDropFResult = checkDropF.ExecuteScalar();
+	
+	if (checkDropFResult == 1) {
+		var dropF = new Query("DELETE FROM USR_Filters");
+		dropF.Execute();
+	}
 }
 
 //------------------------Queries common functions------------------------------

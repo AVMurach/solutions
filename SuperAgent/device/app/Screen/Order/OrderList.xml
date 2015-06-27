@@ -2,7 +2,7 @@
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:d="DefaultScope" StyleSheet="Visits.css">
 
 	<s:Push Id="search" Value="$param1" />
-	<s:Push Id="orders" Value="$GetOrderList()"></s:Push>
+	<s:Push Id="orders" Value="$GetItems()"></s:Push>
 
 	<c:DockLayout>
 
@@ -13,9 +13,9 @@
 			</c:DockLayout>
 			<c:DockLayout CssClass="btn_space" >
 				<c:TextView Id="btnForward" Text="" />
-			</c:DockLayout>			
+			</c:DockLayout>
 			<c:HorizontalLayout>
-				<c:TextView Text="#orders#" />
+				<c:TextView Text="@listTitle" />
 			</c:HorizontalLayout>
 		</c:DockLayout>
 		<c:HorizontalLine />

@@ -30,9 +30,10 @@
 
 			<s:If Test="$OrderExists($workflow.visit)">
 				<c:HorizontalLayout CssClass="grid" OnClickAction="$SetDeliveryDate($workflow.order, $deliveryDate)">
+					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 					<c:VerticalLayout>
 						<c:TextView Text="#deliveryDate#" CssClass="description_row"></c:TextView>
-						<c:TextView Id="deliveryDate" Text="$FormatDate($workflow.order.DeliveryDate)" CssClass="main_row"></c:TextView>
+						<c:TextView Id="deliveryDate" Text="$FormatDate($workflow.order.DeliveryDate, D)" CssClass="main_row"></c:TextView>
 					</c:VerticalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLine />
@@ -40,9 +41,10 @@
 
 			<s:If Test="$sessionConst.PlanEnbl">
 				<c:HorizontalLayout CssClass="grid" OnClickAction="$SetnextVisitDate($nextVisit, $nextVisitControl)">
+					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 					<c:VerticalLayout>
 						<c:TextView Text="#nextVisitDate#" CssClass="description_row"></c:TextView>
-						<c:TextView Id="nextVisitControl" Text="$FormatOutput($nextVisit.PlanDate)" CssClass="main_row"></c:TextView>
+						<c:TextView Id="nextVisitControl" Text="$FormatDate($nextVisit.PlanDate, f)" CssClass="main_row"></c:TextView>
 					</c:VerticalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLine />
@@ -81,6 +83,7 @@
 			</s:If>
 
 			<c:HorizontalLayout CssClass="memo_block">
+				<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 				<c:VerticalLayout>
 					<c:TextView Text="#commentary#" CssClass="description_row"></c:TextView>
 					<c:MemoEdit Value="$workflow.visit.Commentary" CssClass="main_row" Placeholder="—"></c:MemoEdit>
@@ -93,7 +96,7 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<s:If Test="$NoQuestionnaires($workflow.skipQuestions, $workflow.skipSKUs)">
+			<s:If Test="$ShowQuestionnaires()">
 				<c:DockLayout CssClass="parameter_grid">
 					<s:Push Id="answered" Value="$GetSum($workflow.questions_answ, $workflow.questions_answ_sku)"></s:Push>
 					<s:Push Id="questions" Value="$GetSum($workflow.questions_qty, $workflow.questions_qty_sku)"></s:Push>
@@ -103,7 +106,7 @@
 				<c:HorizontalLine />
 			</s:If>
 
-			<s:If Test="$NoTasks($workflow.skipTasks)">
+			<s:If Test="$NoTasks()">
 				<c:DockLayout CssClass="parameter_grid">
 					<s:Push Id="todoDone" Value="$CountDoneTasks($workflow.visit)"></s:Push>
 					<s:Push Id="todo" Value="$CountTasks($workflow.outlet)"></s:Push>
@@ -113,13 +116,23 @@
 				<c:HorizontalLine />
 			</s:If>
 
-			<c:DockLayout CssClass="parameter_grid">
-				<c:TextView Text="#orderSum#"></c:TextView>
-				<c:TextView Text="{$GetOrderSUM($workflow.order)}" CssClass="value"></c:TextView>
-			</c:DockLayout>
-			<c:HorizontalLine />
+			<s:If Test="@orderEnabled">
+				<c:DockLayout CssClass="parameter_grid">
+					<c:TextView Text="#orderSum#"></c:TextView>
+					<c:TextView Text="{$GetOrderSUM($workflow.order)}" CssClass="value"></c:TextView>
+				</c:DockLayout>
+				<c:HorizontalLine />
+			</s:If>
 
-			<s:If Test="$sessionConst.encashEnabled">
+			<s:If Test="@returnEnabled">
+				<c:DockLayout CssClass="parameter_grid">
+					<c:TextView Text="#returnSum#"></c:TextView>
+					<c:TextView Text="{$GetReturnSum($workflow.Return)}" CssClass="value"></c:TextView>
+				</c:DockLayout>
+				<c:HorizontalLine />
+			</s:If>
+
+			<s:If Test="@encashmentEnabled">
 				<c:DockLayout CssClass="parameter_grid">
 					<c:TextView Text="#encashmentSum#"></c:TextView>
 					<c:TextView Text="{$FormatValue($workflow.encashment.EncashmentAmount)}" CssClass="value"></c:TextView>

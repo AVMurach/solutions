@@ -148,6 +148,24 @@
 	font: 10% arial;
 }
 
+.no_image_small {
+	width: 7mm;
+	height: 100%;
+	dock-align: right;
+	margin-top: 0.3mm;
+	margin-bottom: 0.3mm;
+	margin-right: 2.4mm;
+	background-color: #eeeeee;
+}
+
+.no_image_small img {
+	height: 5mm;
+	width: 5mm;
+	margin-top: 10%;
+	background-image: url(no_image_small.png);
+	horizontal-align: center;
+}
+
 .single_picture{
 	height: 25.6mm;
 	width: 100%;
@@ -212,12 +230,7 @@
 }
 
 .parameter_image{
-	height: 100%;
 	width: 0%;
-	margin-right: 2.4mm;
-	margin-top: 1.5%;
-	margin-bottom: 1.5%;
-	dock-align: right;
 }
 
 .not_available {

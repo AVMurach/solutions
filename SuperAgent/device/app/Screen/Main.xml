@@ -15,10 +15,10 @@
 	<c:SwipeHorizontalLayout Id="swipe_layout">
 		<c:VerticalLayout CssClass="menu">
 
-			<c:DockLayout CssClass="header" OnEvent="Forward" OnClickAction="$CloseMenu()">							
+			<c:DockLayout CssClass="header" OnEvent="Forward" OnClickAction="$CloseMenu()">
 				<c:HorizontalLayout>
 					<c:Image CssClass="btn_summary" />
-					<c:TextView Text="#summary#" />	
+					<c:TextView Text="#summary#" />
 				</c:HorizontalLayout>
 			</c:DockLayout>
 
@@ -40,14 +40,27 @@
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout OnClickAction="$DoAction(Order)">
-				<c:TextView CssClass="menu_text" Text="{$orderQty} | {$FormatValue($orderSum)}"></c:TextView>
-				<c:HorizontalLayout>
-					<c:Image CssClass="btn_orders" />
-					<c:TextView Text="#orders#"></c:TextView>
-				</c:HorizontalLayout>
-			</c:DockLayout>
-			<c:HorizontalLine />
+			<s:If Test="$sessionConst.orderEnabled">
+				<c:DockLayout OnClickAction="$DoAction(Order)">
+					<c:TextView CssClass="menu_text" Text="{$orderQty} | {$FormatValue($orderSum)}"></c:TextView>
+					<c:HorizontalLayout>
+						<c:Image CssClass="btn_orders" />
+						<c:TextView Text="#orders#"></c:TextView>
+					</c:HorizontalLayout>
+				</c:DockLayout>
+				<c:HorizontalLine />
+			</s:If>
+
+			<s:If Test="$sessionConst.returnEnabled">
+				<c:DockLayout OnClickAction="$DoAction(Return)">
+					<c:TextView CssClass="menu_text" Text="{$GetReturnQty()} | {$GetReturnSum()}"></c:TextView>
+					<c:HorizontalLayout>
+						<c:Image CssClass="btn_returns" />
+						<c:TextView Text="#returns#"></c:TextView>
+					</c:HorizontalLayout>
+				</c:DockLayout>
+				<c:HorizontalLine />
+			</s:If>
 
 			<c:DockLayout OnClickAction="$DoAction(Sync)">
 				<c:TextView Id="syncTitle" CssClass="menu_text" Text="$GetLastSyncTime()"></c:TextView>
@@ -59,14 +72,14 @@
 			<c:HorizontalLine />
 
 			<c:DockLayout OnClickAction="$DoAction(About)">
-				<c:TextView CssClass="menu_text" Text="ver. 2.5" />
+				<c:TextView CssClass="menu_text" Text="$GetMainVersion($sessionConst.solVersion)" />
 				<c:HorizontalLayout>
 					<c:Image CssClass="btn_info" />
 					<c:TextView Text="#info#" />
 				</c:HorizontalLayout>
 			</c:DockLayout>
 			<c:HorizontalLine />
-			
+
 			<c:DockLayout OnClickAction="$LogoutQuery()">
 				<c:HorizontalLayout>
 					<c:Image CssClass="btn_logout" />
@@ -130,15 +143,16 @@
 
 				</c:DockLayout>
 
-
-				<c:DockLayout CssClass="short_panel">
-					<c:DockLayout CssClass="grid">
-						<c:VerticalLayout>
-							<c:TextView Text="{$FormatValue($orderSum)} #currency#" CssClass="main_row"></c:TextView>
-							<c:TextView Text="#amountOfOrdersForToday#" CssClass="description_row" />
-						</c:VerticalLayout>
+				<s:If Test="$sessionConst.orderEnabled">
+					<c:DockLayout CssClass="short_panel">
+						<c:DockLayout CssClass="grid">
+							<c:VerticalLayout>
+								<c:TextView Text="{$FormatValue($orderSum)} #currency#" CssClass="main_row"></c:TextView>
+								<c:TextView Text="#amountOfOrdersForToday#" CssClass="description_row" />
+							</c:VerticalLayout>
+						</c:DockLayout>
 					</c:DockLayout>
-				</c:DockLayout>
+				</s:If>
 
 				<s:If Test="$sessionConst.encashEnabled">
 					<c:DockLayout>

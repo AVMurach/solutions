@@ -9,6 +9,13 @@
 	padding-left: 2.4mm;
 }
 
+.grid hl {
+	padding-top: 11%;
+	padding-bottom: 11%;
+	padding-left: 2.4mm;
+	padding-right: 2.4mm;
+}
+
 .parameter_grid TextView {
 	width: 74%;
 }
@@ -17,7 +24,7 @@
 	padding-left: 2.4mm;
 }
 
-.description_row {	
+.description_row {
 	width: 60%;
 	height: 40%;
 	font: 2.2mm Arial;
@@ -87,6 +94,7 @@
 	padding-top: 2.4mm;
 	padding-left: 2.4mm;
 	background-color: #efeff4;
+	horizontal-align: right;
 	padding-left: 10%;
 }
 
@@ -97,6 +105,16 @@
 	color: #2d89cf;
 }
 
+.child_grid hl {
+	width: 90%;
+	height: 100%;
+	padding-top: 2.4mm;
+	padding-left: 2.4mm;
+	background-color: #efeff4;
+	padding-left: 10%;
+	padding-bottom: 2.4mm;
+}
+
 .answer_main_row {
 	width: 100%;
 	height: 40%;
@@ -104,7 +122,26 @@
 	white-space: normal;
 	font: 42% Arial;
 	color: #2D89CF;
-	placeholder-color: #2D89CF; 
+	placeholder-color: #2D89CF;
+}
+
+.child_main_row {
+	width: 100%;
+	height: 40%;
+	margin-top: 5%;
+	white-space: normal;
+	font: 42% Arial;
+	color: #2D89CF;
+	placeholder-color: #2D89CF;
+}
+
+.answer_snapshot {
+	width: 0%;
+	height: 98%;
+	horizontal-align: right;
+	/*margin-bottom: 11%;
+	margin-left: 8%;*/
+	background-color: #336699;
 }
 
 .required_grid {
@@ -137,29 +174,41 @@
 .required_side_wh{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(required_side_wh.png);	
-	dock-align: right;
+	background-image: url(required_side_wh.png);
+	dock-align: left;
 }
 
 .answered_side_wh{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(answered_side_wh.png);	
-	dock-align: right;
+	background-image: url(answered_side_wh.png);
+	dock-align: left;
 }
 
 .required_side_gr{
 	height: 100%;
 	width: 1.2mm;
 	background-image: url(required_side_gr.png);
-	dock-align: right;	
+	dock-align: left;
+}
+
+.empty_side_wh{
+	height: 100%;
+	width: 1.2mm;
+	dock-align: left;
+}
+
+.empty_side_gr{
+	height: 100%;
+	width: 1.2mm;
+	dock-align: left;
 }
 
 .answered_side_gr{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(answered_side_gr.png);	
-	dock-align: right;
+	background-image: url(answered_side_gr.png);
+	dock-align: left;
 }
 
 .single_rec{
@@ -182,5 +231,75 @@
 
 .search_filter{
 	height: 15.4sp;
-	width: 100%;	
+	width: 100%;
+}
+
+.no_answer {
+	height: 100%;
+	width: 12mm;
+	horizontal-align: right;
+	margin-right: 0px;
+	background-color: #eeeeee;
+}
+
+.no_answer img {
+	background-image: url(small_camera.png);
+	width: 5mm;
+	height: 5mm;
+	horizontal-align: center;
+	margin-top: 26%;
+}
+
+.no_image{
+	background-color: #eeeeee;
+	height: 100%;
+	width: 12mm;
+	horizontal-align: right;
+	margin-top: 0mm;
+	margin-bottom: 0mm;
+	margin-left: 0mm;
+	margin-right: 0mm;
+}
+
+.no_image img {
+	height: 5mm;
+	width: 5mm;
+	background-image: url(no_image_small.png);
+	margin-top: 27.5%;
+	horizontal-align: center;
+}
+
+.no_child_answer {
+	height: 100%;
+	width: 10mm;
+	horizontal-align: right;
+	margin-right: 0px;
+	background-color: #dddddd;
+}
+
+.no_child_answer img {
+	background-image: url(small_camera.png);
+	width: 5mm;
+	height: 5mm;
+	horizontal-align: center;
+	margin-top: 20%;
+}
+
+.no_child_image{
+	background-color: #dddddd;
+	height: 100%;
+	width: 12mm;
+	horizontal-align: right;
+	margin-top: 0mm;
+	margin-bottom: 0mm;
+	margin-left: 0mm;
+	margin-right: 0mm;
+}
+
+.no_child_image img {
+	height: 5mm;
+	width: 5mm;
+	background-image: url(no_image_small.png);
+	margin-top: 22%;
+	horizontal-align: center;
 }

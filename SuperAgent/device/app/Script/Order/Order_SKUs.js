@@ -5,32 +5,52 @@ var swipedRow;
 var rec_order;
 var doRecommend;
 var doGroupping;
+var alreadyOrdered;
 
 function OnLoading() {
     rec_order = "<font size=''>1576 шт.</font>";
     doGroupping = DoGroupping();
     doRecommend = DoRecommend();
+    if ($.workflow.currentDoc=="Order")
+        alreadyOrdered = Translate["#alreadyOrdered#"];
+    else
+        alreadyOrdered = Translate["#alreadyReturned#"]
 }
 
 function WarMupFunction() {
 
 }
 
-function GetSKUAndGroups(searchText, priceList, stock) {
+function GetCurrentDoc(){
+    var d = DB.EmptyRef("Document_Order");
+    if ($.workflow.currentDoc=='Order')
+        d =  $.workflow.order;
+    if ($.workflow.currentDoc=='Return')
+        d =  $.workflow.Return;
+    return d;
+}
+
+function GetSKUAndGroups(searchText, thisDoc) {
+
+     var priceList = thisDoc.PriceList;
+     var stock = thisDoc.Stock;
 
     var filterString = "";
-    filterString += AddFilter(filterString, "group_filter", "G.Id", " AND ");
-    filterString += AddFilter(filterString, "brand_filter", "CB.Id", " AND ");
+
+    filterString = AddFilter(filterString, "group_filter", "S.Owner", "OF");
+    filterString = AddFilter(filterString, "brand_filter", "S.Brand", "BF");
 
     var groupFields = "";
-    var groupJoin = "";
+    var groupJoin = " INDEXED BY IND_SKUBRAND ON PL.SKU = S.Id ";
     var groupParentJoin = "";
     var groupSort = "";
+    var groupWhere = "";
     if (doGroupping){
         groupFields = " G.Description AS GroupDescription, G.Id AS GroupId, G.Parent AS GroupParent, P.Description AS ParentDescription, ";
-        groupJoin = "JOIN Catalog_SKUGroup G ON G.Id = S.Owner ";
+        groupJoin = " INDEXED BY IND_SKUOWNERBRAND ON PL.SKU = S.Id JOIN _Catalog_SKUGroup G INDEXED BY IND_SKUGROUPPARENT ON G.Id = S.Owner ";
         groupParentJoin = "LEFT JOIN Catalog_SKUGroup P ON G.Parent=P.Id ";
-        if ($.workflow.order.Stock.EmptyRef()==true){
+        groupWhere = " AND G.IsTombstone = 0 ";
+        if (thisDoc.Stock.EmptyRef()==true){
           groupSort = " G.Description, ";
         } else {
           groupSort = " GroupDescription, ";
@@ -46,21 +66,21 @@ function GetSKUAndGroups(searchText, priceList, stock) {
         searchString = " AND Contains(S.Description, '" + searchText + "') ";
     }
 
-    if (doRecommend){
+    if (doRecommend && $.workflow.currentDoc=="Order"){
 
         var recOrderFields = ", CASE WHEN V.Answer IS NULL THEN U.Description ELSE UB.Description END AS RecUnit " +
                              ", CASE WHEN V.Answer IS NULL THEN U.Id ELSE UB.Id END AS UnitId " +
                              ", CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder " +
-                             ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.Qty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder "
+                             ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder ";
 
-        var recOrderStr =  "JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id " +
-                           "LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet " +
-                           "LEFT JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN " +
-                                    " (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS " +
-                                    " JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref    " +
-                                    " WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1) " +
-                           "LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id " +
-                           "LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@assignment)";
+        var recOrderStr =   "JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id " +
+                            "LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet " +
+                            "LEFT JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN " +
+                                     " (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS " +
+                                     " JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref    " +
+                                     " WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1) " +
+                            "LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id " +
+                            "LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@assignment)";
 
         query.AddParameter("outlet", $.workflow.outlet);
         query.AddParameter("assignment", DB.Current.Constant.SKUQuestions.Stock);
@@ -74,8 +94,9 @@ function GetSKUAndGroups(searchText, priceList, stock) {
                              ", 0 AS RecOrder " +
                              ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE 1 END AS OrderRecOrder "
 
-        var recOrderStr =  "LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet " +
-                           "LEFT JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU ";
+        var recOrderStr =  "LEFT JOIN (SELECT SS.Ref, SS.SKU, SS.Qty, SS.Unit, SS.BaseUnitQty FROM Catalog_AssortmentMatrix_SKUs SS " +
+                                     " JOIN _Catalog_AssortmentMatrix_Outlets OO INDEXED BY IND_AMREFOUTLET ON SS.Ref=OO.Ref " +
+                                     " WHERE OO.Outlet=@outlet AND OO.IsTombstone = 0) MS ON S.Id=MS.SKU ";
 
         query.AddParameter("outlet", $.workflow.outlet);
         query.AddParameter("visit", $.workflow.visit);
@@ -84,25 +105,25 @@ function GetSKUAndGroups(searchText, priceList, stock) {
 
     }
 
-    if ($.workflow.order.Stock.EmptyRef()==true){
+    if (stock.EmptyRef()==true){
 
     	if ($.sessionConst.NoStkEnbl) {
             var stockCondition = "";
         } else {
-            var stockCondition = " S.CommonStock > 0 AND ";
+            var stockCondition = " AND S.CommonStock > 0 ";
     	}
 
-	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price, S.CommonStock AS CommonStock, " +
+	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
-	            "FROM Document_PriceList_Prices PL " +
-	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
-	            groupJoin +
+	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
+	            "JOIN _Catalog_SKU S " +
+	            groupJoin + groupWhere +
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
-	            recOrderStr +
-	            " WHERE " + stockCondition + " PL.Ref = @Ref " + searchString + filterString +
+	            recOrderStr + filterString +
+	            " WHERE PL.Ref = @Ref AND PL.IsTombstone = 0 AND S.IsTombstone = 0 " + stockCondition + searchString +
 	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 100";
 
     } else {
@@ -110,21 +131,22 @@ function GetSKUAndGroups(searchText, priceList, stock) {
     	if ($.sessionConst.NoStkEnbl) {
             var stockCondition = "";
         } else {
-            var stockCondition = " SS.StockValue > 0 AND ";
+            var stockCondition = " AND SS.StockValue > 0 ";
     	}
 
-    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM Catalog_SKU_Stocks SS JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price, " +
+    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
+              "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
-	            "FROM Document_PriceList_Prices PL " +
-	            "JOIN Catalog_SKU S ON PL.SKU = S.Id " +
+	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
+	            "JOIN _Catalog_SKU S " +
 	            groupJoin +
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
-	            recOrderStr +
-	            " WHERE PL.Ref = @Ref " + searchString + filterString +
-	            ") INQ ON SS.Ref = INQ.Id WHERE " + stockCondition + " SS.Stock=@stock ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
+	            recOrderStr + filterString +
+	            " WHERE PL.Ref = @Ref AND PL.IsTombstone = 0 AND S.IsTombstone = 0 " + groupWhere + searchString +
+	            ") INQ ON SS.Ref = INQ.Id WHERE SS.Stock=@stock AND SS.IsTombstone = 0 " + stockCondition + " ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
 
     	query.AddParameter("stock", stock);
 
@@ -146,12 +168,12 @@ function GetQuickOrder(control, skuId, itemPrice, packField, editField, textView
                 "SP.Pack AS DefaultUnit, IfNull(O.Qty, 0) AS Qty, U.Description AS Pack, SP.Multiplier AS Multiplier " +
                 "FROM Catalog_SKU S " +
                 "JOIN Catalog_SKU_Packing SP ON S.Id=SP.Ref " +
-                "JOIN Catalog_SKU_Stocks BF ON BF.Ref=S.Id AND BF.LineNumber=1 " +
                 "JOIN Catalog_UnitsOfMeasure U ON SP.Pack=U.Id " +
-                "LEFT JOIN Document_Order_SKUs O ON O.Ref=@order AND O.SKU = S.Id " +
+                "LEFT JOIN Catalog_SKU_Stocks BF ON BF.Ref=S.Id AND BF.LineNumber=1 " +
+                "LEFT JOIN Document_" + $.workflow.currentDoc + "_SKUs O ON O.Ref=@order AND O.SKU = S.Id " +
                     "AND O.Feature=BF.Feature AND O.Units=SP.Pack " +
                 "WHERE S.Id=@sku AND SP.Pack=@pack"
-        query.AddParameter("order", $.workflow.order);
+        query.AddParameter("order", ($.workflow.currentDoc == "Order" ? $.workflow.order : $.workflow.Return));
         query.AddParameter("sku", skuId);
         if (recUnit==null){
             var q = new Query("SELECT Pack FROM Catalog_SKU_Packing WHERE Ref=@ref AND LineNumber=1");
@@ -174,7 +196,7 @@ function GetQuickOrder(control, skuId, itemPrice, packField, editField, textView
         }
 
         Variables[packField].Text = packDescription;
-        Variables[textViewField].Text = quickOrderItem.Qty + " " + packDescription + " " + Translate["#alreadyOrdered#"];
+        Variables[textViewField].Text = quickOrderItem.Qty + " " + packDescription + " " + alreadyOrdered;
         multiplier = quickOrderItem.Multiplier;
 
     }
@@ -197,8 +219,11 @@ function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, 
     if (String.IsNullOrEmpty(Variables[editFieldName].Text) == false) {
         if (Converter.ToDecimal(Variables[editFieldName].Text) != Converter.ToDecimal(0)) {
 
-            var p = DB.Create("Document.Order_SKUs");
-            p.Ref = $.workflow.order;
+            var p = DB.Create("Document." + $.workflow.currentDoc + "_SKUs");
+            if ($.workflow.currentDoc=="Order")
+                p.Ref = $.workflow.order;
+            else
+                p.Ref = $.workflow.Return;
             p.SKU = sku;
             p.Feature = defFeature;
             p.Price = price;
@@ -209,9 +234,9 @@ function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, 
             p.Discount = 0;
             p.Save();
 
-            FindTwinAndUnite(p);
+            Global.FindTwinAndUnite(p);
 
-            var query = new Query("SELECT Qty FROM Document_Order_SKUs WHERE Ref=@ref AND SKU=@sku AND Feature=@feature AND Units=@units");
+            var query = new Query("SELECT Qty FROM Document_" + $.workflow.currentDoc + "_SKUs WHERE Ref=@ref AND SKU=@sku AND Feature=@feature AND Units=@units");
             query.AddParameter("ref", p.Ref);
             query.AddParameter("sku", p.SKU);
             query.AddParameter("feature", p.Feature);
@@ -219,13 +244,13 @@ function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, 
             var qty = query.ExecuteScalar();
 
             Variables[editFieldName].Text = 0;
-            Variables[textFieldName].Text = qty + " " + packDescription + " " + Translate["#alreadyOrdered#"];
+            Variables[textFieldName].Text = qty + " " + packDescription + " " + alreadyOrdered;
         }
     }
 }
 
 function EmptyStockAllowed() {
-    var q = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NoStkEnbl'");
+    var q = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Code='EmptyStockEnabled'");
     var res = q.ExecuteScalar();
 
     if (res == null)
@@ -246,9 +271,9 @@ function GetGroupPath(group, parent, parentDescription) {
     return string;
 }
 
-function AddFilter(filterString, filterName, condition, connector) {
+function AddFilter(filterString, filterName, condition, tableName) {
 
-	var q = new Query("SELECT F.Id FROM USR_Filters F WHERE F.FilterType = @filterName");
+	var q = new Query("SELECT F.Id FROM USR_Filters F INDEXED BY IND_FILTERS WHERE F.FilterType = @filterName");
 
 	q.AddParameter("filterName", filterName);
 
@@ -256,7 +281,7 @@ function AddFilter(filterString, filterName, condition, connector) {
 
 	if (res!=null) {
 
-		filterString += connector + condition + " IN(SELECT F.Id FROM USR_Filters F WHERE F.FilterType = '" + filterName + "') ";
+    filterString += String.Format(" JOIN USR_Filters {0} INDEXED BY IND_FILTERS ON {0}.FilterType = '{1}' AND {0}.Id = {2} ", tableName, filterName, condition);
 
 	}
 
@@ -264,16 +289,18 @@ function AddFilter(filterString, filterName, condition, connector) {
 
 }
 
-function OnScroll(sender)
-{
+function OnScroll(sender) {
+
     if($.grScrollView.ScrollIndex > 0 && swipedRow != $.grScrollView.Controls[$.grScrollView.ScrollIndex])
         HideSwiped();
+
 }
 
-function HideSwiped()
-{
+function HideSwiped() {
+
     if(swipedRow != null)
-        swipedRow.Index = 1;
+      swipedRow.Index = 1;
+
 }
 
 function DoGroupping() {
@@ -298,11 +325,8 @@ function DoRecommend() {
         return false;
 }
 
-function ShowRecommendedQty(order, recOrder) {
-    if (order>0)
-        if (recOrder>0)
-            return true;
-    return false;
+function GoBackTo(){
+    Workflow.BackTo($.workflow.currentDoc);
 }
 
 // --------------------------Filters------------------
@@ -330,7 +354,6 @@ function CheckFilterAndForward() {
 
 }
 
-
 function GetLeftFilterStyle(val) {
     if (Variables["filterType"] == val)
         return "mode_left_button_on";
@@ -356,20 +379,20 @@ function GetGroups(priceList, stock, screenContext) {
 
   var filterString = " ";
 
-  filterString += AddFilter(filterString, "brand_filter", "S.Brand", " AND ");
+  filterString = AddFilter(filterString, "brand_filter", "S.Brand", "BF");
 
   if (screenContext=="Order"){
 
     var q = new Query("SELECT DISTINCT SG.Id AS ChildId, USGF.Id AS ChildIsSet, SG.Description As Child, SGP.Id AS ParentId, SGP.Description AS Parent, USPF.Id AS ParentIsSet " +
-        		"FROM Document_PriceList_Prices SP " +
-        		"JOIN Catalog_SKU S On SP.SKU = S.Id " +
-        		"JOIN Catalog_SKUGroup SG ON S.Owner = SG.Id " +
+        		"FROM _Document_PriceList_Prices SP INDEXED BY IND_PLREFSKU " +
+        		"JOIN _Catalog_SKU S INDEXED BY IND_SKUOWNERBRAND ON SP.SKU = S.Id " + filterString +
+        		"JOIN _Catalog_SKUGroup SG INDEXED BY IND_SKUGROUPPARENT ON S.Owner = SG.Id " +
         		"LEFT JOIN USR_Filters USGF ON USGF.Id = SG.Id " +
         		"LEFT JOIN Catalog_SKUGroup SGP ON SG.Parent = SGP.Id " +
         		"LEFT JOIN USR_Filters USPF ON USPF.Id = SGP.Id " +
-        		"WHERE SP.Ref = @priceList " +
-        		"AND CASE WHEN @isStockEmptyRef = 0 THEN SP.SKU IN(SELECT SS.Ref FROM Catalog_SKU_Stocks SS WHERE SS.Stock = @stock AND CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE SS.StockValue > 0 END) ELSE CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE S.CommonStock > 0 END END " +
-        		filterString + " ORDER BY Parent, Child");
+        		"WHERE SP.Ref = @priceList AND SP.IsTombstone = 0 AND S.IsTombstone = 0 AND SG.IsTombstone = 0 " +
+        		"AND CASE WHEN @isStockEmptyRef = 0 THEN SP.SKU IN(SELECT SS.Ref FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK WHERE SS.IsTombstone = 0 AND SS.Stock = @stock AND CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE SS.StockValue > 0 END ORDER BY SS.Ref, SS.Stock, SS.IsTombstone) ELSE CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE S.CommonStock > 0 END END " +
+        		"ORDER BY Parent, Child");
 
     q.AddParameter("priceList", priceList);
     q.AddParameter("stock", stock);
@@ -386,12 +409,12 @@ function GetGroups(priceList, stock, screenContext) {
   if (screenContext=="Questionnaire"){
 
     var q1 = new Query("SELECT DISTINCT G.Id AS ChildId, G.Description AS Child, USGF.Id AS ChildIsSet, GP.Id AS ParentId, GP.Description AS Parent, USPF.Id AS ParentIsSet " +
-        		"FROM Catalog_SKU S " +
-        		"JOIN Catalog_SKUGroup G ON S.Owner = G.Id " +
+        		"FROM _Catalog_SKU S INDEXED BY IND_SKUOWNERBRAND" + filterString +
+        		"JOIN _Catalog_SKUGroup G INDEXED BY IND_SKUGROUPPARENT ON S.Owner = G.Id " +
         		"LEFT JOIN USR_Filters USGF ON USGF.Id = G.Id " +
         		"LEFT JOIN Catalog_SKUGroup GP ON G.Parent = GP.Id " +
         		"LEFT JOIN USR_Filters USPF ON USPF.Id = GP.Id " +
-        		"WHERE S.ID IN (SELECT DISTINCT SKU FROM USR_SKUQuestions) " + filterString + " ORDER BY Parent, Child");
+        		"WHERE S.IsTombstone = 0 AND G.IsTombstone = 0 AND S.Id IN (SELECT DISTINCT SKU FROM USR_SKUQuestions) ORDER BY Parent, Child");
 
     return q1.Execute();
 
@@ -539,23 +562,22 @@ function GetChildren(parent) {
     return q.Execute();
 }
 
-
 function GetBrands(priceList, stock, screenContext) {
 
   var filterString = " ";
 
-	filterString += AddFilter(filterString, "group_filter", "S.Owner", " AND ");
+	filterString = AddFilter(filterString, "group_filter", "S.Owner", "OF");
 
   if (screenContext=="Order"){
 
   	var q = new Query("SELECT DISTINCT SB.Id, SB.Description, USBF.Id AS BrandIsSet  " +
-      		"FROM Document_PriceList_Prices SP " +
-      		"JOIN Catalog_SKU S ON SP.SKU = S.Id " +
+      		"FROM _Document_PriceList_Prices SP INDEXED BY IND_PLREFSKU " +
+      		"JOIN _Catalog_SKU S INDEXED BY IND_SKUOWNERBRAND ON SP.SKU = S.Id " + filterString +
       		"JOIN Catalog_Brands SB ON S.Brand = SB.Id " +
       		"LEFT JOIN USR_Filters USBF ON USBF.Id = SB.Id " +
-      		"WHERE SP.Ref = @priceList " +
-      		"AND CASE WHEN @isStockEmptyRef = 0 THEN SP.SKU IN(SELECT SS.Ref FROM Catalog_SKU_Stocks SS WHERE SS.Stock = @stock AND CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE SS.StockValue > 0 END) ELSE CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE S.CommonStock > 0 END END " +
-      		filterString + " ORDER BY SB.Description");
+      		"WHERE SP.Ref = @priceList AND SP.IsTombstone = 0 AND S.IsTombstone = 0 " +
+      		"AND CASE WHEN @isStockEmptyRef = 0 THEN SP.SKU IN(SELECT SS.Ref FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK WHERE SS.IsTombstone = 0 AND SS.Stock = @stock AND CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE SS.StockValue > 0 END ORDER BY SS.Ref, SS.Stock, SS.IsTombstone) ELSE CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE S.CommonStock > 0 END END " +
+      		"ORDER BY SB.Description");
 
   	q.AddParameter("priceList", priceList);
     q.AddParameter("stock", stock);
@@ -572,11 +594,10 @@ function GetBrands(priceList, stock, screenContext) {
   if (screenContext=="Questionnaire"){
 
   	  var q1 = new Query("SELECT DISTINCT B.Id, B.Description, USBF.Id AS BrandIsSet " +
-      		"FROM Catalog_SKU S " +
+      		"FROM _Catalog_SKU S INDEXED BY IND_SKUOWNERBRAND " + filterString +
       		"JOIN Catalog_Brands B ON S.Brand=B.Id " +
-      		"JOIN Catalog_SKUGroup G ON S.Owner=G.Id " +
       		"LEFT JOIN USR_Filters USBF ON USBF.Id = B.Id " +
-      		"WHERE S.ID IN (SELECT DISTINCT SKU FROM USR_SKUQuestions) " + filterString + " ORDER BY B.Description");
+      		"WHERE S.IsTombstone = 0 AND S.Id IN (SELECT DISTINCT SKU FROM USR_SKUQuestions) ORDER BY B.Description");
 
       return q1.Execute();
 
@@ -605,25 +626,4 @@ function CreateCondition(list, field) {
     }
 
     return str;
-}
-
-function FindTwinAndUnite(orderitem) { // DELETE AFTER WARMUP FIXED
-	var q = new Query(
-			"SELECT Id FROM Document_Order_SKUs WHERE Ref=@ref AND SKU=@sku AND Discount=@discount AND Units=@units AND Feature=@feature AND Id<>@id LIMIT 1"); // AND
-																																								// Id<>@id
-	q.AddParameter("ref", orderitem.Ref);
-	q.AddParameter("sku", orderitem.SKU);
-	q.AddParameter("discount", orderitem.Discount);
-	q.AddParameter("units", orderitem.Units);
-	q.AddParameter("feature", orderitem.Feature);
-	q.AddParameter("id", orderitem.Id);
-	var rst = q.ExecuteCount();
-	if (parseInt(rst) != parseInt(0)) {
-		var twin = q.ExecuteScalar();
-		twin = twin.GetObject();
-		twin.Qty += orderitem.Qty;
-		twin.Save();
-		DB.Delete(orderitem.Id);
-	} else
-		orderitem.Save();
 }

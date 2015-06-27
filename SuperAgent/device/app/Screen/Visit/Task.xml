@@ -27,7 +27,7 @@
 			
 			<c:HorizontalLayout CssClass="half_grid">
 				<c:TextView Text="#turnaroundTime#" />
-				<s:Push Id="date" Value="$GetDate($task.PlanDate, $task)"></s:Push>
+				<s:Push Id="date" Value="$FormatDate($task.PlanDate)"></s:Push>
 				<c:TextView Text="$date" CssClass="hlf_value" />
 			</c:HorizontalLayout>
 			<c:HorizontalLine />

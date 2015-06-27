@@ -1,58 +1,32 @@
 ﻿// ------------------------ Application -------------------
 
 function OnApplicationInit() {
-	SetSessionConstants();
+	Global.SetSessionConstants();
 	Indicators.SetIndicators();
 }
 
 // ------------------------ Events ------------------------
 
-function OnLoad(screenName) {
-	if (screenName == "Outlet_Map.xml") {
-		var outlet = Variables["outlet"];
-		Variables["map"].AddMarker(outlet.Description, outlet.Lattitude,
-				outlet.Longitude, "red");
-	} else if (screenName == "ScheduledVisits_Map.xml") {
-		PrepareScheduledVisits_Map();
-	}
-}
-
 function OnWorkflowStart(name) {
 	if ($.Exists("workflow"))
 		$.Remove("workflow");
 	Variables.AddGlobal("workflow", new Dictionary());
-	if (name == "Visits" || name == "Outlets" || name=="CreateOrder") {
+	if (name == "Visits" || name == "Outlets" || name=="Order" || name=="Return") {
 		GPS.StartTracking();
 	}
 
 	if (name == "Visit") {
 
-//			var questionnaires = GetQuestionnairesForOutlet($.outlet);
-//			$.workflow.Add("questionnaires", questionnaires);
-
 			CreateQuestionnareTable($.outlet);
 			CreateQuestionsTable($.outlet);
 			CreateSKUQuestionsTable($.outlet);
 
-			if (parseInt(GetTasksCount()) != parseInt(0))
-				$.workflow.Add("skipTasks", false); // нельзя просто взять и присвоить значение переменной!
-			else
-				$.workflow.Add("skipTasks", true);
-
-			if (parseInt(GetQuestionsCount()) != parseInt(0))
-				$.workflow.Add("skipQuestions", false);
-			else
-				$.workflow.Add("skipQuestions", true);
-
-			if (parseInt(GetSKUQuestionsCount()) != parseInt(0))
-				$.workflow.Add("skipSKUs", false);
-			else
-				$.workflow.Add("skipSKUs", true);
+			SetSteps($.outlet);
 	}
 
 	Variables["workflow"].Add("name", name);
 
-	if (name=="Visit" || name=="CreateOrder"){
+	if (name=="Visit" || name=="CreateOrder" || name=="CreateReturn"){
 
 		var checkDropF = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_Filters'");
 
@@ -70,6 +44,10 @@ function OnWorkflowStart(name) {
 
 			createTable.Execute();
 
+			var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_FILTERS ON USR_Filters(FilterType)");
+
+			indexQuery.Execute();
+
 		}
 
 	}
@@ -77,62 +55,37 @@ function OnWorkflowStart(name) {
 }
 
 function OnWorkflowForward(name, lastStep, nextStep, parameters) {
-//	if (lastStep == "Order" && nextStep == "EditSKU" && Variables.Exists("AlreadyAdded") == false) {
-//		Variables.AddGlobal("AlreadyAdded", true);
-//	}
 }
 
 function OnWorkflowForwarding(workflowName, lastStep, nextStep, parameters) {
 
-	if (workflowName == "Visit") {
+	if (workflowName == "Visit" && nextStep != "Outlet" && nextStep != "Total") {
 
-		if (nextStep == "Visit_Tasks") {
-			if ($.workflow.skipTasks) {
-				if ($.workflow.skipQuestions) {
-					if ($.workflow.skipSKUs) {
-						Workflow.Action("Skip3", [ outlet ]);
-						return false;
-					}
-					Workflow.Action("Skip2", []);
-					return false;
-				}
-				Workflow.Action("Skip1", []);
-				return false;
-			}
+		var action;
+		action = GetAction(nextStep);
+
+		if (action != null) {
+			Workflow.Action(action, []);
+			return false;
 		}
 
-		if (nextStep == "Questions") {
-			if ($.workflow.skipQuestions) {
-				if ($.workflow.skipSKUs) {
-					Workflow.Action("Skip3", [ outlet ]);
-					return false;
-				}
-				Workflow.Action("Skip2", []);
-				return false;
-			} else
-				Workflow.Action("Skip1", []);
-		}
-
-		if (nextStep == "SKUs") {
-			if ($.workflow.skipSKUs) {
-				Workflow.Action("Skip3", [ outlet ]);
-				return false;
-			} else
-				Workflow.Action("Skip2", []);
-		}
 	}
 
-	return true;
+	if (NextDoc(lastStep, nextStep))
+		Global.ClearFilter();
 
+	WriteScreenName(nextStep);
+
+	return true;
 }
 
-//function OnWorkflowBack(name, lastStep, nextStep) {}
+// function OnWorkflowBack(name, lastStep, nextStep) {}
 
 function OnWorkflowFinish(name, reason) {
 	$.Remove("finishedWorkflow");
 	$.AddGlobal("finishedWorkflow", name);
 
-	if (name == "Visit" || name == "CreateOrder" || name=="Outlets") {
+	if (name == "Visit" || name == "CreateOrder" || name=="Outlets" || name=="CreateReturn") {
 		Variables.Remove("outlet");
 
 		if (Variables.Exists("planVisit"))
@@ -147,20 +100,19 @@ function OnWorkflowFinish(name, reason) {
 
 	Variables.Remove("workflow");
 
-	if (name=="Visit" || name=="CreateOrder"){
+	if (name=="Visit" || name=="CreateOrder" || name=="CreateReturn"){
+		Global.ClearFilter();
+	}
+}
 
-		var checkDropF = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_Filters'");
+function OnWorkflowBack(workflow, lastStep, nextStep){
+	WriteScreenName(nextStep);
+	if (NextDoc(lastStep, nextStep))
+		Global.ClearFilter();
 
-		var checkDropFResult = checkDropF.ExecuteScalar();
-
-		if (checkDropFResult == 1) {
-
-			var dropF = new Query("DELETE FROM USR_Filters");
-
-			dropF.Execute();
-
-		}
-
+	if (lastStep=="Image" && nextStep=="EditSKU"){  //Diarty hack, if remove, will be created new orderItem
+		// Dialog.Debug($.entity);
+		$.AddGlobal("orderitemAlt", $.entity);
 	}
 }
 
@@ -170,46 +122,100 @@ function OnWorkflowPause(name) {
 
 // ------------------------ Functions ------------------------
 
-function SetSessionConstants() {
-	var planEnbl = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='PlanEnbl'");
-	var multStck = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='MultStck'");
-	var stckEnbl = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NoStkEnbl'");
-	var orderCalc = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='OrderCalc'");
-	var UVR = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='UVR'");
-	var NOR = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NOR'");
+function NextDoc(lastStep, nextStep){
+	next = false;
 
-	$.AddGlobal("sessionConst", new Dictionary());
-	$.sessionConst.Add("PlanEnbl", EvaluateBoolean(planEnbl.ExecuteScalar()));
-	$.sessionConst.Add("MultStck", EvaluateBoolean(multStck.ExecuteScalar()));
-	$.sessionConst.Add("NoStkEnbl", EvaluateBoolean(stckEnbl.ExecuteScalar()));
-	$.sessionConst.Add("OrderCalc", EvaluateBoolean(orderCalc.ExecuteScalar()));
-	$.sessionConst.Add("UVR", EvaluateBoolean(UVR.ExecuteScalar()));
-	$.sessionConst.Add("NOR", EvaluateBoolean(NOR.ExecuteScalar()));
+	if ((lastStep=="SKUs" && nextStep=="Order") || (nextStep=="SKUs" && lastStep=="Order"))
+		next = true;
+	if ((lastStep=="Order" && nextStep=="Return") || (nextStep=="Order" && lastStep=="Return"))
+		next = true;
 
-	var q = new Query("SELECT U.AccessRight, A.Id, A.Code FROM Catalog_MobileAppAccessRights A " +
-			" LEFT JOIN Catalog_User_UserRights U ON U.AccessRight=A.Id ");
-	var rights = q.Execute();
-	while (rights.Next()) {
-		if (rights.Code=='000000002'){
-			if (rights.AccessRight==null)
-				$.sessionConst.Add("editOutletParameters", false);
-			else
-				$.sessionConst.Add("editOutletParameters", true);
-		}
-		if (rights.Code=='000000003'){
-			if (rights.AccessRight==null)
-				$.sessionConst.Add("galleryChoose", false);
-			else
-				$.sessionConst.Add("galleryChoose", true);
-		}
-		if (rights.Code=='000000004'){
-			if (rights.AccessRight==null)
-				$.sessionConst.Add("encashEnabled", false);
-			else
-				$.sessionConst.Add("encashEnabled", true);
-		}
+	return next;
+}
+
+function WriteScreenName(stepName){
+	if (stepName=="Order" || stepName=="Return" || stepName=="SKUs"){
+		if ($.workflow.HasValue("currentDoc"))
+			$.workflow.Remove("currentDoc");
+		$.workflow.Add("currentDoc", stepName);
 	}
 
+	if (stepName=="OrderList" || stepName=="ReturnList"){
+		if ($.workflow.HasValue("step"))
+			$.workflow.Remove("step");
+		$.workflow.Add("step", stepName);
+	}
+}
+
+function SetSteps(outlet) {
+
+	var q = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_WorkflowSteps'");
+	var check = q.ExecuteScalar();
+
+	if (parseInt(check) == parseInt(1)) {
+		var dropQS = new Query("DELETE FROM USR_WorkflowSteps");
+		dropQS.Execute();
+	} else {
+		var q = new Query("CREATE TABLE " + " USR_WorkflowSteps (StepOrder, Skip, Value, NextStep, LastStep)");
+		q.Execute();
+	}
+
+	var skipQuest = false;
+
+	var q = new Query("SELECT CreateOrderInMA, FillQuestionnaireInMA, DoEncashmentInMA, CreateReturnInMA FROM Catalog_OutletsStatusesSettings WHERE Status=@status");
+	q.AddParameter("status", outlet.OutletStatus);
+	var statusValues = q.Execute();
+	while (statusValues.Next()) {
+		if (EvaluateBoolean(statusValues.CreateOrderInMA) && $.sessionConst.orderEnabled)
+			InsertIntoSteps("4", "SkipOrder", false, "Order", "SKUs");
+		else
+			InsertIntoSteps("4", "SkipOrder", true, "Order", "SKUs");
+		if (EvaluateBoolean(statusValues.CreateReturnInMA) && $.sessionConst.returnEnabled) {
+			InsertIntoSteps("5", "SkipReturn", false, "Return", "Order");
+		}
+		else
+			InsertIntoSteps("5", "SkipReturn", true, "Return", "Order");
+		if (EvaluateBoolean(statusValues.DoEncashmentInMA) && $.sessionConst.encashEnabled)
+			InsertIntoSteps("6", "SkipEncashment", false, "Receivables", "Return");
+		else
+			InsertIntoSteps("6", "SkipEncashment", true, "Receivables", "Return");
+		if (EvaluateBoolean(statusValues.FillQuestionnaireInMA))
+			skipQuest = false;
+		else
+			skipQuest = true;
+	}
+
+	if (parseInt(GetTasksCount()) != parseInt(0))
+		InsertIntoSteps("1", "SkipTask", false, "Visit_Tasks", "Outlet");
+	else
+		InsertIntoSteps("1", "SkipTask", true, "Visit_Tasks", "Outlet");
+
+	if (parseInt(GetQuestionsCount()) == parseInt(0) || skipQuest)
+		InsertIntoSteps("2", "SkipQuestions", true, "Questions", "Visit_Tasks");
+	else
+		InsertIntoSteps("2", "SkipQuestions", false, "Questions", "Visit_Tasks");
+
+	if (parseInt(GetSKUQuestionsCount()) == parseInt(0) || skipQuest)
+		InsertIntoSteps("3", "SkipSKUs", true, "SKUs", "Questions");
+	else
+		InsertIntoSteps("3", "SkipSKUs", false, "SKUs", "Questions");
+
+}
+
+function InsertIntoSteps(stepOrder, skip, value, action, previousStep) {
+	var q = new Query("INSERT INTO USR_WorkflowSteps VALUES (@stepOrder, @skip, @value, @action, @previousStep)");
+	q.AddParameter("stepOrder", stepOrder);
+	q.AddParameter("skip", skip);
+	q.AddParameter("value", value);
+	q.AddParameter("action", action);
+	q.AddParameter("previousStep", previousStep);
+	q.Execute();
+}
+
+function GetAction(nextStep) {
+	var q = new Query("SELECT Skip FROM USR_WorkflowSteps WHERE NextStep=@nextStep AND Value=1 ORDER BY StepOrder LIMIT 1");
+	q.AddParameter("nextStep", nextStep);
+	return q.ExecuteScalar();
 }
 
 function EvaluateBoolean(res){
@@ -245,7 +251,7 @@ function PrepareScheduledVisits_Map() {
 }
 
 function GetTasksCount() {
-	var taskQuery = new Query("SELECT COUNT(Id) FROM Document_Task WHERE PlanDate >= date('now','start of day') AND Outlet=@outlet");
+	var taskQuery = new Query("SELECT COUNT(Id) FROM Document_Task WHERE PlanDate >= date('now','start of day', 'localtime') AND Outlet=@outlet");
 	taskQuery.AddParameter("outlet", $.outlet);
 	return taskQuery.ExecuteScalar();
 }
@@ -416,7 +422,7 @@ function CreateQuestionsTable(outlet) {
 	var tableCommand = Global.CreateUserTableIfNotExists("USR_Questions");
 
 	var query = new Query(tableCommand +
-			"SELECT MIN(D.Date) AS DocDate, Q.ChildQuestion AS Question, Q.ChildDescription AS Description" +
+			"SELECT D.Date AS DocDate, Q.ChildQuestion AS Question, Q.ChildDescription AS Description" +
 			", Q.ParentQuestion AS ParentQuestion, Q.ChildType AS AnswerType " +
 			", A.Answer AS Answer " +
 			", A.Answer AS HistoryAnswer, MAX(A.AnswerDate) AS AnswerDate, D.Single AS Single " +
@@ -451,7 +457,7 @@ function CreateSKUQuestionsTable(outlet) {
 	var tableCommand = Global.CreateUserTableIfNotExists("USR_SKUQuestions");
 
 	var query = new Query(tableCommand +
-			"SELECT MIN(D.Date) AS DocDate, S.SKU AS SKU, S.Description AS SKUDescription, Q.ChildQuestion AS Question, Q.ChildDescription AS Description" +
+			"SELECT D.Date AS DocDate, S.SKU AS SKU, S.Description AS SKUDescription, Q.ChildQuestion AS Question, Q.ChildDescription AS Description" +
 			", Q.ParentQuestion AS ParentQuestion, Q.ChildType AS AnswerType" +
 			", A.Answer AS Answer " +
 			", A.Answer AS HistoryAnswer, MAX(A.AnswerDate) AS AnswerDate, D.Single AS Single " +

@@ -124,6 +124,10 @@ svl vl {
 	background-image: url(Menu_03.png);
 }
 
+.btn_returns {
+	background-image: url(Menu_11.png);
+}
+
 .btn_clients {
 	background-image: url(Menu_04.png);
 }

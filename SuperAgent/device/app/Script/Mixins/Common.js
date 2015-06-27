@@ -116,9 +116,8 @@ function EmptyRef(ref) {
     return ref.EmptyRef();
 }
 
-function IsEmptyValue(value) {		
-	//Dialog.Debug(value);
-	
+function IsEmptyValue(value) {
+
 	if (String.IsNullOrEmpty(value))
 		return true;
 	else{
@@ -129,8 +128,8 @@ function IsEmptyValue(value) {
 	            return true;
 	        else
 	            return false;
-		}			
-	}	
+		}
+	}
 }
 
 function NotEmptyRef(ref) {

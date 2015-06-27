@@ -91,15 +91,46 @@
 							<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
 						</s:Else>
 					</s:If>
-					<c:VerticalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
-						<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
-						<s:If Test="$question.IsInputField=='1'">
-							<c:MemoEdit Id="control{$index}" Text="$question.Answer" Placeholder="—" OnChange="$AssignAnswer($question.Question)" OnLostFocus="$Workflow.DoRefresh()" Keyboard="$question.KeyboardType" CssClass="answer_main_row"></c:MemoEdit>
-						</s:If>
-						<s:Else>
-							<c:TextView Id="control{$index}" Text="$question.AnswerOutput" CssClass="answer_main_row"></c:TextView>
-						</s:Else>
-					</c:VerticalLayout>
+					<s:Else>
+						<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+					</s:Else>
+					<s:If Test="$question.IsSnapshot==1">
+						<c:HorizontalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
+							<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
+							<s:If Test="$IsNullOrEmpty($question.Answer)">
+								<c:VerticalLayout>
+									<c:VerticalLayout CssClass="no_answer">
+										<c:Image Id="control{$index}" />
+									</c:VerticalLayout>
+								</c:VerticalLayout>
+							</s:If>
+							<s:Else>
+								<s:If Test="$SnapshotExists($visit, $outlet, $question.Answer)">
+									<c:VerticalLayout>
+										<c:Image Id="control{$index}" CssClass="answer_snapshot" Source="$GetImagePath($visit.Id, $outlet.Id, $question.Answer)"></c:Image>
+									</c:VerticalLayout>
+								</s:If>
+								<s:Else>
+									<c:VerticalLayout>
+										<c:VerticalLayout CssClass="no_image">
+											<c:Image Id="control{$index}" />
+										</c:VerticalLayout>
+									</c:VerticalLayout>
+								</s:Else>
+							</s:Else>
+						</c:HorizontalLayout>
+					</s:If>
+					<s:Else>
+						<c:VerticalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
+							<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
+							<s:If Test="$question.IsInputField=='1'">
+								<c:MemoEdit Id="control{$index}" Text="$question.Answer" Placeholder="—" OnChange="$AssignAnswer($question.Question)" OnLostFocus="$Workflow.DoRefresh()" Keyboard="$question.KeyboardType" CssClass="answer_main_row"></c:MemoEdit>
+							</s:If>
+							<s:Else>
+								<c:TextView Id="control{$index}" Text="$question.AnswerOutput" CssClass="answer_main_row"></c:TextView>
+							</s:Else>
+						</c:VerticalLayout>
+					</s:Else>
 				</c:DockLayout>
 				<c:HorizontalLine />
 

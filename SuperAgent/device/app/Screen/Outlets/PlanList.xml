@@ -32,7 +32,7 @@
 
 				<c:DockLayout CssClass="parameter_grid" OnClickAction="$CreatePlan($outlet, $plan.Id, $plan.PlanDate)">
 					<c:TextView Text="#visitdate#"></c:TextView>
-					<c:TextView Text="$plan.PlanDate" CssClass="value"></c:TextView>
+					<c:TextView Text="$FormatDate($plan.PlanDate)" CssClass="value"></c:TextView>
 				</c:DockLayout>
 				<c:HorizontalLine />
 

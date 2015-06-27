@@ -1,52 +1,104 @@
 
 .caption_grid{
-	padding-left: 5%;
+	padding-left: 2.7mm;
 }
 
 .main_row {
-	height: 2.15sp auto;
+	height: 2.1mm auto;
 	width: 100%;
-	padding-top: 1sp;
+	padding-top: 1.7mm;
 	margin-top: 0%;
-	padding-left: 5%;
-	padding-right: 7%;	
+	padding-left: 2.7mm;
+	padding-right: 2.7mm;	
 	white-space: normal;
 	font: 100% Arial;
 	color: #000000;
 }
 
 .description_row {
-	height: 2.15sp auto;
+	height: 2.1mm auto;
 	width: 100%;
-	padding-top: 1sp;
+	padding-top: 1.7mm;
 	margin-top: 0%;
-	padding-left: 5%;
-	padding-right: 7%;	
+	padding-left: 2.7mm;
+	padding-right: 2.7mm;	
 	white-space: normal;
 	color: #8e8e93;
 	font: 100% Arial;
 }
 
 .image_block{
-	height: 11% auto;
+	height: 6.7mm auto;
 	width: 100%;
-	padding-left: 5%;
-	padding-top: 11%;
-	padding-bottom: 11%;
+	padding-left: 2.7mm;
 	background-color: none;
 }
 
 .image_block super_agent{
 	background-image: url(logo_superagent.png);
-	height: 8sp;
+	height: 6.7mm;
 }
 
 .image_block firstBIT{
 	background-image: url(logo_firstbit.png);
-	height: 8sp;
+	height: 6.7mm;
+}
+
+.extra_padding{
+	width: 100%;
+	height: 6.7mm auto;
+	padding-top: 1.7mm;
+	padding-bottom: 1.7mm;
+	background-color: none;
+}
+
+.parameter_grid {
+	height: 8.4mm;
+	background-color: #ffffff;
 }
 
 .parameter_grid TextView {
-	width: 74%;
+	width: 100%;
 	color: #000000;
+/*	background-color: #ccaa55;*/
+	font: 30% arial;
+}
+
+.add_button{
+	width: 18mm;
+	height: 4.1mm;
+	vertical-align: central;
+	dock-align: right;
+	margin-top: 25%;
+	margin-right: -24.7mm;
+	border-style : solid;
+	border-width: 1px;
+	border-color: #43acfd;
+	border-radius: 5px;
+	color: #2d89cf;
+	text-align: center;
+	font: 52% arial;
+}
+
+.sync Indicator {
+	height: 4mm;
+	color: #2d89cf;
+	vertical-align: central;
+}
+
+.sync{
+	height: 100%;
+	width: 21.7mm;
+	dock-align: right;
+	margin-right: 2.7mm;
+}
+
+.sync TextView{
+	width: 100%;
+	height: 100%;
+	margin-top: 10%;
+	margin-left: 2mm;
+	font: 30% Arial-ItalicMT;
+	color: #2d89cf;
+	/*background-color: #ddff66;*/
 }

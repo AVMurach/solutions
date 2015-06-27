@@ -3,6 +3,7 @@
 
 	<s:Push Id="screenContext" Value="$param1"></s:Push>
 	<s:Push Id="screenFilter" Value="$SetFilter()"></s:Push>
+	<s:Push Id="thisDoc" Value="$GetCurrentDoc()"></s:Push>
 
 	<c:DockLayout Id="DLayout">
 
@@ -49,7 +50,7 @@
 
 			<s:If Test="$filterType=='group'">
 
-				<s:Push Id="groupsHierarchy" Value="$GetGroups($workflow.order.PriceList,$workflow.order.Stock,$screenContext)"></s:Push>
+				<s:Push Id="groupsHierarchy" Value="$GetGroups($thisDoc.PriceList,$thisDoc.Stock,$screenContext)"></s:Push>
 				<s:Push Id="currentGroup" Value=""></s:Push>
 				<s:Iterator Id="group" Value="$groupsHierarchy">
 
@@ -88,7 +89,7 @@
 
 
 			<s:Else>
-				<s:Push Id="brands" Value="$GetBrands($workflow.order.PriceList,$workflow.order.Stock,$screenContext)"></s:Push>
+				<s:Push Id="brands" Value="$GetBrands($thisDoc.PriceList,$thisDoc.Stock,$screenContext)"></s:Push>
 				<s:Iterator Id="brand" Value="$brands">
 
 					<c:HorizontalLayout CssClass="parameter_grid" OnClickAction="$AddFilterAndRefresh($brand.Id, brand_filter)">

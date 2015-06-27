@@ -73,7 +73,7 @@ function SelectOwnership(control) {
 // --------------------internal--------------
 
 function EmptyContact(contact) {
-	if (String.IsNullOrEmpty(contact.ContactName) && String.IsNullOrEmpty(contact.PhoneNumber) && String.IsNullOrEmpty(contact.Email) && String.IsNullOrEmpty(contact.Position))
+	if (String.IsNullOrWhiteSpace(contact.ContactName) && String.IsNullOrEmpty(contact.PhoneNumber) && String.IsNullOrEmpty(contact.Email) && String.IsNullOrEmpty(contact.Position))
 		return true;
 	else
 		return false;
@@ -117,9 +117,10 @@ function ValidEntity(entity) {
 			return true;
 		}
 		if (Global.ValidatePhoneNr(entity.PhoneNumber) && Global.ValidateEmail(entity.Email) && ValidateContactName(entity))
-			return true;
+			result = true;
 		else
-			return false;
+			result = false;
+		return result;
 	}
 
 	// Validate Details
@@ -128,11 +129,12 @@ function ValidEntity(entity) {
 }
 
 function ValidateContactName(entity) {
-	if (String.IsNullOrEmpty(entity.ContactName)) {
+	if (String.IsNullOrWhiteSpace(entity.ContactName)) {
 		Dialog.Message(String.Format("{0} {1}", Translate["#incorrect#"], Translate["#contactName#"]));
 		return false;
-	} else
+	} else {
 		return true;
+	}
 }
 
 function ValidateOutlet(entity) {
@@ -158,4 +160,8 @@ function CreateOwnershipDictionary() {
 	d.Add("OP", "ОП");
 	d.Add("TSJ", "ТСЖ");
 	return d;
+}
+
+function FormatDate(datetime) {
+	return Format("{0:g}", Date(datetime));
 }

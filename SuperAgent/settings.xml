@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<resource>
+		<version version="402.6.0.184"></version>
+	</resource>
+	<client>
+		<supportedCore version="2.4.0.126" />
+	</client>
+	<server>
+    <filterShared value="yes" />
+  </server>
+</configuration>

@@ -44,7 +44,7 @@
 					<c:DockLayout CssClass="grid" OnClickAction="$DoAction(Select, $task.Id, null, $task.Target)">
 						<c:Image />
 						<c:VerticalLayout>
-							<c:TextView Text="$task.PlanDate" CssClass="description_row"></c:TextView>
+							<c:TextView Text="$FormatDate($task.PlanDate)" CssClass="description_row"></c:TextView>
 							<c:TextView Text="$task.TextTask" CssClass="main_row"></c:TextView>
 						</c:VerticalLayout>						
 					</c:DockLayout>
@@ -66,7 +66,7 @@
 					<c:DockLayout CssClass="grid" OnClickAction="$DoAction(Select, $eTask.Id.TaskRef ,$eTask.Id, $eTask.Target)">
 						<c:Image />
 						<c:VerticalLayout>
-							<c:TextView Text="$eTask.PlanDate" CssClass="description_row"></c:TextView>
+							<c:TextView Text="$FormatDate($eTask.PlanDate)" CssClass="description_row"></c:TextView>
 							<c:TextView Text="$eTask.TextTask" CssClass="main_row"></c:TextView>
 						</c:VerticalLayout>						
 					</c:DockLayout>

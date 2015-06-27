@@ -102,6 +102,9 @@
 							<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
 						</s:Else>
 					</s:If>
+					<s:Else>
+						<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+					</s:Else>
 					<c:DockLayout>
 						<s:If Test="$sku.BaseUnitQty != NULL">
 							<c:TextView Text="#recommended#" CssClass="single_rec"/>
@@ -117,23 +120,54 @@
 					<s:Iterator Id="child" Value="$childs" Status="statusCountCh">
 						<s:Push Id="indexCh" Value="{$statusCountCh.Index}"></s:Push>
 						<c:DockLayout CssClass="child_grid">
-							<s:If Test="$ObligatedAnswered($child.Answer, $child.Obligatoriness)">
-								<c:HorizontalLayout CssClass="answered_side_gr"></c:HorizontalLayout>
-							</s:If>
-							<s:Else>
-								<s:If Test="$child.Obligatoriness">
+							<s:If Test="$child.Obligatoriness=='1'">
+								<s:If Test="$IsNullOrEmpty($child.Answer)">
 									<c:HorizontalLayout CssClass="required_side_gr"></c:HorizontalLayout>
 								</s:If>
-							</s:Else>
-							<c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)">
-								<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
-								<s:If Test="$child.IsInputField==1">
-									<c:EditText Id="control{$indexCh}" Text="$child.Answer" Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)" OnLostFocus="$RefreshScreen($search)" Keyboard="$child.KeyboardType" CssClass="answer_main_row"></c:EditText>
-								</s:If>
 								<s:Else>
-									<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput" CssClass="answer_main_row"></c:TextView>
+									<c:HorizontalLayout CssClass="answered_side_gr"></c:HorizontalLayout>
 								</s:Else>
-							</c:VerticalLayout>
+							</s:If>
+							<s:Else>
+								<c:HorizontalLayout CssClass="empty_side_gr"></c:HorizontalLayout>
+							</s:Else>
+							<s:If Test="$child.IsSnapshot==1">
+								<c:HorizontalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.Answer, $child.Description)">
+									<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
+									<s:If Test="$IsNullOrEmpty($child.Answer)">
+										<c:VerticalLayout>
+											<c:VerticalLayout CssClass="no_child_answer">
+												<c:Image Id="control{$indexCh}" />
+											</c:VerticalLayout>
+										</c:VerticalLayout>
+									</s:If>
+									<s:Else>
+										<s:If Test="$SnapshotExists($visit, $outlet, $child.Answer)">
+											<c:VerticalLayout>
+												<c:Image Id="control{$indexCh}" CssClass="answer_snapshot" Source="$GetImagePath($visit.Id, $outlet, $child.Answer)"></c:Image>
+											</c:VerticalLayout>
+										</s:If>
+										<s:Else>
+											<c:VerticalLayout>
+												<c:VerticalLayout CssClass="no_child_image">
+													<c:Image Id="control{$indexCh}" />
+												</c:VerticalLayout>
+											</c:VerticalLayout>
+										</s:Else>
+									</s:Else>
+								</c:HorizontalLayout>
+							</s:If>
+							<s:Else>
+								<c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.Answer, $child.Description)">
+									<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
+									<s:If Test="$child.IsInputField==1">
+										<c:EditText Id="control{$indexCh}" Text="$child.Answer" Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)" OnLostFocus="$RefreshScreen($search)" Keyboard="$child.KeyboardType" CssClass="child_main_row"></c:EditText>
+									</s:If>
+									<s:Else>
+										<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput" CssClass="child_main_row"></c:TextView>
+									</s:Else>
+								</c:VerticalLayout>
+							</s:Else>
 						</c:DockLayout>
 						<c:HorizontalLine />
 					</s:Iterator>

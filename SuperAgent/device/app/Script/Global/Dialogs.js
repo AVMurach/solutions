@@ -1,4 +1,4 @@
-function DoChoose(listChoice, entity, attribute, control, func, title) {
+function DoChoose(listChoice, entity, attribute, control, func, title) { //optional": func, title; listChice - nullable
 
 	title = typeof title !== 'undefined' ? title : "#select_answer#";
 
@@ -47,7 +47,9 @@ function ChooseBool(entity, attribute, control, func, title) {
 	else
 		var startKey = entity[attribute];
 
-	var listChoice = [[ "—", "—" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	//нужно вернуть этот вариант, после того, как платформа снова будет поддерживать нужную кодировку в диалоге выбора
+	//var listChoice = [[ "—", "—" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
 	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);

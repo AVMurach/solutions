@@ -19,11 +19,31 @@
 			<c:HorizontalLayout CssClass="caption_grid">
 				<c:TextView Text="#about#:" />
 			</c:HorizontalLayout>
-			<c:HorizontalLayout CssClass="image_block">
-				<c:Image CssClass="super_agent"/>
-			</c:HorizontalLayout>
-			<c:TextView	Text="#version#" CssClass="main_row" />
+
+			<c:VerticalLayout CssClass="extra_padding">
+				<c:HorizontalLayout CssClass="image_block">
+					<c:Image CssClass="super_agent"/>
+				</c:HorizontalLayout>
+			</c:VerticalLayout>
+
+			<c:TextView	Text="#version# {$sessionConst.solVersion}" CssClass="main_row" />
 			<c:TextView	Text="#superDescription#" CssClass="description_row" />
+
+			<c:VerticalLayout CssClass="extra_padding">
+				<c:HorizontalLine/>
+					<c:DockLayout CssClass="parameter_grid">
+						
+						<c:HorizontalLayout Id="dataSyncLayout" Visible="false" CssClass="sync">
+							<c:Indicator Id="dataSyncIndicator"/>							
+							<c:TextView Text="#sending#..." />							
+						</c:HorizontalLayout>
+
+						<c:Button Id="sendButton" OnClick="$SendLog()" Text="#send#" CssClass="add_button" />
+						<c:TextView Id="errorReport" Text="#errorMessage#"></c:TextView>
+					</c:DockLayout>
+				<c:HorizontalLine/>
+			</c:VerticalLayout>
+
 			<!-- <c:HorizontalLayout CssClass="end_of_block" />
 			<c:HorizontalLine/>
 			
@@ -47,9 +67,11 @@
 				<c:TextView Text="#developer#:" />
 			</c:HorizontalLayout>
 			
-			<c:HorizontalLayout CssClass="image_block">
-				<c:Image CssClass="firstBIT"/>
-			</c:HorizontalLayout>
+			<c:VerticalLayout CssClass="extra_padding">
+				<c:HorizontalLayout CssClass="image_block">
+					<c:Image CssClass="firstBIT"/>
+				</c:HorizontalLayout>
+			</c:VerticalLayout>
 
 			<c:TextView	Text="#firstBIT#" CssClass="description_row" />
 			<c:HorizontalLayout CssClass="end_of_block" />

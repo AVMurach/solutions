@@ -1,12 +1,19 @@
 ﻿
 var checkOrderReason;
 var checkVisitReason;
+var orderEnabled;
+var returnEnabled;
+var encashmentEnabled;
 
 function OnLoading() {
 	checkOrderReason = false;
 	checkVisitReason = false;
 
-	if ($.sessionConst.NOR && NotEmptyRef($.workflow.visit.Plan) && OrderExists($.workflow.visit)==false)
+	orderEnabled = OptionAvailable("SkipOrder");
+	returnEnabled = OptionAvailable("SkipReturn");
+	encashmentEnabled = OptionAvailable("SkipEncashment") && $.sessionConst.encashEnabled;
+
+	if ($.sessionConst.NOR && NotEmptyRef($.workflow.visit.Plan) && OrderExists($.workflow.visit)==false && orderEnabled)
 		checkOrderReason = true;
 	if ($.sessionConst.UVR && IsEmptyValue($.workflow.visit.Plan))
 		checkVisitReason = true;
@@ -40,17 +47,26 @@ function OrderExists(visit) {
         return true;
 }
 
-function SetDeliveryDate(order, control) {
-    Dialogs.ChooseDateTime(order, "DeliveryDate", control, null, Translate["#deliveryDate#"]);
+function OptionAvailable(option) {
+	var q = new Query("SELECT Value FROM USR_WorkflowSteps WHERE Value=0 AND Skip=@skip");
+	q.AddParameter("skip", option);
+	if (q.ExecuteScalar() == null)
+		return false;
+	else
+		return true;
 }
 
-function FormatDate(value) {
+function SetDeliveryDate(order, control) {
+    Dialogs.ChooseDateTime(order, "DeliveryDate", control, DeliveryDateCallBack, Translate["#deliveryDate#"]);
+}
+
+function FormatDate(value, format) {
 	if (value != null)
 		value = value.ToString();
 	if (String.IsNullOrEmpty(value) || IsEmptyValue(value))
 		return "—";
 	else
-		return value;
+		return Format("{0:" + format + "}", Date(value));
 }
 
 function DoSelect(outlet, attribute, control, title) {
@@ -72,7 +88,7 @@ function SetnextVisitDate(nextVisit, control){
 
 function GetOrderControlValue() {
     //var orderFillCheck = DB.Current.Catalog.MobileApplicationSettings.SelectBy("Code", "NOR").First();
-    var q = new Query("SELECT Use FROM Catalog_MobileApplicationSettings WHERE Code='NOR'");
+    var q = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Code='ControlOrderReasonEnabled'");
     var uvr = q.ExecuteScalar();
 
     if (uvr == null)
@@ -106,6 +122,13 @@ function GetOrderSUM(order) {
     return FormatValue(sum);
 }
 
+function GetReturnSum(returnDoc) {
+	var query = new Query("SELECT SUM(Qty*Total) FROM Document_Return_SKUs WHERE Ref = @Ref");
+	query.AddParameter("Ref", returnDoc);
+	var sum = query.ExecuteScalar();
+	return FormatValue(sum);
+}
+
 function CheckAndCommit(order, visit, wfName) {
 
 	var check = VisitIsChecked(visit, order, wfName);
@@ -134,7 +157,7 @@ function CheckAndCommit(order, visit, wfName) {
 
 function NextDateHandler(state, args){
 
-	var newVistPlan = state[0];
+	var newVistPlan = state[0]; 
 
 	if (newVistPlan.Id==null){
 		newVistPlan = DB.Create("Document.MobileAppPlanVisit");
@@ -148,15 +171,20 @@ function NextDateHandler(state, args){
 	newVistPlan.PlanDate = args.Result;
 	newVistPlan.Save();
 
-	$.nextVisitControl.Text = newVistPlan.PlanDate;
-	
+	Workflow.Refresh([]);
+}
+
+function DeliveryDateCallBack(state, args){
+	AssignDialogValue(state, args);
+	$.deliveryDate.Text = Format("{0:D}", Date(args.Result));
+
 }
 
 function VisitIsChecked(visit, order, wfName) {
-	
+
 	var result = new Dictionary();
 	result.Add("Checked", false);
-	
+
     if (checkOrderReason && visit.ReasonForNotOfTakingOrder.EmptyRef())
     	result.Add("Message", Translate["#noOrder#"]);
     else {
@@ -165,7 +193,7 @@ function VisitIsChecked(visit, order, wfName) {
         else
             result.Checked = true;
     }
-    
+
     return result;
 }
 
@@ -173,15 +201,26 @@ function DialogCallBack(control, key){
 	control.Text = key;
 }
 
-function NoQuestionnaires(noQuest, noSKUQuest) {
-	if ((noQuest && noSKUQuest) || (noQuest==null && noSKUQuest==null))
+function ShowQuestionnaires() {
+	var noQuestQuery = new Query("SELECT Value FROM USR_WorkflowSteps WHERE Skip = @SkipQuestions");
+	noQuestQuery.AddParameter("SkipQuestions", "SkipQuestions");
+	var noQuest = noQuestQuery.ExecuteScalar();
+
+	var noSKUQuestQuery = new Query("SELECT Value FROM USR_WorkflowSteps WHERE Skip = @SkipSKUs");
+	noSKUQuestQuery.AddParameter("SkipSKUs", "SkipSKUs");
+	var noSKUQuest = noSKUQuestQuery.ExecuteScalar();
+
+	if ((noQuest && noSKUQuest))
 		return false;
 	else
 		return true;
 }
 
 function NoTasks(skipTasks) {
-	if (skipTasks)
+	var noTaskQuery = new Query("SELECT Value FROM USR_WorkflowSteps WHERE Skip = @SkipTask");
+	noTaskQuery.AddParameter("SkipTask", "SkipTask");
+	var noTask = noTaskQuery.ExecuteScalar();
+	if (noTask)
 		return false;
 	else
 		return true;

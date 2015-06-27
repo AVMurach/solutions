@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:d="DefaultScope" StyleSheet="Order_Info.css">
 
-	<s:Push Id="order" Value="$workflow.order" />
 	<s:Push Id="sum" Value="$param1" />
 	<s:Push Id="executedOrder" Value="$param2" />
-	<s:Push Id="priceLists" Value="$GetPriceListQty($order.Outlet)" />
+	<s:Push Id="thisDoc" Value="$param3" />
+	<s:Push Id="priceLists" Value="$GetPriceListQty($thisDoc.Outlet)" />
 
 	<c:DockLayout>
 
 		<c:DockLayout CssClass="top_navigator">
 			<c:HorizontalLayout>
-				<c:TextView Text="#orderInfoSmall#" />
+				<c:TextView Text="@infoTitleSmall" />
 			</c:HorizontalLayout>
 		</c:DockLayout>
 
@@ -33,18 +33,18 @@
 			<c:HorizontalLine />
 
 			<s:If Test="$workflow.name!='Visit'">
-				<c:DockLayout CssClass="parameter_grid" OnClickAction="$SetDeliveryDateDialog($workflow.order, $deliveryDate, $executedOrder, #deliveryDate#)">
+				<c:DockLayout CssClass="parameter_grid" OnClickAction="$SetDeliveryDateDialog($thisDoc, $deliveryDate, $executedOrder, #deliveryDate#)">
 					<c:TextView Text="#deliveryDate#" />
-					<c:TextView Id="deliveryDate" Text="$workflow.order.DeliveryDate" CssClass="value" />
+					<c:TextView Id="deliveryDate" Text="$FormatDate($thisDoc.DeliveryDate)" CssClass="value" />
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
 
-			<c:HorizontalLayout CssClass="grid" OnClickAction="$SelectPriceListIfIsNew($workflow.order, $priceLists, $executedOrder)">
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$SelectPriceListIfIsNew($thisDoc, $priceLists, $executedOrder)">
 				<c:VerticalLayout>
 					<c:TextView Text="#priceList#" CssClass="description_row"/>
-					<s:If Test="$NotEmptyRef($workflow.order.PriceList)">
-						<c:TextView Id="priceListTextView" Text="$workflow.order.PriceList.Description" CssClass="main_row"/>
+					<s:If Test="$NotEmptyRef($thisDoc.PriceList)">
+						<c:TextView Id="priceListTextView" Text="$thisDoc.PriceList.Description" CssClass="main_row"/>
 					</s:If>
 					<s:Else>
 						<s:If Test="$priceLists == 0">
@@ -59,9 +59,9 @@
 			<c:HorizontalLine />
 
 			<s:If Test="$sessionConst.MultStck">
-				<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectStock($workflow.order, Stock, $stockDescription)">
+				<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectStock($thisDoc, Stock, $stockDescription)">
 					<c:TextView Text="#stockPlace#" />
-					<c:TextView Id="stockDescription" Text="$GetStockDescription($workflow.order.Stock)" CssClass="value" />
+					<c:TextView Id="stockDescription" Text="$GetStockDescription($thisDoc.Stock)" CssClass="value" />
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
@@ -69,15 +69,45 @@
 				<c:HorizontalLayout CssClass="memo_block">
 					<c:VerticalLayout>
 						<c:TextView Text="#commentary#" CssClass="description_row" />
-						<s:If Test="$IsEditable($executedOrder, $order)">
-							<c:MemoEdit Value="$order.Commentary" CssClass="main_row" />
+						<s:If Test="$IsEditable($executedOrder, $thisDoc)">
+							<c:MemoEdit Value="$thisDoc.Commentary" CssClass="main_row" />
 						</s:If>
 						<s:Else>
-							<c:TextView Text="$order.Commentary" CssClass="main_row" />
+							<c:TextView Text="$thisDoc.Commentary" CssClass="main_row" />
 						</s:Else>
 					</c:VerticalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLine />
+
+				<s:If Test="$HasOrderParameters()">
+
+					<c:HorizontalLayout CssClass="caption_grid">
+						<c:TextView Text="@c_docParams"></c:TextView>
+					</c:HorizontalLayout>
+					<c:HorizontalLine />
+
+					<s:Iterator Id="parameter" Value="$GetOrderParameters($thisDoc)" Status="statusCount">
+
+						<s:Push Id="index" Value="$statusCount.Index" />
+
+						<s:If Test="$parameter.Visible">
+
+							<c:DockLayout CssClass="parameter_grid" OnClickAction="$GoToParameterAction($parameter.TypeDescription, $parameter.Value, Value, $thisDoc, $parameter.Id, control{$index}, $parameter.Description, $parameter.Editable, $parameter.IsInputField)">
+								<s:If Test="$IsEditText($parameter.IsInputField, $parameter.Editable, $thisDoc)">
+									<c:EditText Id="control{$index}" Text="$parameter.Value" Placeholder="—" Keyboard="$parameter.KeyboardType" CssClass="value" OnChange="$AssignParameterValue($parameter.TypeDescription, $parameter.Value, Value, $thisDoc, $parameter.Id)"/>
+								</s:If>
+								<s:Else>
+									<c:TextView Id="control{$index}" Text="$parameter.AnswerOutput" CssClass="value" />
+								</s:Else>
+								<c:TextView Text="$parameter.Description" />
+							</c:DockLayout>
+							<c:HorizontalLine />
+
+						</s:If>
+
+					</s:Iterator>
+
+				</s:If>
 
 		</c:ScrollView>
 

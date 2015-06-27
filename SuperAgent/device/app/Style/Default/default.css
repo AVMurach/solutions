@@ -44,6 +44,7 @@ dl {
 dl hl {
 	width: 100%;
 	height: 100%;
+	dock-align: top;
 }
 
 shl {
@@ -399,6 +400,7 @@ MemoEdit {
 	height: 40%;
 	width: 90%;
 	font: 45% Arial;
+	placeholder-color: #2d89cf;
 }
 
 .grid vl EditText {
@@ -798,4 +800,44 @@ MemoEdit {
 	width: 100%;
 	margin-left: 0%;
 	font: 15% Arial;
+}
+
+.no_image{
+	background-color: #eeeeee;
+	height: 100%;
+	width: 45.7mm;
+	margin-top: 0.5mm;
+	margin-bottom: 2.3mm;
+	margin-left: 3mm;
+	margin-right: 3mm;
+}
+
+.no_image TextView {
+	height: 100%;
+	width: 25mm;
+	color: #8e8e93;
+	text-align: center;
+	horizontal-align: central;
+	padding-top: 0mm;
+	padding-left: 2mm;
+	padding-right: 2mm;
+	white-space: normal;
+	font: 25% arial;
+}
+
+.no_image img {
+	height: 12mm;
+	width: 12mm;
+	background-image: url(no_image_big.png);
+	margin-top: 10%;
+	horizontal-align: center;
+}
+
+.no_single_image {
+	height: 25.6mm;
+	background-color: #ffffff;
+	width: 45.7mm;
+	margin-top: 0.5mm;
+	margin-bottom: 2.3mm;
+	horizontal-align: center;
 }

@@ -11,13 +11,21 @@
 .required_side_wh{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(required_side_wh.png);	
-	dock-align: right;
+	background-image: url(required_side_wh.png);
+	dock-align: left;
+	padding-right: 0mm;
 }
 
 .answered_side_wh{
 	height: 100%;
 	width: 1.2mm;
-	background-image: url(answered_side_wh.png);	
-	dock-align: right;
+	background-image: url(answered_side_wh.png);
+	dock-align: left;
+	padding-right: 0mm;
+}
+
+.empty_side_wh{
+	height: 100%;
+	width: 1.2mm;
+	dock-align: left;
 }
