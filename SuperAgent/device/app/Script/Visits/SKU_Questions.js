@@ -140,6 +140,86 @@ function GetSKUsFromQuesionnaires(search) {
 	//
 }
 
+
+/////---------------------------------------AVMurach +
+function GetSKUsFromQuesionnaires_NTZ_m(search) {
+
+	var single = 1;
+	if (regularAnswers)
+		single = 0;
+
+	SetIndicators();
+
+	// getting left obligated
+	var q = new Query(
+			"SELECT DISTINCT S.Question, S.Description, S.SKU "
+					+ "FROM USR_SKUQuestions S "
+					+ "WHERE (RTRIM(Answer)='' OR S.Answer IS NULL) AND S.Obligatoriness=1 "
+					+ "AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT SS.Question FROM USR_SKUQuestions SS "
+					+ "WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
+	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
+	obligateredLeft = q.ExecuteCount();
+
+	// getting SKUs list
+	var searchString = "";
+	if (String.IsNullOrEmpty(search) == false) {
+		search = StrReplace(search, "'", "''");
+		searchString = " Contains(SKUDescription, '" + search + "') AND ";
+	}
+
+	var filterString = "";
+	var filterJoin = "";
+	filterString += AddFilter(filterString, "group_filter", "OwnerGroup",
+			" AND ");
+	filterString += AddFilter(filterString, "brand_filter", "Brand", " AND ");
+
+	var q = new Query();
+	q.Text = "SELECT DISTINCT S.SKU, S.SKUDescription "
+			+ ", COUNT(DISTINCT S.Question) AS Total "
+			+ ", COUNT(S.Answer) AS Answered "
+			+ ", MAX(CAST (Obligatoriness AS INT)) AS Obligatoriness "
+			+ ", (SELECT COUNT(DISTINCT U1.Question) FROM USR_SKUQuestions U1 "
+			+ " WHERE U1.Single=@single AND (Answer='' OR Answer IS NULL) "
+			+ " AND U1.SKU=S.SKU AND Obligatoriness = 1 "
+			+ " AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions "
+			+ " WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да')))) AS ObligateredLeft "
+			+ ", (SELECT MAX(AMS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs AMS "
+			+ " JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet "
+			+ " WHERE S.SKU=AMS.SKU) AS BaseUnitQty "
+			+
+			// ", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 0 END AS ShowChild " +
+			", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 1 END AS ShowChild " + 
+			
+			
+
+			"FROM USR_SKUQuestions S "
+			+ filterJoin
+			
+			+ "WHERE Single=@single AND "
+			+ searchString
+			+ filterString
+			+ " (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions SS "
+			+ "WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))"
+			+ "GROUP BY S.SKU, S.SKUDescription "
+			+ " ORDER BY BaseUnitQty DESC, S.SKUDescription ";
+	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
+	q.AddParameter("single", single);
+	q.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
+	q.AddParameter("attached", Translate["#snapshotAttached#"]);
+	q.AddParameter("outlet", $.workflow.outlet);
+	q.AddParameter("currentSKU", parentGUID);
+
+	
+
+	return q.Execute();
+	//
+}
+
+// ///--------------------------------------- AVMurach -
+
+
+
+
 function SetIndicators() {
 	regular_total = CalculateTotal('0');
 	single_total = CalculateTotal('1');
@@ -207,21 +287,75 @@ function GetChilds(sku) {
 	if (regularAnswers)
 		single = 0;
 
-	var q = new Query("SELECT *, " +
-			"CASE WHEN IsInputField='1' THEN Answer ELSE " +
-				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput, " +
-				"CASE WHEN S.AnswerType=@snapshot THEN 1 END AS IsSnapshot " +
-			"FROM USR_SKUQuestions S " +
-			"WHERE SKU=@sku AND Single=@single AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions " +
-			"WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) " +
-			"ORDER BY DocDate, QuestionOrder ");
+	var q = new Query(
+			"SELECT *, "
+					+ "CASE WHEN IsInputField='1' THEN Answer ELSE "
+					+ "CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput "
+					+ "FROM USR_SKUQuestions S "
+					+ "WHERE SKU=@sku AND Single=@single AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions "
+					+ "WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) "
+					+ "ORDER BY DocDate, QuestionOrder ");
 	q.AddParameter("sku", sku);
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	q.AddParameter("single", single);
 	q.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
 	q.AddParameter("attached", Translate["#snapshotAttached#"]);
 
-	return q.Execute();
+	
+	var qq = q.Execute();
+	
+	var arr = [];
+	
+	var qtyStr = 0;
+	var arr_int = [];
+	while(qq.Next()) {
+		
+		var str_qq = qq;
+		if (qtyStr < 4) {
+			var dict = new Dictionary();
+			dict.Add("AnswerOutput", str_qq.AnswerOutput);
+			dict.Add("Answer", str_qq.Answer);
+			dict.Add("Obligatoriness", str_qq.Obligatoriness);
+			dict.Add("AnswerType", str_qq.AnswerType);
+			dict.Add("Question", str_qq.Question);
+			dict.Add("Description", str_qq.Description);
+			dict.Add("IsInputField", str_qq.IsInputField);
+			dict.Add("KeyboardType", str_qq.KeyboardType);
+									
+			arr_int.push(dict);
+			qtyStr = qtyStr + 1
+			
+		} else {
+			var dict = new Dictionary();
+			dict.Add("AnswerOutput", str_qq.AnswerOutput);
+			dict.Add("Answer", str_qq.Answer);
+			dict.Add("Obligatoriness", str_qq.Obligatoriness);
+			dict.Add("AnswerType", str_qq.AnswerType);
+			dict.Add("Question", str_qq.Question);
+			dict.Add("Description", str_qq.Description);
+			dict.Add("IsInputField", str_qq.IsInputField);
+			dict.Add("KeyboardType", str_qq.KeyboardType);
+									
+			arr_int.push(dict);
+			
+			arr.push(arr_int);
+			arr_int = [];
+			qtyStr = 0;			
+		}		
+	}
+	
+	if (qtyStr != 0){
+		arr.push(arr_int);
+		arr_int = [];
+		qtyStr = 0;
+	}
+	
+	//Dialog.Debug(arr[0][0]);
+	
+	return arr;
+	
+	
+	//return q.Execute();
 }
 
 function GetImagePath(visitID, outletID, pictID, pictExt) {
