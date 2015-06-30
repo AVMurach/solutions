@@ -40,13 +40,15 @@
 				<c:HorizontalLayout CssClass="mode_left_button_on">
 					<c:HorizontalLayout Id="regular" CssClass="select_zone"
 						OnClick="$ChangeListAndRefresh(1)">
-						<c:TextView Text="#regular# ({@regular_answ} #of# {@regular_total})"></c:TextView>
+						<!--<c:TextView Text="#regular# ({@regular_answ} #of# {@regular_total})"></c:TextView> -->
+						<c:TextView Text="#regular# ({@regular_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLayout CssClass="mode_right_button_off">
 					<c:HorizontalLayout Id="nonregular" CssClass="select_zone"
 						OnClick="$ChangeListAndRefresh(0)">
-						<c:TextView Text="#nonregular# ({@single_answ} #of# {@single_total})"></c:TextView>
+						<!--<c:TextView Text="#nonregular# ({@single_answ} #of# {@single_total})"></c:TextView> -->
+						<c:TextView Text="#nonregular# ({@single_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 			</s:If>
@@ -54,13 +56,15 @@
 				<c:HorizontalLayout CssClass="mode_left_button_off">
 					<c:HorizontalLayout Id="regular" CssClass="select_zone"
 						OnClick="$ChangeListAndRefresh(1)">
-						<c:TextView Text="#regular# ({@regular_answ} #of# {@regular_total})"></c:TextView>
+						<!-- <c:TextView Text="#regular# ({@regular_answ} #of# {@regular_total})"></c:TextView> -->
+						<c:TextView Text="#regular# ({@regular_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLayout CssClass="mode_right_button_on">
 					<c:HorizontalLayout Id="nonregular" CssClass="select_zone"
 						OnClick="$ChangeListAndRefresh(0)">
-						<c:TextView Text="#nonregular# ({@single_answ} #of# {@single_total})"></c:TextView>
+						<!--<c:TextView Text="#nonregular# ({@single_answ} #of# {@single_total})"></c:TextView> -->
+						<c:TextView Text="#nonregular# ({@single_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 			</s:Else>
@@ -143,8 +147,9 @@
 											<c:TextView Text="$sku.BaseUnitQty" CssClass="single_rec" />
 										</s:If>
 										
-										<c:TextView Text="{$sku.Answered} #of# {$sku.Total}"
-											CssClass="description_row_m" />
+										<!--<c:TextView Text="{$sku.Answered} #of# {$sku.Total}"
+											CssClass="description_row_m" /> -->
+																				
 									</c:DockLayout>
 									<c:DockLayout CssClass="SKUDescription_dl_m">
 										<c:TextView Text="$sku.SKUDescription" CssClass="main_row_m"></c:TextView>

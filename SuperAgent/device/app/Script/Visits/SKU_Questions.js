@@ -14,6 +14,7 @@ var curr_sku;
 var skuValueGl;
 var questionValueGl;
 
+var controlPeremChooseBool; //Murach 
 //
 //-------------------------------Header handlers-------------------------
 //
@@ -464,6 +465,13 @@ function AssignAnswer(control, question, sku, answer) {
 	q.AddParameter("sku", sku);
 	q.AddParameter("question", question);
 	q.Execute();
+	
+	if(controlPeremChooseBool != false){
+		editControl = controlPeremChooseBool;
+		editControl.Text = answer;
+		controlPeremChooseBool = false;
+	}
+	
 }
 
 function GetCameraObject(entity) {
@@ -513,7 +521,7 @@ function DialogCallBack(state, args){
 	var entity = state[0];
 	AssignAnswer(null, entity, curr_sku, args.Result);
 
-	Workflow.Refresh([$.search]);
+	//Workflow.Refresh([$.search]);
 }
 
 function GalleryCallBack(state, args) {
@@ -588,6 +596,8 @@ function DoChoose(listChoice, entity, attribute, control, func, title) {
 
 	if (func == null)
 		func = CallBack;
+	
+	controlPeremChooseBool = control;
 
 	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
 }
@@ -607,6 +617,9 @@ function ChooseDateTime(entity, attribute, control, func, title) {
 
 	if (func == null)
 		func = CallBack;
+	
+	controlPeremChooseBool = control;
+	
 	Dialog.DateTime(title, startKey, func, [entity, attribute, control]);
 }
 
@@ -622,6 +635,9 @@ function ChooseBool(entity, attribute, control, func, title) {
 	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
+	
+	controlPeremChooseBool = control;		
+	
 	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
 }
 
