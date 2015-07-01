@@ -15,6 +15,7 @@ var skuValueGl;
 var questionValueGl;
 
 var controlPeremChooseBool; //Murach 
+var controlPeremSnapshot;
 //
 //-------------------------------Header handlers-------------------------
 //
@@ -414,6 +415,8 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.Snapshot).ToString()) {
 		skuValueGl = sku;
 		questionValueGl = question;
+		
+		controlPeremSnapshot = editControl;
 
 		//AddSnapshot($.workflow.visit, null, GalleryCallBack, listChoice, "document.visit", title);
 		var path = null;
@@ -470,6 +473,12 @@ function AssignAnswer(control, question, sku, answer) {
 		editControl = controlPeremChooseBool;
 		editControl.Text = answer;
 		controlPeremChooseBool = false;
+	}
+	
+	if(controlPeremSnapshot != false){
+		editControl = controlPeremSnapshot;
+		editControl.Text = Translate["#snapshotAttached#"];
+		controlPeremSnapshot = false;
 	}
 	
 }
@@ -534,7 +543,7 @@ function GalleryCallBack(state, args) {
 		newFile.FullFileName = state[2];
 		newFile.Save();
 
-		Workflow.Refresh([]);
+		//Workflow.Refresh([]);
 	}
 }
 
