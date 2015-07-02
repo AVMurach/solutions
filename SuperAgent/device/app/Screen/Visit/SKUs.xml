@@ -11,8 +11,7 @@
 	<c:VerticalLayout>
 
 		<c:DockLayout CssClass="top_navigator">
-			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back"
-				OnClickAction="$GetActionAndBack()">
+			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$GetActionAndBack()">
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
@@ -25,8 +24,7 @@
 				</c:DockLayout>
 			</s:If>
 			<s:Else>
-				<c:DockLayout CssClass="btn_forward" OnEvent="Forward"
-					OnClickAction="$CountResultAndForward()">
+				<c:DockLayout CssClass="btn_forward" OnEvent="Forward"	OnClickAction="$CountResultAndForward()">
 					<c:TextView Id="btnForward" Text="#forward#" />
 				</c:DockLayout>
 			</s:Else>

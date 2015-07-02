@@ -16,6 +16,8 @@ var questionValueGl;
 
 var controlPeremChooseBool; //Murach 
 var controlPeremSnapshot;
+var controlPeremObligatered;
+
 //
 //-------------------------------Header handlers-------------------------
 //
@@ -23,6 +25,7 @@ var controlPeremSnapshot;
 
 function OnLoading(){
 	obligateredLeft = parseInt(0);
+	controlPeremObligatered = false;
 	SetListType();
 	if (String.IsNullOrEmpty(setScroll))
 		setScroll = true;
@@ -161,6 +164,10 @@ function GetSKUsFromQuesionnaires_NTZ_m(search) {
 					+ "WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	obligateredLeft = q.ExecuteCount();
+	
+	if(parseInt(obligateredLeft)!=parseInt(0)){
+		controlPeremObligatered = true;
+	}
 
 	// getting SKUs list
 	var searchString = "";
@@ -443,7 +450,7 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 		FocusOnEditText(editControlName, '1');
 	}
 
-	setScroll = false;
+	setScroll = false;		
 }
 
 function AssignAnswer(control, question, sku, answer) {
@@ -480,6 +487,8 @@ function AssignAnswer(control, question, sku, answer) {
 		editControl.Text = Translate["#snapshotAttached#"];
 		controlPeremSnapshot = false;
 	}
+	
+	CheangeObligatorinessIndex();
 	
 }
 
@@ -665,6 +674,30 @@ function AssignDialogValue(state, args) {
 	entity[attribute] = args.Result;
 	entity.GetObject().Save();
 	return entity;
+}
+
+function CheangeObligatorinessIndex() {
+	var q = new Query("SELECT DISTINCT S.Question, S.Description, S.SKU " +
+			"FROM USR_SKUQuestions S " +
+			"WHERE (RTRIM(Answer)='' OR S.Answer IS NULL) AND S.Obligatoriness=1 " +
+			"AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT SS.Question FROM USR_SKUQuestions SS " +
+				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
+	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
+	obligateredLeft = q.ExecuteCount();
+	
+	if(parseInt(obligateredLeft)==parseInt(0)){
+		if(controlPeremObligatered == true){
+			controlPeremObligatered == false;
+			Workflow.Refresh([]);
+		}
+	}else{
+		if(controlPeremObligatered == true){
+			Variables["obligateredButton"].Text = obligateredLeft;
+			Variables["obligateredInfo"].Text = obligateredLeft;
+		return;
+		}
+	}
+	
 }
 
 //------------------------------Temporary, from global----------------
