@@ -462,7 +462,7 @@ function AssignAnswer(control, question, sku, answer) {
 		if (answer!=null)
 			answer = answer.ToString();
 	}
-	if (answer == "—" || answer == "")
+	if (answer == "—" || answer == "" || answer=="-")
 		answer = null;
 
 	var answerString;
@@ -479,7 +479,10 @@ function AssignAnswer(control, question, sku, answer) {
 	
 	if(controlPeremChooseBool != false){
 		editControl = controlPeremChooseBool;
-		editControl.Text = answer;
+		var textAnswer = answer;
+		if (textAnswer == null)
+			textAnswer = "—";
+		editControl.Text = textAnswer;
 		controlPeremChooseBool = false;
 		CheangeObligatorinessIndex();
 	}
@@ -653,7 +656,7 @@ function ChooseBool(entity, attribute, control, func, title) {
 	else
 		var startKey = entity[attribute];
 
-	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
 	
@@ -687,9 +690,7 @@ function CheangeObligatorinessIndex() {
 				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	obligateredLeft = q.ExecuteCount();
-	
-	Dialog.Debug(obligateredLeft);
-			
+				
 	if(parseInt(obligateredLeft)==parseInt(0)){
 		if(controlPeremObligatered){
 			controlPeremObligatered = false;
