@@ -17,6 +17,7 @@ var questionValueGl;
 var controlPeremChooseBool; //Murach 
 var controlPeremSnapshot;
 var controlPeremObligatered;
+var controlPeremRefresh = false;
 
 //
 //-------------------------------Header handlers-------------------------
@@ -480,15 +481,17 @@ function AssignAnswer(control, question, sku, answer) {
 		editControl = controlPeremChooseBool;
 		editControl.Text = answer;
 		controlPeremChooseBool = false;
+		CheangeObligatorinessIndex();
 	}
 	
 	if(controlPeremSnapshot != false){
 		editControl = controlPeremSnapshot;
 		editControl.Text = Translate["#snapshotAttached#"];
 		controlPeremSnapshot = false;
+		CheangeObligatorinessIndex();
 	}
 	
-	CheangeObligatorinessIndex();
+	//CheangeObligatorinessIndex();
 	
 }
 
@@ -685,19 +688,46 @@ function CheangeObligatorinessIndex() {
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	obligateredLeft = q.ExecuteCount();
 	
+	Dialog.Debug(obligateredLeft);
+			
 	if(parseInt(obligateredLeft)==parseInt(0)){
-		if(controlPeremObligatered == true){
-			controlPeremObligatered == false;
+		if(controlPeremObligatered){
+			controlPeremObligatered = false;
+			controlPeremRefresh = true;
 			Workflow.Refresh([]);
 		}
 	}else{
-		if(controlPeremObligatered == true){
+		if(controlPeremRefresh == false){
 			Variables["obligateredButton"].Text = obligateredLeft;
 			Variables["obligateredInfo"].Text = obligateredLeft;
-		return;
+			return;
+		}else{
+			controlPeremRefresh = false;
+			Workflow.Refresh([]);
 		}
 	}
 	
+	
+//	if(parseInt(obligateredLeft)==parseInt(0)){
+//		if(controlPeremObligatered){
+//			controlPeremObligatered = false;
+//			controlPeremRefresh = true;
+//			Workflow.Refresh([]);
+//		}
+//	}else{
+//		if(controlPeremRefresh){			
+//			controlPeremObligatered = true;	
+//			controlPeremRefresh = false;
+//			Workflow.Refresh([]);			
+//		}else{
+//			if(controlPeremObligatered){
+//				Variables["obligateredButton"].Text = obligateredLeft;
+//				Variables["obligateredInfo"].Text = obligateredLeft;
+//				return;
+//			}
+//		}
+//	}
+//	
 }
 
 //------------------------------Temporary, from global----------------

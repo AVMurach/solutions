@@ -125,14 +125,14 @@
 				
 					<c:HorizontalLayout CssClass="grid_m">
 						
-						<s:If Test="$sku.Obligatoriness=='1'">
+						<!-- <s:If Test="$sku.Obligatoriness=='1'">
 							<s:If Test="$ConvertToBoolean1($sku.ObligateredLeft)">
 								<c:HorizontalLayout CssClass="required_side_wh_m"></c:HorizontalLayout>
 							</s:If>
 							<s:Else>
 								<c:HorizontalLayout CssClass="answered_side_wh_m"></c:HorizontalLayout>
 							</s:Else>
-						</s:If>
+						</s:If> -->
 												
 							<c:VerticalLayout>
 								<s:If Test="$firstIter == 'true'">
@@ -172,10 +172,13 @@
 				
 											<c:DockLayout
 												OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)"
-												CssClass="dl_answers_m">
+												CssClass="dl_answers_m" >
 												
 												<s:If Test="$ObligatedAnswered($child.Answer, $child.Obligatoriness)">
-													<c:HorizontalLayout CssClass="answered_side_gr_m"></c:HorizontalLayout>
+													<!-- <c:HorizontalLayout CssClass="answered_side_gr_m"></c:HorizontalLayout> -->
+													<s:If Test="$child.Obligatoriness">
+														<c:HorizontalLayout CssClass="required_side_gr_m"></c:HorizontalLayout>
+													</s:If>
 												</s:If>
 												<s:Else>
 													<s:If Test="$child.Obligatoriness">
@@ -188,7 +191,7 @@
 													<c:EditText Id="control{$indexCh}" Text="$child.Answer"
 														Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)"
 														Keyboard="$child.KeyboardType"
-														CssClass="answer_editText_m"></c:EditText>
+														CssClass="answer_editText_m" OnLostFocus="$CheangeObligatorinessIndex()"></c:EditText>
 														<!-- OnLostFocus="$RefreshScreen($search)" -->
 												</s:If>
 												<s:Else>
