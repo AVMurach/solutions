@@ -407,7 +407,12 @@ function CreateItemAndShow(control, sku, index, showChild) {
 }
 
 function GoToQuestionAction(control, answerType, question, sku, editControl, currAnswer, title) {
-
+	
+	if ($.Exists("globPeremSnapshot") != false)
+		$.Remove("globPeremSnapshot");
+	controlPeremSnapshot = false;
+	controlPeremChooseBool = false;
+	
 	editControlName = editControl;
 	editControl = Variables[editControl];
 	curr_sku = sku;
@@ -425,12 +430,16 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 		questionValueGl = question;
 		
 		controlPeremSnapshot = editControl;
-
+				
+		if ($.Exists("globPeremSnapshot") == false)
+			$.AddGlobal("globPeremSnapshot", editControl);
+						
 		//AddSnapshot($.workflow.visit, null, GalleryCallBack, listChoice, "document.visit", title);
 		var path = null;
 //		if (String.IsNullOrEmpty(currAnswer)==false)
 //			path = Images.FindImage($.visit, currAnswer, ".jpg");
-		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAnswer, true, title, GalleryCallBack);
+		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAnswer, true, title, GalleryCallBack);	
+					
 	}
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.DateTime).ToString()) {
@@ -455,7 +464,7 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 }
 
 function AssignAnswer(control, question, sku, answer) {
-
+	
 	if (control != null) {
 		answer = control.Text;
 	} else{
@@ -596,7 +605,7 @@ function AddSnapshotHandler(state, args) {
 
 	if (parseInt(args.Result)==parseInt(2)){
 		AssignAnswer(null, questionValueGl, skuValueGl, null);
-		Workflow.Refresh([]);
+		Workflow.Refresh([]);		
 	}
 }
 

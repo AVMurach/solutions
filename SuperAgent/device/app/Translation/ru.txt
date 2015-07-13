@@ -293,3 +293,4 @@ sending			Отправка..
 editSKU			Изменить
 returnParameters	ПАРАМЕТРЫ ВОЗВРАТА:
 returnHistory	ИСТОРИЯ ВОЗВРАТОВ
+emDash	—

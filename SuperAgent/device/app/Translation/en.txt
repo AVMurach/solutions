@@ -293,3 +293,4 @@ sending			Sending..
 editSKU			Edit
 returnParameters	RETURN PARAMETERS
 returnHistory	RETURN HISTORY
+emDash	—

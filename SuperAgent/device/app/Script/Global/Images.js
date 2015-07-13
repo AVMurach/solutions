@@ -216,6 +216,12 @@ function DeleteFromTable(question, sku) {
 	q.AddParameter("answer", null);
 	q.AddParameter("question", question);
 	q.Execute();
-
-	Workflow.Refresh([]);
+	
+	if ($.globPeremSnapshot == null){
+		Workflow.Refresh([]);			
+	}else{
+		$.globPeremSnapshot.Text = Translate["#emDash#"];
+		
+		$.Remove("globPeremSnapshot");		 
+	}
 }
