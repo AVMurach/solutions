@@ -222,6 +222,6 @@ function DeleteFromTable(question, sku) {
 	}else{
 		$.globPeremSnapshot.Text = Translate["#emDash#"];
 		
-		$.Remove("globPeremSnapshot");		 
+		$.Remove("globPeremSnapshot");		
 	}
 }
