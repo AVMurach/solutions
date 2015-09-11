@@ -473,6 +473,14 @@ function CheckEmtySKUAndForward(outlet, visit) {
 		Variables.Remove("group_filter");
 		Variables.Remove("brand_filter");
 		
+		//hotfix Murach A+
+		q = new Query("DELETE FROM _Document_Visit_SKUs " +
+				"WHERE Ref == @visit AND (Answer IS NULL OR Answer='—' OR Answer='') " +
+				"");
+		q.AddParameter("visit", visit);
+		q.Execute();
+		//hotfix Murach A-
+		
 		Workflow.Forward(p);
 	}
 }
