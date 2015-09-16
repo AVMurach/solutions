@@ -51,8 +51,8 @@ function CreatePlan(outlet, plan, planDate) {
 function DeleteContact(ref) {
 	var contact = ref.GetObject();
 	contact.NotActual = true;
-	contact.Save();
-	DB.Commit();
+	contact.Save(false);
+	//DB.Commit();
 	Workflow.Refresh([ $.outlet ]);
 }
 
@@ -121,8 +121,8 @@ function ValidEntity(entity) {
 	// Validate Contact
 	if (getType(entity.GetObject()) == "DefaultScope.Catalog.Outlet_Contacts") {
 		if (EmptyContact(entity) && entity.IsNew()) {
-			DB.Delete(entity);
-			DB.Commit();
+			DB.Delete(entity, false);
+			//DB.Commit();
 			return true;
 		}
 		if (Global.ValidatePhoneNr(entity.PhoneNumber) && Global.ValidateEmail(entity.Email) && ValidateContactName(entity))
@@ -159,12 +159,12 @@ function ValidateOutlet(entity) {
 
 function CreateOwnershipDictionary() {
 	var d = new Dictionary();
-	d.Add("ZAO", "ЗАО");
+	d.Add("ZAO", "Р—РђРћ");
 	d.Add("OOO", "OOO");
-	d.Add("IP", "ИП");
-	d.Add("NKO", "НКО");
+	d.Add("IP", "Р�Рџ");
+	d.Add("NKO", "РќРљРћ");
 	d.Add("OAO", "OAO");
-	d.Add("OP", "ОП");
-	d.Add("TSJ", "ТСЖ");
+	d.Add("OP", "РћРџ");
+	d.Add("TSJ", "РўРЎР–");
 	return d;
 }
