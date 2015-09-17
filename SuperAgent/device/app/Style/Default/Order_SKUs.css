@@ -1,7 +1,7 @@
 
 .grid vl dl{
 	width: 100%;
-	height: 40%;
+	height: 35%;
 }
 
 .grid vl dl vl{
@@ -71,6 +71,22 @@
 .description_row {
 	height: 40%;
 	font: 42% Arial;
+}
+
+.description_row2 {
+	width: 100%;
+	height: 35%;
+	white-space: normal;
+	font: 42% Arial;
+	color: #8e8e93;
+}
+
+.description_row3 {
+	width: 100%;
+	height: 25%;
+	white-space: nowrap;
+	font: 70% Arial;
+	color: #000;
 }
 
 .swipe_layout {

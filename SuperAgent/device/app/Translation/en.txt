@@ -317,3 +317,4 @@ inn_regexp		^((\d{10})|(\d{12})|)?$
 selectOwner		Owner isn't selected
 no_questions_list	NO QUESTIONS
 requiredFieldsLeft	Required fields left
+edi	EDI

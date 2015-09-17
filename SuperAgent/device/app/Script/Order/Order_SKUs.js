@@ -26,7 +26,7 @@ function GetCurrentDoc(){
     return d;
 }
 
-function GetSKUAndGroups(searchText, thisDoc) {
+function GetSKUAndGroups(searchText, thisDoc, currentOutlet) {
 
      var priceList = thisDoc.PriceList;
      var stock = thisDoc.Stock;
@@ -36,6 +36,21 @@ function GetSKUAndGroups(searchText, thisDoc) {
     filterString = AddFilter(filterString, "group_filter", "S.Owner", "OF");
     filterString = AddFilter(filterString, "brand_filter", "S.Brand", "BF");
 
+    //AVMurach +    
+    var stocksAnswer = " LEFT JOIN Document_Visit_SKUs VSKU ON VSKU.SKU = S.Id AND VSKU.Ref In " +
+    		" (SELECT V.Id FROM Document_Visit V" +
+    		" WHERE strftime('%d', V.Date) = strftime('%d','now')" +
+    		" AND V.Outlet = @outlet" +
+    		" ORDER BY V.Date DESC LIMIT 1)" +
+    		" AND VSKU.Question In (SELECT Id FROM Catalog_Question WHERE Description = 'Остаток') ";
+    
+    //кол-во в последнем не отгруженном заказе на данную ТТ по данной номенклатуре
+    var SKUinLastOrder = " LEFT LOIN  ";
+    
+    //данными продаж  за последние 4 недели в виде «Номер недели»: «средние дневные продажи (кол-во за неделю / 7 дней)
+    var averageSKUinWeek = " LEFT LOIN  ";
+    //AVMurach -
+    
     var groupFields = "";
     var groupJoin = " INDEXED BY IND_SKUBRAND ON PL.SKU = S.Id ";
     var groupParentJoin = "";
@@ -119,12 +134,16 @@ function GetSKUAndGroups(searchText, thisDoc) {
     	}
 
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
-	            groupFields +
+	            "ifnull(VSKU.Answer,0) AS stockAnswer, " +
+	    		groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
 	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
 	            "JOIN _Catalog_SKU S " +
 	            groupJoin + groupWhere +
+	            //AVMurach+
+	            stocksAnswer +
+	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
 	            recOrderStr + filterString +
@@ -141,12 +160,16 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
     	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
               "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
+              	"ifnull(VSKU.Answer,0) AS stockAnswer, " +
 	            groupFields +
 	            "CB.Description AS Brand " +
 	            recOrderFields +
 	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
 	            "JOIN _Catalog_SKU S " +
 	            groupJoin +
+	            //AVMurach+
+	            stocksAnswer +
+	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
 	            recOrderStr + filterString +
@@ -158,7 +181,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     }
 
     query.AddParameter("Ref", priceList);
-
+    
     return query.Execute();
 
 }
