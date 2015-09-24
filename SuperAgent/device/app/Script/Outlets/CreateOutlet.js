@@ -1,28 +1,35 @@
-
+//AVMurach+
 function CreateOutlet() {
 	if (Variables.Exists("setDistr")){
-		var outlet = $.outletFromDistr;
-		outlet = outlet.GetObject();
-		outlet.Distributor = $.setDistr;
+		if (Variables.Exists("outletFromDistr")){
+			var outlet = $.outletFromDistr;
+			outlet = outlet.GetObject();
+			$.Remove("outletFromDistr");
+		}else{
+			var outlet = DB.Create("Catalog.Outlet");
+			outlet.OutletStatus = DB.Current.Constant.OutletStatus.Potential;
+			outlet.Save();
+		}
 		$.Remove("setDistr");
-		$.Remove("outletFromDistr");
+		
 	}else{
 		var outlet = DB.Create("Catalog.Outlet");
-		outlet.OutletStatus = DB.Current.Constant.OutletStatus.Potential;		
-	}
-	outlet.Save();
+		outlet.OutletStatus = DB.Current.Constant.OutletStatus.Potential;
+		outlet.Save();
+	}	
 	return outlet.Id;	
 }
 
 function SaveAndDoAction(SelectDistr, outlet) {
 			
 	if (Variables.Exists("outletFromDistr"))
-	$.Remove("outletFromDistr");
-	$.AddGlobal("outletFromDistr", outlet);
+		$.Remove("outletFromDistr");
+		$.AddGlobal("outletFromDistr", outlet);
 		
 	var parameters = [ outlet ];
 	Workflow.Action(SelectDistr, parameters);
 }
+//AVMurach-
 
 function DialogCallBack(control, key) {
 	control.Text = key;

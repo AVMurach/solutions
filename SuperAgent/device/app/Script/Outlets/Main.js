@@ -458,11 +458,7 @@ function DialogCallBack(control, key) {
 
 //AVMurach+
 function SaveAndDoAction(SelectDistr, outlet) {
-	
-	if (Variables.Exists("outletFromDistr"))
-	$.Remove("outletFromDistr");
-	$.AddGlobal("outletFromDistr", outlet);
-		
+			
 	var parameters = [ outlet ];
 	Workflow.Action(SelectDistr, parameters);
 }
