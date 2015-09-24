@@ -455,3 +455,15 @@ function CommitAndBack(){
 function DialogCallBack(control, key) {
 	Workflow.Refresh([]);
 }
+
+//AVMurach+
+function SaveAndDoAction(SelectDistr, outlet) {
+	
+	if (Variables.Exists("outletFromDistr"))
+	$.Remove("outletFromDistr");
+	$.AddGlobal("outletFromDistr", outlet);
+		
+	var parameters = [ outlet ];
+	Workflow.Action(SelectDistr, parameters);
+}
+//AVMurach-

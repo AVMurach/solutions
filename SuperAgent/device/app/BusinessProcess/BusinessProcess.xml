@@ -211,12 +211,18 @@
 			<bp:Action Name="ShowContacts" NextStep="Contacts" />
 			<bp:Action Name="ShowMap" NextStep="ShowMap"></bp:Action>
 			<bp:Action Name="Plans" NextStep="Plans" />
+			<bp:Action Name="SelectDistr" NextStep="OpenDistr" />
 		</bp:Step>
 
 		<bp:Step Name="CreateOutlet" Screen="Outlets\CreateOutlet.xml" Controller="Outlets\CreateOutlet.js">
 			<bp:Action Name="Open" NextStep="OpenOutlet" />
+			<bp:Action Name="SelectDistr" NextStep="OpenDistr" />
 		</bp:Step>
 
+		<bp:Step Name="OpenDistr" Screen="DistrList.xml" Controller="Outlets\DistrList.js">
+			
+		</bp:Step>
+		
 		<bp:Step Name="Details" Screen="Details.xml" Controller="Outlets\DetailsAndContacts.js"></bp:Step>
 
 		<bp:Step Name="Contacts" Screen="ContactsList.xml" Controller="Outlets\DetailsAndContacts.js">

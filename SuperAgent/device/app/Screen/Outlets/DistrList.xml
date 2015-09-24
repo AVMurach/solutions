@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Visit_SKUs.css">
+
+	<s:Push Id="outlet" Value="$param1"></s:Push>
+	<s:Push Id="search" Value="$param2" />
+
+	<c:DockLayout>
+
+		<c:HorizontalLayout Id="btnCancel" CssClass="bottom_btn">
+			<c:VerticalLayout Id="btnBack" OnEvent="Back" OnClickAction="$DoBack()">
+				<c:TextView Text="#back#" CssClass="left_tv"></c:TextView>
+			</c:VerticalLayout>
+			<!-- <c:VerticalLayout Id="btnAdd" OnEvent="Forward" OnClickAction="$DoAction(Select, null, $outlet)">
+				<c:TextView Text="#add#" CssClass="right_tv"></c:TextView>
+			</c:VerticalLayout> -->
+		</c:HorizontalLayout>
+		<c:HorizontalLine CssClass="b_line" />
+		
+		<c:HorizontalLayout CssClass="empty_caption_grid" />
+			<c:HorizontalLine />
+		
+		<c:DockLayout CssClass="search">
+			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($outlet, $edtSearch.Text)"></c:Button>
+			<c:DockLayout>
+				<c:Image />
+				<c:EditText Id="edtSearch" Text="$search" Placeholder="#search#"></c:EditText>
+			</c:DockLayout>			
+		</c:DockLayout>
+		<c:HorizontalLine />
+
+		<c:ScrollView Id="grScrollView">
+
+			<c:HorizontalLayout CssClass="empty_caption_grid" />
+			<c:HorizontalLine />
+
+			<s:Iterator Id="distr" Value="$GetDistr($search)" Status="statusCount">
+
+				<c:SwipeHorizontalLayout CssClass="swipe_layout">
+					<!-- <c:DockLayout CssClass="parameter_grid" OnClickAction="$DoAction(Select, $contact.Id, $outlet)"> -->
+					<c:DockLayout CssClass="parameter_grid" OnClickAction="$SetObj($distr.Id, $outlet)">
+						<!--<c:Image />-->
+						<c:TextView Text="$distr.Description"></c:TextView>						
+					</c:DockLayout>					
+				</c:SwipeHorizontalLayout>
+				<c:HorizontalLine />
+
+			</s:Iterator>
+
+		</c:ScrollView>
+
+	</c:DockLayout>
+
+</c:Screen>

@@ -1,9 +1,27 @@
 
 function CreateOutlet() {
-	var outlet = DB.Create("Catalog.Outlet");
-	outlet.OutletStatus = DB.Current.Constant.OutletStatus.Potential;
+	if (Variables.Exists("setDistr")){
+		var outlet = $.outletFromDistr;
+		outlet = outlet.GetObject();
+		outlet.Distributor = $.setDistr;
+		$.Remove("setDistr");
+		$.Remove("outletFromDistr");
+	}else{
+		var outlet = DB.Create("Catalog.Outlet");
+		outlet.OutletStatus = DB.Current.Constant.OutletStatus.Potential;		
+	}
 	outlet.Save();
-	return outlet.Id;
+	return outlet.Id;	
+}
+
+function SaveAndDoAction(SelectDistr, outlet) {
+			
+	if (Variables.Exists("outletFromDistr"))
+	$.Remove("outletFromDistr");
+	$.AddGlobal("outletFromDistr", outlet);
+		
+	var parameters = [ outlet ];
+	Workflow.Action(SelectDistr, parameters);
 }
 
 function DialogCallBack(control, key) {

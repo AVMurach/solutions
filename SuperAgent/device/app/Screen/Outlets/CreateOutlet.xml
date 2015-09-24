@@ -51,7 +51,8 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClickAction="$DoSelect($outlet,Distributor,$outletDistr)">
+			<!-- <c:HorizontalLayout CssClass="grid" OnClickAction="$DoSelect($outlet,Distributor,$outletDistr)"> -->
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$SaveAndDoAction(SelectDistr, $outlet)">
 				<c:VerticalLayout>
 					<c:TextView Text="#distributor#" CssClass="description_row"></c:TextView>
 					<c:TextView Id="outletDistr" Text="$outlet.Distributor.Description" CssClass="main_row" />
