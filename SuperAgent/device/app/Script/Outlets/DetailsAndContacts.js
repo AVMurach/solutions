@@ -51,8 +51,8 @@ function CreatePlan(outlet, plan, planDate) {
 function DeleteContact(ref) {
 	var contact = ref.GetObject();
 	contact.NotActual = true;
-	contact.Save(false);
-	//DB.Commit();
+	contact.Save();
+	DB.Commit();
 	Workflow.Refresh([ $.outlet ]);
 }
 
@@ -121,8 +121,8 @@ function ValidEntity(entity) {
 	// Validate Contact
 	if (getType(entity.GetObject()) == "DefaultScope.Catalog.Outlet_Contacts") {
 		if (EmptyContact(entity) && entity.IsNew()) {
-			DB.Delete(entity, false);
-			//DB.Commit();
+			DB.Delete(entity);
+			DB.Commit();
 			return true;
 		}
 		if (Global.ValidatePhoneNr(entity.PhoneNumber) && Global.ValidateEmail(entity.Email) && ValidateContactName(entity))
