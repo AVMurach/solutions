@@ -347,9 +347,21 @@ function GetChilds(sku) {
 }
 
 
-//function AssignQuestionValue(control, sku, question) {
-//	CreateVisitSKUValueIfNotExists(sku, question, control.Text)
-//}
+function AssignQuestionValue(control, sku, question) {
+	//AVMurach+
+		var textText = control.Text;
+		var textCount = StrLen(textText);
+		if(textCount > 100){
+			control.Text = Mid(textText, 1, 100);
+			Dialog.Message("Текст не должен превышать 100 символов");
+			return 0;
+		}else{
+			return 0;
+		}		
+	//AVMurach-
+	
+	CreateVisitSKUValueIfNotExists(sku, question, control.Text)
+}
 
 function RemovePlaceHolder(control) {
 	if (control.Text == "—")

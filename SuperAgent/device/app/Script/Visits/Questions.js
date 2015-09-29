@@ -336,6 +336,19 @@ function GoToQuestionAction(answerType, visit, control, questionItem, currAnswer
 
 function AssignQuestionValue(control, question) {
 	doRefresh = true;
+	
+	//AVMurach+
+		var textText = control.Text;
+		var textCount = StrLen(textText);
+		if(textCount > 100){
+			control.Text = Mid(textText, 1, 100);
+			Dialog.Message("Текст не должен превышать 100 символов");
+			return 0;
+		}else{
+			return 0;
+		}		
+	//AVMurach-
+	
 	CreateVisitQuestionValueIfNotExists(question, control.Text, false);
 }
 
