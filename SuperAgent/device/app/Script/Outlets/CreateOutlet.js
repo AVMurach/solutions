@@ -83,12 +83,12 @@ function SaveNewOutlet(outlet) {
 
 function DoSelectTerr(source, outlet, attribute, control, title) {
 	if (control.Id != "outletTerritory") {
-		Dialogs.DoChoose(null, outlet, attribute, control, CallBack, title);
+		DoChoose(null, outlet, attribute, control, CallBack, title);
 	}
 	else
 	{
 		if ($.territory != DB.EmptyRef("Catalog_Territory")) {
-			Dialogs.DoChoose(null, outlet, attribute, control, TerritoryCallBack, title);
+			DoChoose(null, outlet, attribute, control, TerritoryCallBack, title);
 		}
 	}
 }
@@ -110,4 +110,26 @@ function TerritoryCallBack(state, args) {
 		$.territory = DB.EmptyRef("Catalog_Territory");
 		control.Text = String.IsNullOrEmpty(args.Result) ? "—" : args.Result;
 	}
+}
+
+function DoChoose(listChoice, entity, attribute, control, func, title) { //optional": func, title; listChice - nullable
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
+	if (attribute==null)
+		var startKey = control.Text;
+	else
+		var startKey = entity[attribute];
+
+	if (listChoice==null){
+		var tableName = entity[attribute].Metadata().TableName;
+		var query = new Query();
+		query.Text = "SELECT Id, Description FROM " + tableName;
+		listChoice = query.Execute();
+	}
+
+	if (func == null)
+		func = CallBack;
+
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
 }
