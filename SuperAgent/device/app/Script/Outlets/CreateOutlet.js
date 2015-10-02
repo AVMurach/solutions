@@ -20,6 +20,18 @@ function CreateOutlet() {
 	return outlet.Id;	
 }
 
+function GetTerritory() {
+	var q = new Query("SELECT Id From Catalog_Territory LIMIT 1");
+	var territory = q.ExecuteScalar();
+	if (territory == null) {
+		return  territoryEmptyRef;
+	}
+	else {
+		return territory;
+	}
+	return territory || territoryEmptyRef;
+}
+
 function SaveAndDoAction(SelectDistr, outlet) {
 			
 	if (Variables.Exists("outletFromDistr"))
@@ -67,4 +79,35 @@ function SaveNewOutlet(outlet) {
 		}
 	}		
 	Dialog.Message("#messageNulls#");
+}
+
+function DoSelectTerr(source, outlet, attribute, control, title) {
+	if (control.Id != "outletTerritory") {
+		Dialogs.DoChoose(null, outlet, attribute, control, CallBack, title);
+	}
+	else
+	{
+		if ($.territory != DB.EmptyRef("Catalog_Territory")) {
+			Dialogs.DoChoose(null, outlet, attribute, control, TerritoryCallBack, title);
+		}
+	}
+}
+
+function CallBack(state, args) {
+	AssignDialogValue(state, args);
+	var outlet = state[0];
+	DoRefresh(null, outlet);
+}
+
+function TerritoryCallBack(state, args) {
+	var control = state[2];
+	var attribute = state[1];
+	if (getType(args.Result)=="BitMobile.DbEngine.DbRef") {
+		$.territory = args.Result;
+		control.Text = args.Result.Description;
+	}
+	else {
+		$.territory = DB.EmptyRef("Catalog_Territory");
+		control.Text = String.IsNullOrEmpty(args.Result) ? "—" : args.Result;
+	}
 }

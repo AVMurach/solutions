@@ -2,6 +2,7 @@
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="CreateOutlet.css">
 
 	<s:Push Id="outlet" Value="$CreateOutlet()"></s:Push>
+	<s:Push Id="territory" Value="$GetTerritory()"></s:Push>
 
 	<c:DockLayout>
 
@@ -27,6 +28,14 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
+			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelectTerr($territory,Id,$outletTerritory,#outlet_territory#)">
+				<c:VerticalLayout>
+					<c:TextView Text="#outlet_territory#" CssClass="description_row"></c:TextView>
+					<c:TextView Id="outletTerritory" Text="$territory.Description" CssClass="main_row" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+			
 			<c:HorizontalLayout CssClass="grid">
 				<c:VerticalLayout>
 					<c:TextView Text="#address#" CssClass="description_row"></c:TextView>

@@ -248,3 +248,4 @@ notAvailable	Снимок прикреплен. Просмотр будет до
 clearValue		Очистить значение
 setDate			Установить дату
 choose_action	Выберите действие:
+outlet_territory	Территория
