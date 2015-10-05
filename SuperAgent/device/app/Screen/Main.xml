@@ -40,14 +40,14 @@
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout OnClickAction="$DoAction(Order)">
+			<!-- <c:DockLayout OnClickAction="$DoAction(Order)">
 				<c:TextView CssClass="menu_text" Text="{$orderQty} | {$FormatValue($orderSum)}"></c:TextView>
 				<c:HorizontalLayout>
 					<c:Image CssClass="btn_orders" />
 					<c:TextView Text="#orders#"></c:TextView>
 				</c:HorizontalLayout>
 			</c:DockLayout>
-			<c:HorizontalLine />
+			<c:HorizontalLine /> -->
 
 			<c:DockLayout OnClickAction="$DoAction(Sync)">
 				<c:TextView Id="syncTitle" CssClass="menu_text" Text="$GetLastSyncTime()"></c:TextView>
