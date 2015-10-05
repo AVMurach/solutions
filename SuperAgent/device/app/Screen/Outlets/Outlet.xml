@@ -74,7 +74,7 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<s:Push Id="snapshots" Value="$GetSnapshots($outlet)" />
+			<!-- <s:Push Id="snapshots" Value="$GetSnapshots($outlet)" />
 
 			<s:If Test="@snapshotsExists">				
 				<c:DockLayout CssClass="snapshot_grid">
@@ -119,7 +119,7 @@
 					</c:DockLayout>
 					<c:HorizontalLine />
 				</s:If>
-			</s:Else>			
+			</s:Else> -->			
 
 			<c:HorizontalLayout CssClass="grid">
 				<c:VerticalLayout>
