@@ -13,17 +13,17 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<s:If Test="@forwardAllowed">
-				<c:DockLayout  CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CountResultAndForward()">
-					<c:TextView Id="btnForward" Text="#forward#" />
+			<s:If Test="$ForwardIsntAllowed()">
+				<c:DockLayout Id="btnForward" CssClass="forward">
+					<c:VerticalLayout></c:VerticalLayout>
+					<c:TextView Id="obligateredButton" Text="{$ToString(@obligateredLeft)})" />
+					<c:Image />
+					<c:TextView Text="#forward# (" />
 				</c:DockLayout>
 			</s:If>
 			<s:Else>
-				<c:DockLayout Id="btnForward" CssClass="forward">
-					<c:VerticalLayout></c:VerticalLayout>
-					<c:TextView Id="obligateredButton" Text="{@obligateredLeft})" />
-					<c:Image />
-					<c:TextView Text="#forward# (" />
+				<c:DockLayout  CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CountResultAndForward()">
+					<c:TextView Id="btnForward" Text="#forward#" />
 				</c:DockLayout>
 			</s:Else>
 			<c:HorizontalLayout>
@@ -63,130 +63,117 @@
 
 		<c:ScrollView Id="grScrollView">
 
-			<s:If Test="$HasQuestions()">
-
-				<c:DockLayout CssClass="search">
-					<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoSearch($edtSearch.Text)"></c:Button>
-					<c:DockLayout>
-						<c:Image />
-						<c:EditText Id="edtSearch" Text="$search" Placeholder="#search#"></c:EditText>
-					</c:DockLayout>
+			<c:DockLayout CssClass="search">
+				<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoSearch($edtSearch.Text)"></c:Button>
+				<c:DockLayout>
+					<c:Image />
+					<c:EditText Id="edtSearch" Text="$search" Placeholder="#search#"></c:EditText>
 				</c:DockLayout>
-				<c:HorizontalLine />
+			</c:DockLayout>
+			<c:HorizontalLine />
 
-				<c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(ShowFilters1, Questionnaire)">
-					<c:TextView Text="#filter#"></c:TextView>
-					<c:Image></c:Image>
-				</c:DockLayout>
-				<c:HorizontalLine />
+			<c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(ShowFilters1, Questionnaire)">
+				<c:TextView Text="#filter#"></c:TextView>
+				<c:Image></c:Image>
+			</c:DockLayout>
+			<c:HorizontalLine />
 
-				<s:If Test="@forwardAllowed">
-					<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
-				</s:If>
-				<s:Else>
-					<c:HorizontalLayout CssClass="required_grid">
-						<c:TextView Text="#requiredLeft# "></c:TextView>
-						<c:Image />
-						<c:TextView Id="obligateredInfo" Text="{@obligateredLeft}"></c:TextView>
-					</c:HorizontalLayout>
-				</s:Else>
-				<c:HorizontalLine />
+			<s:If Test="$ForwardIsntAllowed()">
+				<c:HorizontalLayout CssClass="required_grid">
+					<c:TextView Text="#requiredLeft# "></c:TextView>
+					<c:Image />
+					<c:TextView Id="obligateredInfo" Text="$ToString(@obligateredLeft)"></c:TextView>
+				</c:HorizontalLayout>
+			</s:If>
+			<s:Else>
+				<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
+			</s:Else>
+			<c:HorizontalLine />
 
-				<s:Iterator Id="sku" Value="$SKUs" Status="statusCount">
-					<s:Push Id="index" Value="{$statusCount.Index}"></s:Push>
+			<s:Iterator Id="sku" Value="$SKUs" Status="statusCount">
+				<s:Push Id="index" Value="{$statusCount.Index}"></s:Push>
 
-					<c:DockLayout CssClass="grid" OnClick="$CreateItemAndShow($sku.SKU, $index, $sku.ShowChild)">
-						<s:If Test="$sku.Obligatoriness=='1'">
-							<s:If Test="$sku.ObligateredLeft > 0">
-								<c:HorizontalLayout CssClass="required_side_wh"></c:HorizontalLayout>
-							</s:If>
-							<s:Else>
-								<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
-							</s:Else>
+				<c:DockLayout CssClass="grid" OnClick="$CreateItemAndShow($sku.SKU, $index, $sku.ShowChild)">
+					<s:If Test="$sku.Obligatoriness=='1'">
+						<s:If Test="$ConvertToBoolean1($sku.ObligateredLeft)">
+							<c:HorizontalLayout CssClass="required_side_wh"></c:HorizontalLayout>
 						</s:If>
 						<s:Else>
-							<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+							<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
 						</s:Else>
-						<c:DockLayout>
-							<s:If Test="$sku.BaseUnitQty != NULL">
-								<c:TextView Text="#recommended#" CssClass="single_rec"/>
-							</s:If>
-							<c:TextView Text="{$sku.Answered} #of# {$sku.Total}" CssClass="description_row" />
-						</c:DockLayout>
-						<c:TextView Text="$sku.SKUDescription" CssClass="main_row"></c:TextView>
+					</s:If>
+					<s:Else>
+						<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+					</s:Else>
+					<c:DockLayout>
+						<s:If Test="$sku.BaseUnitQty != NULL">
+							<c:TextView Text="#recommended#" CssClass="single_rec"/>
+						</s:If>
+						<c:TextView Text="{$sku.Answered} #of# {$sku.Total}" CssClass="description_row" />
 					</c:DockLayout>
-					<c:HorizontalLine />
+					<c:TextView Text="$sku.SKUDescription" CssClass="main_row"></c:TextView>
+				</c:DockLayout>
+				<c:HorizontalLine />
 
-					<s:If Test="$sku.ShowChild">
-						<s:Push Id="childs" Value="$GetChilds($sku.SKU)"></s:Push>
-						<s:Iterator Id="child" Value="$childs" Status="statusCountCh">
-							<s:Push Id="indexCh" Value="{$statusCountCh.Index}"></s:Push>
-							<c:DockLayout CssClass="child_grid">
-								<s:If Test="$child.Obligatoriness=='1'">
-									<s:If Test="$child.Answer == null || $child.Answer == ''">
-										<c:HorizontalLayout CssClass="required_side_gr"></c:HorizontalLayout>
-									</s:If>
-									<s:Else>
-										<c:HorizontalLayout CssClass="answered_side_gr"></c:HorizontalLayout>
-									</s:Else>
+				<s:If Test="$sku.ShowChild">
+					<s:Push Id="childs" Value="$GetChilds($sku.SKU)"></s:Push>
+					<s:Iterator Id="child" Value="$childs" Status="statusCountCh">
+						<s:Push Id="indexCh" Value="{$statusCountCh.Index}"></s:Push>
+						<c:DockLayout CssClass="child_grid">
+							<s:If Test="$child.Obligatoriness=='1'">
+								<s:If Test="$IsNullOrEmpty($child.Answer)">
+									<c:HorizontalLayout CssClass="required_side_gr"></c:HorizontalLayout>
 								</s:If>
 								<s:Else>
-									<c:HorizontalLayout CssClass="empty_side_gr"></c:HorizontalLayout>
+									<c:HorizontalLayout CssClass="answered_side_gr"></c:HorizontalLayout>
 								</s:Else>
-								<s:If Test="$child.IsSnapshot==1">
-									<c:HorizontalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.Answer, $child.Description)">
-										<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
-										<s:If Test="$child.Answer == null || $child.Answer == ''">
+							</s:If>
+							<s:Else>
+								<c:HorizontalLayout CssClass="empty_side_gr"></c:HorizontalLayout>
+							</s:Else>
+							<s:If Test="$child.IsSnapshot==1">
+								<c:HorizontalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.Answer, $child.Description)">
+									<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
+									<s:If Test="$IsNullOrEmpty($child.Answer)">
+										<c:VerticalLayout>
+											<c:VerticalLayout CssClass="no_child_answer">
+												<c:Image Id="control{$indexCh}" />
+											</c:VerticalLayout>
+										</c:VerticalLayout>
+									</s:If>
+									<s:Else>
+										<s:If Test="$SnapshotExists($visit, $outlet, $child.Answer)">
 											<c:VerticalLayout>
-												<c:VerticalLayout CssClass="no_child_answer">
-													<c:Image Id="control{$indexCh}" />
-												</c:VerticalLayout>
+												<c:Image Id="control{$indexCh}" CssClass="answer_snapshot" Source="$GetImagePath($visit.Id, $outlet, $child.Answer)"></c:Image>
 											</c:VerticalLayout>
 										</s:If>
 										<s:Else>
-											<s:If Test="$child.FullFileName != '/shared/result.jpg'">
-												<s:If Test="$SnapshotExists($child.FullFileName)">
-													<c:VerticalLayout>
-														<c:Image Id="control{$indexCh}" CssClass="answer_snapshot" Source="$GetImagePath($visit.Id, $outlet, $child.Answer)"></c:Image>
-													</c:VerticalLayout>
-												</s:If>
-												<s:Else>
-												</s:Else>
-											</s:If>
-											<s:Else>
-												<c:VerticalLayout>
-													<c:VerticalLayout CssClass="no_child_image">
-														<c:Image Id="control{$indexCh}" />
-													</c:VerticalLayout>
+											<c:VerticalLayout>
+												<c:VerticalLayout CssClass="no_child_image">
+													<c:Image Id="control{$indexCh}" />
 												</c:VerticalLayout>
-											</s:Else>
+											</c:VerticalLayout>
 										</s:Else>
-									</c:HorizontalLayout>
+									</s:Else>
+								</c:HorizontalLayout>
+							</s:If>
+							<s:Else>
+								<c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.Answer, $child.Description)">
+									<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
+									<s:If Test="$child.IsInputField==1">
+										<c:EditText Id="control{$indexCh}" Text="$child.Answer" Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU)" OnLostFocus="$RefreshScreen($search)" Keyboard="$child.KeyboardType" CssClass="child_main_row"></c:EditText>
 									</s:If>
-								<s:Else>
-									<c:VerticalLayout OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.Answer, $child.Description)">
-										<c:TextView Text="$child.Description" CssClass="description_row"></c:TextView>
-										<s:If Test="$child.IsInputField==1">
-											<c:EditText Id="control{$indexCh}" Text="$child.Answer" Placeholder="—" OnChange="$AssignAnswer($child.Question, $sku.SKU, null, $child.AnswerType)" OnLostFocus="$RefreshScreen($search, $sku.SKU, $child.Question, $child.AnswerType)" Keyboard="$child.KeyboardType" CssClass="child_main_row"></c:EditText>
-										</s:If>
-										<s:Else>
-											<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput" CssClass="child_main_row"></c:TextView>
-										</s:Else>
-									</c:VerticalLayout>
-								</s:Else>
-							</c:DockLayout>
-							<c:HorizontalLine />
-						</s:Iterator>
-					</s:If>
+									<s:Else>
+										<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput" CssClass="child_main_row"></c:TextView>
+									</s:Else>
+								</c:VerticalLayout>
+							</s:Else>
+						</c:DockLayout>
+						<c:HorizontalLine />
+					</s:Iterator>
+				</s:If>
 
-				</s:Iterator>
-
-			</s:If>
-
-			<s:Else>
-				<c:HorizontalLayout CssClass="margin_top" />
-				<c:TextView Text="#no_questions_list#" CssClass="no_contacts" />
-			</s:Else>
+			</s:Iterator>
 
 		</c:ScrollView>
 

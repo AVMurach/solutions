@@ -178,33 +178,9 @@ function FocusOnEditText(editFieldName, isInputField) {
 
 function FormatOutput(value) {
 	if (String.IsNullOrEmpty(value) || IsEmptyValue(value))
-		return "-";
+		return "—";
 	else
 		return value;
-}
-
-function RoundToInt(val){ 
-    
-    var string = val;
-    var resultString = "";
-    
-    if (typeof string != "string")
-        string = string.ToString();    
-
-    for (var i = 1; i <= StrLen(string); i++){  // it's all about ot clear source from incorrect chars
-        var ch = Mid(string, i, 1);
-
-        if (validate(ch, "([0-9.,])*")){
-            resultString += ch;
-
-            if (validate(resultString, "([0-9])*[.,][0-9]")) //we've just got a last char to round the source
-                break;
-        }
-        else
-            break;
-    };
-
-    return Round(resultString, 0);
 }
 
 //--------------------Clear Button part----------------------
@@ -233,21 +209,4 @@ function AssignDialogValue(state, args) {
 	entity[attribute] = args.Result;
 	entity.GetObject().Save();
 	return entity;
-}
-
-//--------------------------WorkWithGPS-----------------------
-
-function ActualLocation(location){
-    
-    var actualTime;
-    if (parseInt($.sessionConst.UserCoordinatesActualityTime)==parseInt(0)){
-        actualTime = true;
-    }
-    else{
-        var locTime = location.Time.ToLocalTime();
-        var maxTime = DateTime.Now.AddMinutes(-parseInt($.sessionConst.UserCoordinatesActualityTime));
-        actualTime = locTime > maxTime;
-    }
-
-    return (location.NotEmpty && actualTime);
 }

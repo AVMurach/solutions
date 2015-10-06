@@ -1,40 +1,22 @@
-﻿var snapshotsExists;
+var snapshotsExists;
 var singlePicture;
 var parameterValueC;
-var title;
 
-//"description"	= "000000001"
-//"address"			= "000000002"
-//"coordinates" = "000000003"
-//"type"				= "000000004"
-//"class"				= "000000005"
-//"distributor" = "000000006"
-//"status"			= "000000007"
-//"snapshots"		= "000000008"
-
-function OnLoading() {
-
-	query = new Query("SELECT Editable, Code FROM Catalog_OutletsPrimaryParametersSettings");
-
-	parameterList = query.Execute();
-
-	var primaryParametersSettings = new Dictionary();
-
-	while (parameterList.Next()) {
-
-		primaryParametersSettings.Add(parameterList.Code, parameterList.Editable);
-
-	}
-
-	$.Add("primaryParametersSettings", primaryParametersSettings);
-
-	title = Translate["#outlet#"];
+function WarMupFunction() {
 
 }
 
-function HasMenu(){
-
-	return GlobalWorkflow.GetMenuItem() == "Outlets" ? true : false;
+function OnLoading() {
+	var primaryParametersSettings = new Dictionary();
+	primaryParametersSettings.Add("description", "000000001");
+	primaryParametersSettings.Add("address", "000000002");
+	primaryParametersSettings.Add("coordinates", "000000003");
+	primaryParametersSettings.Add("type", "000000004");
+	primaryParametersSettings.Add("class", "000000005");
+	primaryParametersSettings.Add("distributor", "000000006");
+	primaryParametersSettings.Add("status", "000000007");
+	primaryParametersSettings.Add("snapshots", "000000008");
+	$.Add("primaryParametersSettings", primaryParametersSettings);
 }
 
 function GetOutlets(searchText) {
@@ -49,18 +31,16 @@ function GetOutlets(searchText) {
 		searchText = StrReplace(searchText, "'", "''");
 		search = "WHERE Contains(O.Description, '" + searchText + "') ";
 	}
-	
-	var currentDoc = GlobalWorkflow.GetMenuItem();
 
-	if (currentDoc=="Outlets") {  //ShowOutletInMA for Outlets.xml at Outlets workflow
+	if ($.workflow.name=="Outlets") {  //ShowOutletInMA for Outlets.xml at Outlets workflow
 		showOutlet = " JOIN Catalog_OutletsStatusesSettings OS ON OS.Status=O.OutletStatus AND ShowOutletInMA=1 ";
 	}
 
-	if (currentDoc=="Orders") {  //CreateOrderInMA for Outlets.xml at Order workflow
+	if ($.workflow.name=="Order") {  //CreateOrderInMA for Outlets.xml at Order workflow
 		createOrder = " JOIN Catalog_OutletsStatusesSettings OS ON OS.Status=O.OutletStatus AND CreateOrderInMA=1 ";
 	}
 
-	if (currentDoc=="Returns"){
+	if ($.workflow.name=="Return"){
 		createReturn = " JOIN Catalog_OutletsStatusesSettings OS ON OS.Status=O.OutletStatus AND CreateReturnInMA=1 ";
 	}
 
@@ -74,43 +54,18 @@ function GetOutlets(searchText) {
 	else
 		outletStatus = " 3 AS OutletStatus";
 
-	q.Text = "SELECT O.Id, O.Description, O.Address, 'main_row' AS Style, " + outletStatus +
+	q.Text = "SELECT O.Id, O.Description, O.Address," + outletStatus +
 		" FROM Catalog_Outlet O " +
 		showOutlet + createOrder + createReturn + search + " ORDER BY O.Description LIMIT 500";
 
 	return q.Execute();
 }
 
-function AddGlobalAndAction(outlet) {
-
-	var actionName = "";
-	var curr = GlobalWorkflow.GetMenuItem();
-
-	if (curr=="Outlets")
-		actionName = "Select";
-	else{
-		if (HasContractors(outlet)){
-			if (curr == "Orders")
-				actionName = "CreateOrder";
-			if (curr == "Returns")
-				actionName = "CreateReturn";
-		}
-		else{
-			Dialog.Message(Translate["#noContractorsMessage#"]);
-		}
-	}
-
-	if (actionName != ""){
-		GlobalWorkflow.SetOutlet(outlet);
-		Workflow.Action(actionName, []);
-	}
-
-}
-
-function GetOutletObject(){
-	if (!$.Exists("outlet"))
-		$.AddGlobal("outlet", GlobalWorkflow.GetOutlet());
-	return GetObject($.outlet);
+function AddGlobalAndAction(name, value, actionName) {
+	if (Variables.Exists(name))
+		$.Remove(name);
+	$.AddGlobal(name, value);
+	Workflow.Action(actionName, []);
 }
 
 function CreateOutletAndForward() {
@@ -123,15 +78,7 @@ function CreateOutletAndForward() {
 }
 
 function CreateVisitEnable() {
-	if ($.sessionConst.PlanEnbl && $.workflow.name == "Outlet")
-		return true;
-	else
-		return false;
-
-}
-
-function CreateOutletEnabled(){
-	if (GlobalWorkflow.GetMenuItem() == "Outlets")
+	if ($.sessionConst.PlanEnbl && $.workflow.name == "Outlets")
 		return true;
 	else
 		return false;
@@ -139,33 +86,29 @@ function CreateOutletEnabled(){
 }
 
 function GetOutletParameters(outlet) {
-
 	var query = new Query();
-
 	query.Text = "SELECT P.Id, P.Description, P.DataType, DT.Description AS TypeDescription, OP.Id AS ParameterValue, OP.Value, P.Visible, P.Editable " +
+
 			", CASE WHEN P.DataType=@integer OR P.DataType=@decimal OR P.DataType=@string THEN 1 ELSE 0 END AS IsInputField " + //IsInputField
 			", CASE WHEN P.DataType=@integer OR P.DataType=@decimal THEN 'numeric' ELSE 'auto' END AS KeyboardType " +
+
 			", CASE WHEN P.DataType=@integer OR P.DataType=@decimal OR P.DataType=@string THEN OP.Value " +
-					"ELSE CASE WHEN OP.Value IS NULL OR RTRIM(OP.Value)='' THEN '—' " +
-										"WHEN OP.Value IS NOT NULL AND P.DataType=@snapshot THEN @attached " +
-										"WHEN OP.Value IS NOT NULL AND P.DataType!=@snapshot THEN OP.Value " +
-					"END END AS AnswerOutput " +
-			", CASE WHEN P.DataType=@snapshot THEN " +
-					"CASE WHEN TRIM(IFNULL(OFILES.FullFileName, '')) != '' THEN LOWER(OFILES.FullFileName) ELSE '/shared/result.jpg' END ELSE NULL END AS FullFileName " +
+			"ELSE CASE " +
+			"WHEN OP.Value IS NULL OR RTRIM(OP.Value)='' THEN '—' " +
+			"WHEN OP.Value IS NOT NULL AND P.DataType=@snapshot THEN @attached " +
+			"WHEN OP.Value IS NOT NULL AND P.DataType!=@snapshot THEN OP.Value " +
+			"END END AS AnswerOutput " +
+
 			"FROM Catalog_OutletParameter P " +
 			"JOIN Enum_DataType DT ON DT.Id=P.DataType " +
-			"LEFT JOIN Catalog_Outlet_Parameters OP ON OP.Parameter = P.Id AND OP.Ref = @outlet " +
-			"LEFT JOIN Catalog_Outlet_Files OFILES ON OP.Value = OFILES.FileName AND OFILES.Ref = @outlet";
-
+			"LEFT JOIN Catalog_Outlet_Parameters OP ON OP.Parameter = P.Id AND OP.Ref = @outlet";
 	query.AddParameter("integer", DB.Current.Constant.DataType.Integer);
 	query.AddParameter("decimal", DB.Current.Constant.DataType.Decimal);
 	query.AddParameter("string", DB.Current.Constant.DataType.String);
 	query.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
 	query.AddParameter("outlet", outlet);
 	query.AddParameter("attached", Translate["#snapshotAttached#"]);
-
 	return query.Execute();
-
 }
 
 function UseInput(typeDescription) {
@@ -206,6 +149,7 @@ function CheckNotNullAndForward(outlet, visit) {
 	}
 }
 
+
 function ReviseParameters(outlet, save) {
 	var q =
 			new Query("SELECT Id, Value FROM Catalog_Outlet_Parameters WHERE Ref=@ref");
@@ -219,11 +163,13 @@ function ReviseParameters(outlet, save) {
 	}
 }
 
+
 //---------------------------header parameters dialog.choose--------------------
+
 
 function SelectIfNotAVisit(outlet, attribute, control, title, editOutletParameters, primaryParameterName) {
 	if ($.workflow.name != "Visit") {
-		if (editOutletParameters && $.primaryParametersSettings[primaryParameterName]) {
+		if (IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName)) {
 
 			var listChoice = null;
 			var func = null;
@@ -236,18 +182,7 @@ function SelectIfNotAVisit(outlet, attribute, control, title, editOutletParamete
 					table.push([listChoice["Id"], Translate[String.Format("#{0}#", listChoice.Description)]]);
 				}
 				listChoice = table;
-			}
-
-			if (title == Translate["#partner#"]){
-				var query = new Query("SELECT DISTINCT D.Id, D.Description " +
-					" FROM Catalog_Distributor D " +
-					" JOIN Catalog_Territory_Distributors TD ON D.Id=TD.Distributor " +
-					" JOIN Catalog_Territory_Outlets T ON TD.Ref=T.Ref AND T.Outlet=@outlet " +
-					" UNION SELECT @emptyRef, '-'" +
-					" ORDER BY Description ");
-				query.AddParameter("outlet", outlet);
-				query.AddParameter("emptyRef", DB.EmptyRef("Catalog.Distributor"));
-				listChoice = query.Execute();
+				func = CallBack;
 			}
 
 			Dialogs.DoChoose(listChoice, outlet, attribute, control, func, title);
@@ -255,22 +190,14 @@ function SelectIfNotAVisit(outlet, attribute, control, title, editOutletParamete
 	}
 }
 
-function GetDescr(description){
-
-	return String.IsNullOrEmpty(description) ? "—" : description;
-}
-
-
-function DistrCallBack(state, args){
-	AssignDialogValue(state, args);
-	var control = state[2];
-	if (args.Result==DB.EmptyRef("Catalog.Distributor"))
-		control.Text = "—";
-	else
-		control.Text = args.Result.Description;
+function DoSelect(editOutletParameters, primaryParameterName) {
+	if (IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName)) {
+		Dialogs.DoChoose(null, $.outlet, 'Distributor', $.outletDistr, null, Translate["#distributor#"]);
+	}
 }
 
 //--------------------------editing additional parameters handlers-----------------------------
+
 
 function CreateOutletParameterValue(outlet, parameter, value, parameterValue, isEditText) {
 	var q = new Query("SELECT Id FROM Catalog_Outlet_Parameters WHERE Ref=@ref AND Parameter = @parameter");
@@ -284,14 +211,15 @@ function CreateOutletParameterValue(outlet, parameter, value, parameterValue, is
 		parameterValue.Save();
 	} else{
 		parameterValue = parameterValue.GetObject();
-		if (isEditText){
+		if (isEditText){			
 			if ((parameter.DataType).ToString() != (DB.Current.Constant.DataType.Snapshot).ToString())
 			parameterValue.Value = value;
 			parameterValue.Save();
 		}
-	}
+	}		
 	return parameterValue.Id;
 }
+
 
 function AssignParameterValue(control, typeDescription, parameterValue, value, outlet, parameter){
 	CreateOutletParameterValue(outlet, parameter, control.Text, parameterValue, true)
@@ -312,12 +240,12 @@ function GoToParameterAction(typeDescription, parameterValue, value, outlet, par
 			}
 			if (typeDescription == "DateTime") {  //---------DateTime-------
 				if (String.IsNullOrEmpty(parameterValue.Value))
-					Dialogs.ChooseDateTime(parameterValue, "Value", Variables[control], DateHandler, parameterDescription);
+					ChooseDateTime(parameterValue, "Value", Variables[control], DateHandler, parameterDescription);
 				else
-					Dialog.Choose(parameterDescription, [[0, Translate["#clearValue#"]], [1, Translate["#setDate#"]]], DateHandler, [parameterValue, control, parameterDescription]);
+					Dialog.Choose(parameterDescription, [[0, Translate["#clearValue#"]], [1, Translate["#setDate#"]]], DateHandler, [parameterValue, control]);
 			}
 			if (typeDescription == "Boolean") {  //----------Boolean--------
-				Dialogs.ChooseBool(parameterValue, "Value", Variables[control], null, parameterDescription);
+				ChooseBool(parameterValue, "Value", Variables[control], null, parameterDescription);
 			}
 			if (typeDescription == "Snapshot") { //----------Snapshot-------
 				query = new Query("SELECT Value FROM Catalog_Outlet_Parameters WHERE Parameter = @parameter AND Ref = @outlet")
@@ -341,6 +269,18 @@ function GoToParameterAction(typeDescription, parameterValue, value, outlet, par
 	}
 }
 
+function IsEmptyString(value) {
+	return String.IsNullOrEmpty(value);
+}
+
+function IsEditText(editOutletParameters, isInputField, editable) {
+	if (editOutletParameters && isInputField && editable) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function GetStatusDescription(outlet) {
 	var query = new Query("SELECT Description FROM Enum_OutletStatus WHERE Id = @status");
 	query.AddParameter("status", outlet.OutletStatus);
@@ -349,8 +289,20 @@ function GetStatusDescription(outlet) {
 	return result;
 }
 
+function IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName) {
+	query = new Query("SELECT Editable FROM Catalog_OutletsprimaryParametersSettings WHERE Code = @Code");
+	query.AddParameter("Code", $.primaryParametersSettings[primaryParameterName]);
+	isParameterEditable = query.ExecuteScalar();
+	if (editOutletParameters && isParameterEditable) {
+		result =  true;
+	} else {
+		result = false;
+	};
+	return result;
+}
+
 function FocusIfHasEditText(fieldName, editOutletParameters, primaryParameterName) {
-	if (editOutletParameters && $.primaryParametersSettings[primaryParameterName]) {
+	if (IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName)) {
 		FocusOnEditText(fieldName, 1);
 	}
 }
@@ -360,7 +312,7 @@ function DateHandler(state, args) {
 	var control = state[1];
 	if(getType(args.Result)=="System.DateTime"){
 		parameterValue = parameterValue.GetObject();
-		parameterValue.Value = Format("{0:dd.MM.yyyy HH:mm}", Date(args.Result));
+		parameterValue.Value = args.Result;
 		parameterValue.Save();
 		Workflow.Refresh([]);
 	}
@@ -371,44 +323,23 @@ function DateHandler(state, args) {
 		Workflow.Refresh([]);
 	}
 	if (parseInt(args.Result)==parseInt(1)){
-		var parameterDescription = state[2];
-		Dialogs.ChooseDateTime(parameterValue, "Value", Variables[control], DateHandler, parameterDescription);
+		ChooseDateTime(parameterValue, "Value", Variables[control]);
 	}
 }
+
 
 function GetSnapshots(outlet) {
-
-	var q = new Query("SELECT S.Id AS Id, " +
-										"CASE WHEN TRIM(IFNULL(OFILES.FullFileName, '')) != '' THEN LOWER(OFILES.FullFileName) ELSE '/shared/result.jpg' END AS FullFileName, " +
-										"S.FileName AS FileName, " +
-										"S.LineNumber AS LineNumber " +
-										"FROM Catalog_Outlet_Snapshots S " +
-										"LEFT JOIN Catalog_Outlet_Files OFILES ON S.FileName = OFILES.FileName AND OFILES.Ref = @ref " +
-										"WHERE S.Ref=@ref AND (S.Deleted!='1' OR S.Deleted IS NULL) ORDER BY S.LineNumber");
-
+	var q = new Query("SELECT Id, FileName, LineNumber FROM Catalog_Outlet_Snapshots WHERE Ref=@ref AND (Deleted!='1' OR Deleted IS NULL) ORDER BY LineNumber");
 	q.AddParameter("ref", outlet);
-
 	snapshotsExists = true;
-
-	countOfFiles = q.ExecuteCount();
-
-	if (parseInt(countOfFiles)==parseInt(0)) {
-
+	if (parseInt(q.ExecuteCount())==parseInt(0))
 		snapshotsExists = false;
-
-	}
-
 	singlePicture = false;
-
-	if (parseInt(countOfFiles)==parseInt(1)) {
-
+	if (parseInt(q.ExecuteCount())==parseInt(1))
 		singlePicture = true;
-
-	}
-
 	return q.Execute();
-
 }
+
 
 function NoSnapshots() {
 	if (snapshotsExists)
@@ -417,12 +348,14 @@ function NoSnapshots() {
 		return true;
 }
 
+
 function GetImagePath(objectID, pictID, pictExt) {
 	return Images.FindImage(objectID, pictID, pictExt, "Catalog_Outlet_Files");
 }
 
+
 function ImageActions(control, valueRef, imageControl, outlet, filename) {
-	if ($.sessionConst.editOutletParameters && $.primaryParametersSettings["000000008"]) {
+	if (IsOutletPrimaryParameterEditable($.sessionConst.editOutletParameters, "snapshots")) {
 		parameterValueC = valueRef;
 		Images.AddSnapshot($.outlet, valueRef, OutletSnapshotHandler, Translate["#snapshot#"], Variables[imageControl].Source);
 	} else {
@@ -435,6 +368,7 @@ function AddSnapshot(control, outlet) {
 		parameterValueC = null;
 		Images.AddSnapshot(outlet, null, OutletSnapshotHandler, Translate["#outletSnapshots#"], null);
 }
+
 
 function OutletSnapshotHandler(state, args) {
 	if (args.Result){
@@ -461,7 +395,9 @@ function OutletSnapshotHandler(state, args) {
 	}
 }
 
+
 // --------------------------case Visits----------------------
+
 
 function CreateVisitIfNotExists(outlet, userRef, visit, planVisit) {
 
@@ -474,7 +410,7 @@ function CreateVisitIfNotExists(outlet, userRef, visit, planVisit) {
 		visit.Date = DateTime.Now;
 		visit.StartTime = DateTime.Now;
 		var location = GPS.CurrentLocation;
-		if (ActualLocation(location)) {
+		if (location.NotEmpty) {
 			visit.Lattitude = location.Latitude;
 			visit.Longitude = location.Longitude;
 		}
@@ -492,7 +428,7 @@ function CreateVisitIfNotExists(outlet, userRef, visit, planVisit) {
 
 function SetLocation(control, outlet) {
 	var location = GPS.CurrentLocation;
-	if (ActualLocation(location)) {
+	if (location.NotEmpty) {
 		outlet = outlet.GetObject();
 		outlet.Lattitude = location.Latitude;
 		outlet.Longitude = location.Longitude;
@@ -502,7 +438,26 @@ function SetLocation(control, outlet) {
 		NoLocationHandler(SetLocation, outlet);
 }
 
+function HasCoordinates(outlet) {
+	if (outlet == null) {
+		return false;
+	}
+	if (!isDefault(outlet.Lattitude) && !isDefault(outlet.Longitude)) {
+		return true;
+	}
+	return false;
+}
+
 function CoordsChecked(visit) {
+
+	var location = GPS.CurrentLocation;
+	if (location.NotEmpty) {
+		var visitObj = visit.GetObject();
+		visitObj.Lattitude = location.Latitude;
+		visitObj.Longitude = location.Longitude;
+		visitObj.Save();
+	}
+	
 	if (Variables["workflow"]["name"] == "Visit" && NotEmptyRef(visit.Plan)) {
 		var query = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='CoordinateControlEnabled'");
 		var coordControl = query.ExecuteScalar();
@@ -526,7 +481,7 @@ function VisitCoordsHandler(answ, visit) {
 	visit = $.workflow.visit;
 	if (answ == DialogResult.Yes) {
 		var location = GPS.CurrentLocation;
-		if (ActualLocation(location)) {
+		if (location.NotEmpty) {
 			visit = visit.GetObject();
 			visit.Lattitude = location.Latitude;
 			visit.Longitude = location.Longitude;
@@ -541,8 +496,8 @@ function NoLocationHandler(descriptor) {
 	Dialog.Message("#locationSetFailed#");
 }
 
-function ShowCoordOptions(control, outlet, editOutletParameters) {
-	if (editOutletParameters && $.primaryParametersSettings["000000003"]) {
+function ShowCoordOptions(control, outlet, editOutletParameters, primaryParameterName) {
+	if (IsOutletPrimaryParameterEditable(editOutletParameters, primaryParameterName)) {
 		Dialog.Choose("#coordinates#", [[0,Translate["#clear_coord#"]], [1,Translate["#refresh#"]], [2,Translate["#copy#"]]], ChooseHandler, outlet);
 	}
 }
@@ -564,64 +519,6 @@ function ChooseHandler(state, args) {
 	}
 }
 
-//---------------------------------Contractors--------------------------
-
-function ShowContractorsIfExists(outlet) {
-
-	var con = parseInt(HasContractors(outlet));
-
-	if (con == parseInt(0))
-		Dialog.Message(Translate["#noContractors#"]);
-
-	else if (con == parseInt(1))
-	{
-		var outletObj = outlet.LoadObject();
-
-		var contractor;
-		if (outletObj.Distributor==DB.EmptyRef("Catalog_Distributor"))
-		{
-			var q = new Query("SELECT Contractor FROM Catalog_Outlet_Contractors WHERE Ref=@ref");
-			q.AddParameter("ref", outlet);
-			contractor = q.ExecuteScalar();
-		}
-		else
-		{
-			var q = new Query("SELECT Contractor FROM Catalog_Distributor_Contractors WHERE Ref=@ref");
-			q.AddParameter("ref", outletObj.Distributor);
-			contractor = q.ExecuteScalar();
-		}
-		DoAction('Contractor', contractor);
-	}
-
-	else if (con > parseInt(1))
-		DoAction('ShowContractors');
-}
-
-function HasContractors(outlet){
-
-	var res;
-
-	var outletObj = outlet.GetObject();
-	if (outletObj.Distributor==DB.EmptyRef("Catalog_Distributor"))
-		res = HasOutletContractors(outlet);
-	else
-		res = HasPartnerContractors(outlet);
-
-	return res;
-}
-
-function HasOutletContractors(outlet) {
-	var q = new Query("SELECT COUNT(Id) FROM Catalog_Outlet_Contractors WHERE ref = @outlet")
-	q.AddParameter("outlet", outlet);
-	return q.ExecuteScalar();
-}
-
-function HasPartnerContractors(outlet){
-	var outletObj = outlet.GetObject();
-	var q = new Query("SELECT COUNT(Id) FROM Catalog_Distributor_Contractors C WHERE C.Ref=@distr");
-	q.AddParameter("distr", outletObj.Distributor);
-	return q.ExecuteScalar();
-}
 
 // --------------------------- Outlets ---------------------------
 
@@ -645,7 +542,8 @@ function SaveAndBack(outlet) {
 		ReviseParameters(outlet, true);
 		if ($.Exists("outlet"))
 			$.Remove("outlet");
-		Workflow.Commit();
+		// DB.Commit();
+		Workflow.BackTo("Outlets");
 	}
 }
 
@@ -691,10 +589,10 @@ function CheckIfEmpty(entity, attribute, objectType, objectName, deleteIfEmpty) 
 }
 
 function BackMenu(){
-	if (GlobalWorkflow.GetMenuItem() == "Outlets")
-		return false;
-	else
+	if ($.workflow.name=='Order' || $.workflow.name=='Return')
 		return true;
+	else
+		return false;
 }
 
 function CommitAndBack(){
@@ -702,8 +600,100 @@ function CommitAndBack(){
 	Workflow.Rollback();
 }
 
-function SnapshotExists(filename) {
+//------------------------------Temporary, from dialogs----------------
 
-	return FileSystem.Exists(filename);
+//function DoChoose(listChoice, entity, attribute, control, func, title) {
+//
+//	title = typeof title !== 'undefined' ? title : "#select_answer#";
+//
+//	if (attribute==null)
+//		var startKey = control.Text;
+//	else
+//		var startKey = entity[attribute];
+//
+//	if (listChoice==null){
+//		var tableName = entity[attribute].Metadata().TableName;
+//		var query = new Query();
+//		query.Text = "SELECT Id, Description FROM " + tableName;
+//		listChoice = query.Execute();
+//	}
+//
+//	if (func == null)
+//		func = CallBack;
+//
+//
+//
+//	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
+//}
+
+function ChooseDateTime(entity, attribute, control, func, title) {
+	var startKey;
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
+	// if (attribute==null)
+		startKey = control.Text;
+	// else
+	// 	startKey = entity[attribute];
+
+	if (String.IsNullOrEmpty(startKey) || startKey=="—")
+		startKey = DateTime.Now;
+
+	if (func == null)
+		func = CallBack;
+	Dialog.DateTime(title, startKey, func, [entity, attribute, control]);
+}
+
+function ChooseBool(entity, attribute, control, func, title) {
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
+	var startKey = control.Text;
+
+	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	if (func == null)
+		func = CallBack;
+
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
+}
+
+function CallBack(state, args) {
+	AssignDialogValue(state, args);
+	var control = state[2];
+	var attribute = state[1];
+	if (getType(args.Result)=="BitMobile.DbEngine.DbRef") {
+		if (attribute = "OutletStatus") {
+			control.Text = Translate[String.Format("#{0}#", args.Result.Description)]
+		} else {
+			control.Text = args.Result.Description;
+		}
+	} else {
+		control.Text = args.Result;
+	}
+}
+
+function AssignDialogValue(state, args) {
+	var entity = state[0];
+	var attribute = state[1];
+	entity[attribute] = args.Result;
+	entity.GetObject().Save();
+	return entity;
+}
+
+function SnapshotExists(outlet, filename, filesTableName) {
+	return Images.SnapshotExists(outlet, filename, filesTableName);
+}
+
+//------------------------------Temporary, from global----------------
+
+function GenerateGuid() {
+
+	return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+
+}
+
+function S4() {
+
+	return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 
 }

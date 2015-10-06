@@ -73,7 +73,7 @@ function GetScheduledVisitsCount() {
 		return cnt;
 }
 
-function GetCommitedVisits(searchText) {
+function GetCommitedScheduledVisits(searchText) {
 
 	//на самом деле функция возвращает все визиты подряд, но мне кажется что это ненадолго, поэтому в комментарии - еще вариант запроса, отражающий изначальный смысл
 
@@ -130,7 +130,7 @@ function GetOutlets(searchText) {
 
 }
 
-function CountOutlets() {
+function GetOutletsCount() {
 	var q = new Query("SELECT COUNT(O.Id) FROM Catalog_Outlet O LEFT JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus = OSS.Status AND OSS.DoVisitInMA = 1 WHERE NOT OSS.Status IS NULL ORDER BY O.Description LIMIT 100");
 	var cnt = q.ExecuteScalar();
 	if (cnt == null)
@@ -142,7 +142,6 @@ function CountOutlets() {
 function AddGlobalAndAction(planVisit, outlet, actionName) {
 	$.AddGlobal("planVisit", planVisit);
 	$.AddGlobal("outlet", outlet);
-	GlobalWorkflow.SetOutlet(outlet);
 	Workflow.Action(actionName, []);
 }
 

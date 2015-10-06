@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="CreateOutlet.css">
+
+	<c:DockLayout>
+
+		<c:DockLayout CssClass="top_navigator">
+			<c:HorizontalLayout>
+				<c:TextView Text="#details#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+
+		<c:HorizontalLine />
+
+		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$SaveAndBack($outlet)">
+			<c:TextView Text="#client#"></c:TextView>
+		</c:HorizontalLayout>
+		<c:HorizontalLine CssClass="b_line" />
+
+		<c:ScrollView Id="grScrollView">
+
+			<c:HorizontalLayout CssClass="margin_top" />
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(legal_name, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#legal_name#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$outlet.LegalName" Placeholder="—" CssClass="main_row" Id="legal_name" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(legal_address, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#legal_address#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$outlet.LegalAddress" Placeholder="—" CssClass="main_row" Id="legal_address"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid">
+				<c:VerticalLayout OnClickAction="$SelectOwnership($OwnershipType)">
+					<c:TextView Text="#ownership#" CssClass="description_row"></c:TextView>
+					<s:If Test="$NotEmptyRef($outlet.OwnershipType)">
+						<c:TextView Id="OwnershipType" Text="$outlet.OwnershipType.Description" CssClass="main_row"/>
+					</s:If>
+					<s:Else>
+						<c:TextView Id="OwnershipType" Text="—" CssClass="main_row"/>
+					</s:Else>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(INN, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#inn#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$outlet.INN" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="INN" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(KPP, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#kpp#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$outlet.KPP" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="KPP" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(phone_number, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#phone#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$outlet.PhoneNumber" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="phone_number" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(email, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#email#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$outlet.Email" Placeholder="—" CssClass="main_row" Id="email" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(website, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#web_site#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$outlet.WebSite" Placeholder="—" CssClass="main_row" Id="website"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+		</c:ScrollView>
+
+	</c:DockLayout>
+
+</c:Screen>

@@ -1,4 +1,4 @@
-﻿var parameters;
+var parameters;
 var tableName;
 var question;
 var sku;

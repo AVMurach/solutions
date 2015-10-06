@@ -1,4 +1,4 @@
-﻿function DoChoose(listChoice, entity, attribute, control, func, title) { //optional": func, title; listChice - nullable
+function DoChoose(listChoice, entity, attribute, control, func, title) { //optional": func, title; listChice - nullable
 
 	title = typeof title !== 'undefined' ? title : "#select_answer#";
 
@@ -61,17 +61,10 @@ function ChooseBool(entity, attribute, control, func, title) {
 function CallBack(state, args) {
 	AssignDialogValue(state, args);
 	var control = state[2];
-	var attribute = state[1];
-	if (getType(args.Result)=="BitMobile.DbEngine.DbRef") {
-		if (attribute == "OutletStatus")
-			control.Text = Translate[String.Format("#{0}#", args.Result.Description)];
-		else{
-			control.Text = Find(args.Result.ToString(), '00000000-0000-0000-0000-000000000000') != parseInt(0) ? "—" : args.Result.Description;
-
-		}
-	}
+	if (getType(args.Result)=="BitMobile.DbEngine.DbRef")
+		control.Text = args.Result.Description;
 	else
-		control.Text = String.IsNullOrEmpty(args.Result) ? "—" : args.Result;
+		control.Text = args.Result;
 }
 
 function AssignDialogValue(state, args) {

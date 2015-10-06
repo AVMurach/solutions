@@ -100,8 +100,7 @@
 				<c:HorizontalLayout CssClass="clickable" OnClickAction="$ChandeDiscount($orderitem)">
 					<c:TextView Id="discountDescr" Text="$discountDescrText" />
 				</c:HorizontalLayout>
-				<!-- <s:Push Id="dummy" Value="$ShowDialog($param4)"></s:Push> -->
-				<c:EditText Id="discountEdit" Text="$DiscountOutput($param4)" CssClass="value" Keyboard="numeric" OnChange="$ApplyDiscount($orderitem)" OnGetFocus="$HideSwiped()"></c:EditText>
+				<c:EditText Id="discountEdit" Text="$param4" CssClass="value" Keyboard="numeric" OnChange="$ApplyDiscount($orderitem)" OnGetFocus="$HideSwiped()"></c:EditText>
 			</c:DockLayout>
 			<c:HorizontalLine />
 
@@ -113,7 +112,7 @@
 				<c:HorizontalLine />
 				<s:Iterator Id="historyItem" Value="$historyItems">
 					<c:SwipeHorizontalLayout CssClass="swipe_history" Index="1" OnSwipe="$WriteSwipedRow()">
-						<c:HorizontalLayout CssClass="repeat" OnClickAction="$RepeatOrder($orderitem, $historyItem.Qty, $historyItem.Discount, $sku.BaseUnit, $sku.BaseUnit.Description)">
+						<c:HorizontalLayout CssClass="repeat" OnClickAction="$RepeatOrder($orderitem, $historyItem.Qty, $historyItem.Total, $historyItem.Price, $historyItem.Discount, $sku.BaseUnit, $sku.BaseUnit.Description)">
 							<c:TextView Text="#repeat#" />
 						</c:HorizontalLayout>
 						<c:DockLayout CssClass="parameter_grid">

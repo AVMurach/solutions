@@ -1,4 +1,4 @@
-﻿var defFeature;
+var defFeature;
 var defPack;
 var packDescription;
 var swipedRow;
@@ -15,6 +15,10 @@ function OnLoading() {
         alreadyOrdered = Translate["#alreadyOrdered#"];
     else
         alreadyOrdered = Translate["#alreadyReturned#"]
+}
+
+function WarMupFunction() {
+
 }
 
 function GetCurrentDoc(){
@@ -83,7 +87,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
         var recOrderSort = " OrderRecOrder DESC, ";
 
-    } else if ($.workflow.name=='Order'){
+    } else {
 
         var recOrderFields = ", NULL AS RecUnit " +
                              ", NULL AS UnitId " +
@@ -98,21 +102,12 @@ function GetSKUAndGroups(searchText, thisDoc) {
         query.AddParameter("visit", $.workflow.visit);
 
         var recOrderSort = " OrderRecOrder DESC, ";
-    }
-    else{
-        var recOrderFields = ", NULL AS RecUnit " +
-                     ", NULL AS UnitId " +
-                     ", 0 AS RecOrder " +
-                     ", 0 AS OrderRecOrder ";
-        
-        var recOrderStr = "";
 
-        var recOrderSort = "";
     }
 
     if (stock.EmptyRef()==true){
 
-    	if ($.sessionConst.NoStkEnbl || $.workflow.currentDoc=='Return') {
+    	if ($.sessionConst.NoStkEnbl) {
             var stockCondition = "";
         } else {
             var stockCondition = " AND S.CommonStock > 0 ";
@@ -133,7 +128,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
     } else {
 
-    	if ($.sessionConst.NoStkEnbl || $.workflow.currentDoc=='Return') {
+    	if ($.sessionConst.NoStkEnbl) {
             var stockCondition = "";
         } else {
             var stockCondition = " AND SS.StockValue > 0 ";

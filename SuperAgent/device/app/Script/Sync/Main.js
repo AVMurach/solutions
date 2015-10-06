@@ -23,7 +23,6 @@ function SyncDataFinish() {
 	$.Remove("sessionConst");
 	Global.SetSessionConstants();
 	Indicators.SetIndicators();
-	Workflow.Refresh([]);
 }
 
 function DrawDataReport() {

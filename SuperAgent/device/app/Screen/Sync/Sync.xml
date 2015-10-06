@@ -1,77 +1,69 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Sync.css">
-	
-	<c:SwipeHorizontalLayout Id="swipe_layout" Index="1">
+	<c:VerticalLayout Id="VLayout">
 
-		<s:Include File="\Components\SideMenu.xml"/>
-
-		<c:VerticalLayout Id="VLayout">
-
-			<c:DockLayout CssClass="top_navigator">
-				<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnEvent="Back" OnClickAction="$OpenMenu($swipe_layout)">
-					<c:Image CssClass="menuIcon" />
-				</c:DockLayout>
-				<c:DockLayout CssClass="btn_space" />
-				<c:HorizontalLayout>
-					<c:TextView Text="#sync#" />
-				</c:HorizontalLayout>
+		<c:DockLayout CssClass="top_navigator">
+			<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnEvent="Back" OnClick="$DoRollback()">
+				<c:Image CssClass="menuIcon" />
 			</c:DockLayout>
-			<c:HorizontalLine />
-
-			<c:HorizontalLayout CssClass="caption_grid">
-				<c:TextView Text="#synchronizationData#:" />
+			<c:DockLayout CssClass="btn_space" />
+			<c:HorizontalLayout>
+				<c:TextView Text="#sync#" />
 			</c:HorizontalLayout>
-			<c:HorizontalLine />
+		</c:DockLayout>
+		<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid">
-				<c:VerticalLayout>
-					<c:DockLayout>
-						<c:TextView Text="#lastSync#" />
-						<c:Button Text="#synchronize#" OnClick="$SyncData()" />
-					</c:DockLayout>
+		<c:HorizontalLayout CssClass="caption_grid">
+			<c:TextView Text="#synchronizationData#:" />
+		</c:HorizontalLayout>
+		<c:HorizontalLine />
 
-					<c:TextView Id="dataSyncReport" CssClass="main_row" />
+		<c:HorizontalLayout CssClass="grid">
+			<c:VerticalLayout>
+				<c:DockLayout>
+					<c:TextView Text="#lastSync#" />
+					<c:Button Text="#synchronize#" OnClick="$SyncData()" />
+				</c:DockLayout>
 
-					<c:TextView Id="dataSyncError" CssClass="red_row" />
+				<c:TextView Id="dataSyncReport" CssClass="main_row" />
 
-					<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
-						<c:Indicator Id="dataSyncIndicator" />
-						<c:TextView Text="#sync#..." />
-					</c:HorizontalLayout>
-				</c:VerticalLayout>
-			</c:HorizontalLayout>
-			<c:HorizontalLine />
+				<c:TextView Id="dataSyncError" CssClass="red_row" />
 
-			<c:HorizontalLayout CssClass="end_of_block" />
+				<c:HorizontalLayout Id="dataSyncLayout" Visible="false">
+					<c:Indicator Id="dataSyncIndicator" />
+					<c:TextView Text="#sync#..." />
+				</c:HorizontalLayout>
+			</c:VerticalLayout>
+		</c:HorizontalLayout>
+		<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="caption_grid">
-				<c:TextView Text="#synchronizationPhoto#:" />
-			</c:HorizontalLayout>
-			<c:HorizontalLine />
+		<c:HorizontalLayout CssClass="end_of_block" />
 
-			<c:HorizontalLayout CssClass="grid">
-				<c:VerticalLayout>
-					<c:DockLayout>
-						<c:TextView Text="#lastSync#" />
-						<c:Button Text="#synchronize#" OnClick="$SyncFtp()" />
-					</c:DockLayout>
+		<c:HorizontalLayout CssClass="caption_grid">
+			<c:TextView Text="#synchronizationPhoto#:" />
+		</c:HorizontalLayout>
+		<c:HorizontalLine />
 
-					<c:TextView Id="ftpSyncReport" CssClass="main_row" />
+		<c:HorizontalLayout CssClass="grid">
+			<c:VerticalLayout>
+				<c:DockLayout>
+					<c:TextView Text="#lastSync#" />
+					<c:Button Text="#synchronize#" OnClick="$SyncFtp()" />
+				</c:DockLayout>
 
-					<c:TextView Id="ftpSyncError" CssClass="red_row" />
+				<c:TextView Id="ftpSyncReport" CssClass="main_row" />
 
-					<c:HorizontalLayout Id="ftpSyncLayout" Visible="false">
-						<c:Indicator Id="ftpSyncIndicator" />
-						<c:TextView Text="#sync#..." />
-					</c:HorizontalLayout>
-				</c:VerticalLayout>
-			</c:HorizontalLayout>
-			<c:HorizontalLine />
+				<c:TextView Id="ftpSyncError" CssClass="red_row" />
 
-			<c:HorizontalLayout CssClass="free_space" />
+				<c:HorizontalLayout Id="ftpSyncLayout" Visible="false">
+					<c:Indicator Id="ftpSyncIndicator" />
+					<c:TextView Text="#sync#..." />
+				</c:HorizontalLayout>
+			</c:VerticalLayout>
+		</c:HorizontalLayout>
+		<c:HorizontalLine />
 
-		</c:VerticalLayout>
+		<c:HorizontalLayout CssClass="free_space" />
 
-	</c:SwipeHorizontalLayout>
-	
+	</c:VerticalLayout>
 </c:Screen>

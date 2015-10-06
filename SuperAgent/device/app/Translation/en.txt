@@ -286,34 +286,10 @@ ReturnSKUWillRevised	SKU list has been revised
 send			Send log
 success			Данные успешно отправлены
 imageNotAvailable	Image not available now
+
 noSuccess		Произошла ошибка во время отправки. Данные не отправлены
 errorMessage	Error message
 sending			Sending..
 editSKU			Edit
 returnParameters	RETURN PARAMETERS
 returnHistory	RETURN HISTORY
-ZAO				ZAO
-OOO				OOO
-IP				IP
-NKO				NKO
-OAO				OAO
-OP				OP
-TSJ				TSJ
-outlet_territory Territory
-no_contacts	NO CONTACTS
-contractors		Contarctors
-contractor		Contarctor
-outletContacts	OUTLET CINTACTS
-partnerContacts	PARTNER CONTACTS
-partner			Partner
-owner			Contact owner
-emptyContactOwner	Contact owner field is empty
-noContractors	No contractors
-noContractorsMessage	This outlet has no contractors
-phone_regexp	^(((8|\+7)[\- ]?)?(\(?\d{3,4}\)?[\- ]?)?[\d\- ]{5,10})?$
-email_regexp	^(([а-яА-ЯёЁa-zA-Z0-9_-]+\.)*[а-яА-ЯёЁa-zA-Z0-9_-]+@[а-яА-ЯёЁa-zA-Z0-9_-]+(\.[а-яА-ЯёЁa-zA-Z0-9_-]+)*\.[а-яА-ЯёЁa-zA-Z]{2,6})?$
-kpp_regexp		^(\d{9}|)?$
-inn_regexp		^((\d{10})|(\d{12})|)?$
-selectOwner		Owner isn't selected
-no_questions_list	NO QUESTIONS
-requiredFieldsLeft	Required fields left
