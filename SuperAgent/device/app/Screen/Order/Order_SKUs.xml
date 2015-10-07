@@ -98,7 +98,9 @@
 								</s:If>
 								<c:TextView Text="$item.Description" CssClass="main_row"></c:TextView>
 							</c:DockLayout>
-							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock}  #brand#: {$item.Brand}" CssClass="description_row"></c:TextView>
+							<!-- <c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock}  #brand#: {$item.Brand}" CssClass="description_row"></c:TextView> -->
+							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.stockAnswer}  #edi#: {$item.stockAnswer}" CssClass="description_row2"></c:TextView>
+							<c:TextView Text="{31:20}   {/}   {32:5}   {/}   {33:4}   {/}   {34:19}" CssClass="description_row3"></c:TextView>
 						</c:VerticalLayout>
 					</c:DockLayout>
 				</c:SwipeHorizontalLayout>
