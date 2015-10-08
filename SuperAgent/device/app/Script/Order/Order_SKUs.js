@@ -49,10 +49,31 @@ function GetSKUAndGroups(searchText, thisDoc) {
     		" AND VSKU.Question In (SELECT Id FROM Catalog_Question WHERE Description = 'Остаток') ";
     
     //кол-во в последнем не отгруженном заказе на данную ТТ по данной номенклатуре
-    var SKUinLastOrder = " LEFT LOIN  ";
+    var SKUinLastOrder = " LEFT JOIN (SELECT Week, Cnt, Ref, ID FROM Catalog_SKU_SalesByWeek ) SW ON SW.Ref = S.Id AND SW.Id In ( " +
+    		"SELECT SSW.ID FROM Catalog_SKU_SalesByWeek SSW " +
+    		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = '@outlet' " +
+    		"WHERE SSW.Week In " +
+    		"		(SELECT DISTINCT Week " +
+    		"		FROM Catalog_SKU_SalesByWeek " +
+    		"		WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4)) ";
     
     //данными продаж  за последние 4 недели в виде «Номер недели»: «средние дневные продажи (кол-во за неделю / 7 дней)
-    var averageSKUinWeek = " LEFT LOIN  ";
+/*    var averageSKUinWeek = 	"	LEFT JOIN (SELECT Ref, group_concat(DISTINCT (ifNull(Week,0) || ':' || ifNull(Cnt,0))) AS ddf FROM " +
+    		"Catalog_SKU_SalesByWeek " +
+    		"WHERE Id In ( " +
+    		"SELECT SSW.ID " +
+    		"FROM Catalog_SKU_SalesByWeek SSW " +
+    		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
+    		"WHERE SSW.Week In (SELECT DISTINCT Week " +
+    		" FROM Catalog_SKU_SalesByWeek " +
+    		" WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4)) " +
+    		"GROUP BY Ref) SW ON SW.Ref == S.Id ";*/
+    
+    var averageSKUinWeek = 	"	LEFT JOIN (SELECT SSW.Ref, group_concat(DISTINCT ('      '|| SSW.Week || ':' || SSW.Cnt || '      ')) AS ddf FROM " +
+    		"Catalog_SKU_SalesByWeek SSW " +
+    		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet WHERE SSW.Week In	" +
+    		"(SELECT DISTINCT Week	FROM Catalog_SKU_SalesByWeek WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4) " +
+    		"GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";
     //AVMurach -
     
     var groupFields = "";
@@ -130,7 +151,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
 	    		//AVMurach+
-	    		"ifnull(VSKU.Answer,0) AS stockAnswer, " +
+	    		"ifnull(VSKU.Answer,0) AS stockAnswer, SW.ddf AS Weeks, " +
 	    		//AVMurach-
 	    		groupFields +
 	            "CB.Description AS Brand " +
@@ -140,6 +161,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	            groupJoin + groupWhere +
 	            //AVMurach+
 	            stocksAnswer +
+	            averageSKUinWeek +
 	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
@@ -155,10 +177,10 @@ function GetSKUAndGroups(searchText, thisDoc) {
             var stockCondition = " AND SS.StockValue > 0 ";
     	}
 
-    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
+    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock, SS.Weeks FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
               "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
               //AVMurach+
-              "ifnull(VSKU.Answer,0) AS stockAnswer, " +
+              "ifnull(VSKU.Answer,0) AS stockAnswer, SW.ddf AS Weeks, " +
               //AVMurach+
               	groupFields +
 	            "CB.Description AS Brand " +
@@ -168,6 +190,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	            groupJoin +
 	            //AVMurach+
 	            stocksAnswer +
+	            averageSKUinWeek +
 	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
