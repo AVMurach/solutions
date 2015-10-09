@@ -65,7 +65,7 @@
 				</s:If>
 
 
-				<c:SwipeHorizontalLayout Id="swipe_layout{$index}" CssClass="swipe_order" Index="1" OnSwipe="$GetQuickOrder($item.Id, $item.Price, pack{$index}, editText{$index}, textView{$index}, $item.RecOrder, $item.UnitId, $item.RecUnit)">
+				<c:SwipeHorizontalLayout Id="swipe_layout{$index}" CssClass="swipe_order" Index="1" OnSwipe="$GetQuickOrder($item.Id, $item.Price, pack{$index}, editText{$index}, textView{$index}, $item.recOrderVK, $item.UnitId, $item.RecUnit)">
 					<c:HorizontalLayout CssClass="quickOrder">
 						<c:VerticalLayout>
 							<c:HorizontalLayout>
@@ -74,17 +74,17 @@
 									<c:TextView Id="pack{$index}" Text=""/>
 								</c:HorizontalLayout>
 								<c:Button Text="+1" CssClass="add_button" OnClick="$AddToOrder(editText{$index})" />
-								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId)" />
+								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.recOrderVK, $item.UnitId)" />
 							</c:HorizontalLayout>
 							<c:TextView Id="textView{$index}" Text="0 {@alreadyOrdered}" />
 						</c:VerticalLayout>
 					</c:HorizontalLayout>
-					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId)" CssClass="grid">
+					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.recOrderVK, $item.UnitId)" CssClass="grid">
 						<c:Image />
 						<c:VerticalLayout>
 							<c:DockLayout>
 								<s:If Test="$workflow.currentDoc=='Order'">
-									<s:If Test="$item.OrderRecOrder==2">
+									<!-- <s:If Test="$item.OrderRecOrder==2">
 										<c:VerticalLayout>
 											<c:TextView Text="{$item.RecOrder} {$item.RecUnit}" CssClass="rec_order" />
 											<c:TextView Text="#recommended#" CssClass="rec_comment" />
@@ -94,13 +94,21 @@
 										<s:If Test="$item.OrderRecOrder>0">
 											<c:TextView Text="#recommended#" CssClass="single_rec" />
 										</s:If>
-									</s:Else>
+									</s:Else> -->
+									<s:If Test="$item.recOrderVK != null">
+										<s:If Test="$item.recOrderVK != 0">
+											<c:VerticalLayout>
+												<c:TextView Text="{$item.recOrderVK}" CssClass="rec_order" />
+												<c:TextView Text="#recommended#" CssClass="rec_comment" />
+											</c:VerticalLayout>
+										</s:If>
+									</s:If>
 								</s:If>
 								<c:TextView Text="$item.Description" CssClass="main_row"></c:TextView>
 							</c:DockLayout>
 							<!-- <c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock}  #brand#: {$item.Brand}" CssClass="description_row"></c:TextView> -->
-							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.stockAnswer}  #edi#: {$item.stockAnswer}" CssClass="description_row2"></c:TextView>
-							<c:TextView Text="{$item.Weeks}" CssClass="description_row3"></c:TextView>
+							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.stockAnswer}  #edi#: {$item.EDICnt}" CssClass="description_row2"></c:TextView>
+							<c:TextView Text="{$item.week4}{:}{$item.last4}     {|}     {$item.week3}{:}{$item.last3}     {|}     {$item.week2}{:}{$item.last2}     {|}     {$item.week1}{:}{$item.last1}" CssClass="description_row3"></c:TextView>
 						</c:VerticalLayout>
 					</c:DockLayout>
 				</c:SwipeHorizontalLayout>

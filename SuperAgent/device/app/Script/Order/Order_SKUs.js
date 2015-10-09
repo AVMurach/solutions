@@ -49,13 +49,13 @@ function GetSKUAndGroups(searchText, thisDoc) {
     		" AND VSKU.Question In (SELECT Id FROM Catalog_Question WHERE Description = 'Остаток') ";
     
     //кол-во в последнем не отгруженном заказе на данную ТТ по данной номенклатуре
-    var SKUinLastOrder = " LEFT JOIN (SELECT Week, Cnt, Ref, ID FROM Catalog_SKU_SalesByWeek ) SW ON SW.Ref = S.Id AND SW.Id In ( " +
-    		"SELECT SSW.ID FROM Catalog_SKU_SalesByWeek SSW " +
-    		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = '@outlet' " +
-    		"WHERE SSW.Week In " +
-    		"		(SELECT DISTINCT Week " +
-    		"		FROM Catalog_SKU_SalesByWeek " +
-    		"		WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4)) ";
+    var SKUinLastOrder = 	" LEFT JOIN (SELECT EDI.Ref, Sum(EDI.Cnt) AS Cnt " +
+    						"			FROM Catalog_SKU_Edi EDI " +
+    						"			JOIN Catalog_Outlet O ON O.Description = EDI.Outlet " +
+    						"			AND O.Id = @outlet " +
+    						//"			WHERE DeliveryDate > date(datetime('now'), '1 day') " +
+    						"			WHERE DeliveryDate > date(datetime('now')) " +
+    						"			GROUP BY EDI.Ref) EDI ON EDI.Ref = S.Id ";
     
     //данными продаж  за последние 4 недели в виде «Номер недели»: «средние дневные продажи (кол-во за неделю / 7 дней)
 /*    var averageSKUinWeek = 	"	LEFT JOIN (SELECT Ref, group_concat(DISTINCT (ifNull(Week,0) || ':' || ifNull(Cnt,0))) AS ddf FROM " +
@@ -69,11 +69,34 @@ function GetSKUAndGroups(searchText, thisDoc) {
     		" WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4)) " +
     		"GROUP BY Ref) SW ON SW.Ref == S.Id ";*/
     
-    var averageSKUinWeek = 	"	LEFT JOIN (SELECT SSW.Ref, group_concat(DISTINCT ('      '|| SSW.Week || ':' || SSW.Cnt || '      ')) AS ddf FROM " +
+    var /*averageSKUinWeek = 	"	LEFT JOIN (SELECT SSW.Ref, group_concat((SSW.Week || ':' || SSW.Cnt), '  |  ') AS ddf FROM " +
     		"Catalog_SKU_SalesByWeek SSW " +
     		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet WHERE SSW.Week In	" +
     		"(SELECT DISTINCT Week	FROM Catalog_SKU_SalesByWeek WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4) " +
-    		"GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";
+    		"GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";*/
+    
+    /*averageSKUinWeek = 	" LEFT JOIN (SELECT SSW.Ref,	group_concat((SSW.Week || ':' || SSW.Cnt), '  |  ') AS ddf " +
+    					"FROM Catalog_SKU_SalesByWeek SSW " +
+    					"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
+    					"WHERE Date  > date(datetime('now'), '-1 month') GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";*/
+    
+    averageSKUinWeek = 	" LEFT JOIN (SELECT SSW.Ref, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN SSW.Cnt ELSE 0 END) AS last1, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN SSW.Cnt ELSE 0 END) AS last2, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN SSW.Cnt ELSE 0 END) AS last3, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-21 day')) THEN SSW.Cnt ELSE 0 END) AS last4 " +
+    		"						FROM Catalog_SKU_SalesByWeek SSW " +
+    		"							JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
+    		"						WHERE SSW.Date  > date(datetime('now'), '-1 month') " +
+    		"						GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";
+    
+    var recOrderVK = " LEFT JOIN (SELECT SSW.Ref, ifNull((Max(SSW.Cnt)/7),0)* ifNull(VP.daysToVisit,0) AS recOrderVK " +
+    				"			FROM Catalog_SKU_SalesByWeek SSW " +
+    				"			JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
+    				"			LEFT JOIN (SELECT ROUND(julianday(VP.Date) - julianday('now')) AS daysToVisit " +
+    				"						FROM Document_VisitPlan_Outlets VP WHERE VP.Outlet = @outlet) VP ON 1=1 " +
+    				"			WHERE SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) GROUP BY SSW.Ref) RCRDR ON RCRDR.Ref = S.Id ";
+    
     //AVMurach -
     
     var groupFields = "";
@@ -148,26 +171,45 @@ function GetSKUAndGroups(searchText, thisDoc) {
         } else {
             var stockCondition = " AND S.CommonStock > 0 ";
     	}
-
+    	
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
 	    		//AVMurach+
-	    		"ifnull(VSKU.Answer,0) AS stockAnswer, SW.ddf AS Weeks, " +
+	    		"ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.Cnt,0) AS EDICnt, RCRDR.recOrderVK, NULL AS UnitId, NULL AS RecUnit, " +
+	    		"strftime('%W', date(datetime('now'))) AS week1, " +
+	    		"strftime('%W', date(datetime('now'), '-7 day')) AS week2, " +
+	    		"strftime('%W', date(datetime('now'), '-14 day')) AS week3, " +
+	    		"strftime('%W', date(datetime('now'), '-21 day')) AS week4, " +
+	    		"ifNull(SW.last1,0) AS last1, " +
+	    		"ifNull(SW.last2,0) AS last2, " +
+	    		"ifNull(SW.last3,0) AS last3, " +
+	    		"ifNull(SW.last4,0) AS last4, " +
 	    		//AVMurach-
 	    		groupFields +
 	            "CB.Description AS Brand " +
-	            recOrderFields +
+	            //AVMurach+
+	            //recOrderFields +
+	            //AVMurach-
 	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
 	            "JOIN _Catalog_SKU S " +
 	            groupJoin + groupWhere +
 	            //AVMurach+
 	            stocksAnswer +
 	            averageSKUinWeek +
+	            SKUinLastOrder +
+	            recOrderVK +
 	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
-	            recOrderStr + filterString +
+	          //AVMurach+
+	            //recOrderStr +
+	          //AVMurach-
+	            filterString +
 	            " WHERE PL.Ref = @Ref AND PL.IsTombstone = 0 AND S.IsTombstone = 0 " + stockCondition + searchString +
-	            " ORDER BY " + groupSort + recOrderSort + " S.Description LIMIT 100";
+	            " ORDER BY " + groupSort + 
+	          //AVMurach+
+	            //recOrderSort +
+	          //AVMurach-
+	            " S.Description LIMIT 100";
 
     } else {
 
@@ -176,27 +218,48 @@ function GetSKUAndGroups(searchText, thisDoc) {
         } else {
             var stockCondition = " AND SS.StockValue > 0 ";
     	}
-
-    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock, SS.Weeks FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
+    	
+    	query.Text = "SELECT INQ.*, SS.StockValue AS CommonStock, SS.EDICnt AS EDICnt, SS.recOrderVK, " +
+    			" SS.week1, SS.week2, SS.week3, SS.week4, SS.last1, SS.last2, SS.last3, SS.last4 " +
+    			" FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
               "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
               //AVMurach+
-              "ifnull(VSKU.Answer,0) AS stockAnswer, SW.ddf AS Weeks, " +
+              "ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.Cnt,0) AS EDICnt, RCRDR.recOrderVK, NULL AS UnitId, NULL AS RecUnit, " +
+              	"strftime('%W', date(datetime('now'))) AS week1, " +
+	    		"strftime('%W', date(datetime('now'), '-7 day')) AS week2, " +
+	    		"strftime('%W', date(datetime('now'), '-14 day')) AS week3, " +
+	    		"strftime('%W', date(datetime('now'), '-21 day')) AS week4, " +
+	    		"ifNull(SW.last1,0) AS last1, " +
+	    		"ifNull(SW.last2,0) AS last2, " +
+	    		"ifNull(SW.last3,0) AS last3, " +
+	    		"ifNull(SW.last4,0) AS last4, " +
               //AVMurach+
               	groupFields +
 	            "CB.Description AS Brand " +
-	            recOrderFields +
+	            //AVMurach+
+	            //recOrderFields +
+	            //AVMurach-
 	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
 	            "JOIN _Catalog_SKU S " +
 	            groupJoin +
 	            //AVMurach+
 	            stocksAnswer +
 	            averageSKUinWeek +
+	            SKUinLastOrder +
+	            recOrderVK +
 	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
-	            recOrderStr + filterString +
+	          //AVMurach+
+	            //recOrderStr +
+	          //AVMurach- 
+	            filterString +
 	            " WHERE PL.Ref = @Ref AND PL.IsTombstone = 0 AND S.IsTombstone = 0 " + groupWhere + searchString +
-	            ") INQ ON SS.Ref = INQ.Id WHERE SS.Stock=@stock AND SS.IsTombstone = 0 " + stockCondition + " ORDER BY " + groupSort + recOrderSort + " INQ.Description LIMIT 100";
+	            ") INQ ON SS.Ref = INQ.Id WHERE SS.Stock=@stock AND SS.IsTombstone = 0 " + stockCondition + " ORDER BY " + groupSort + 
+	          //AVMurach+
+	            //recOrderSort +
+	          //AVMurach-
+	            " INQ.Description LIMIT 100";
 
     	query.AddParameter("stock", stock);
 
