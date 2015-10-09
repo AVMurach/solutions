@@ -69,7 +69,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     		" WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4)) " +
     		"GROUP BY Ref) SW ON SW.Ref == S.Id ";*/
     
-    var /*averageSKUinWeek = 	"	LEFT JOIN (SELECT SSW.Ref, group_concat((SSW.Week || ':' || SSW.Cnt), '  |  ') AS ddf FROM " +
+    /*var averageSKUinWeek = 	"	LEFT JOIN (SELECT SSW.Ref, group_concat((SSW.Week || ':' || SSW.Cnt), '  |  ') AS ddf FROM " +
     		"Catalog_SKU_SalesByWeek SSW " +
     		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet WHERE SSW.Week In	" +
     		"(SELECT DISTINCT Week	FROM Catalog_SKU_SalesByWeek WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4) " +
@@ -80,11 +80,11 @@ function GetSKUAndGroups(searchText, thisDoc) {
     					"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
     					"WHERE Date  > date(datetime('now'), '-1 month') GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";*/
     
-    averageSKUinWeek = 	" LEFT JOIN (SELECT SSW.Ref, " +
-    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN SSW.Cnt ELSE 0 END) AS last1, " +
-    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN SSW.Cnt ELSE 0 END) AS last2, " +
-    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN SSW.Cnt ELSE 0 END) AS last3, " +
-    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-21 day')) THEN SSW.Cnt ELSE 0 END) AS last4 " +
+    var averageSKUinWeek = 	" LEFT JOIN (SELECT SSW.Ref, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '7 day')) THEN SSW.Cnt ELSE 0 END) AS last1, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN SSW.Cnt ELSE 0 END) AS last2, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN SSW.Cnt ELSE 0 END) AS last3, " +
+    		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN SSW.Cnt ELSE 0 END) AS last4 " +
     		"						FROM Catalog_SKU_SalesByWeek SSW " +
     		"							JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
     		"						WHERE SSW.Date  > date(datetime('now'), '-1 month') " +
@@ -95,7 +95,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     				"			JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
     				"			LEFT JOIN (SELECT ROUND(julianday(VP.Date) - julianday('now')) AS daysToVisit " +
     				"						FROM Document_VisitPlan_Outlets VP WHERE VP.Outlet = @outlet) VP ON 1=1 " +
-    				"			WHERE SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) GROUP BY SSW.Ref) RCRDR ON RCRDR.Ref = S.Id ";
+    				"			WHERE SSW.Week = strftime('%W', date(datetime('now'))) GROUP BY SSW.Ref) RCRDR ON RCRDR.Ref = S.Id ";
     
     //AVMurach -
     
@@ -175,11 +175,11 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
 	    		//AVMurach+
 	    		"ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.Cnt,0) AS EDICnt, RCRDR.recOrderVK, NULL AS UnitId, NULL AS RecUnit, " +
-	    		"strftime('%W', date(datetime('now'))) AS week1, " +
-	    		"strftime('%W', date(datetime('now'), '-7 day')) AS week2, " +
-	    		"strftime('%W', date(datetime('now'), '-14 day')) AS week3, " +
-	    		"strftime('%W', date(datetime('now'), '-21 day')) AS week4, " +
-	    		"ifNull(SW.last1,0) AS last1, " +
+	    		"strftime('%W', date(datetime('now'), '7 day')) AS week1, " +
+	    		"strftime('%W', date(datetime('now'))) AS week2, " +
+	    		"strftime('%W', date(datetime('now'), '-7 day')) AS week3, " +
+	    		"strftime('%W', date(datetime('now'), '-14 day')) AS week4, " +
+	    		"ifNull(SW.last1,0) AS last1, " + 
 	    		"ifNull(SW.last2,0) AS last2, " +
 	    		"ifNull(SW.last3,0) AS last3, " +
 	    		"ifNull(SW.last4,0) AS last4, " +
@@ -225,10 +225,10 @@ function GetSKUAndGroups(searchText, thisDoc) {
               "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
               //AVMurach+
               "ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.Cnt,0) AS EDICnt, RCRDR.recOrderVK, NULL AS UnitId, NULL AS RecUnit, " +
-              	"strftime('%W', date(datetime('now'))) AS week1, " +
-	    		"strftime('%W', date(datetime('now'), '-7 day')) AS week2, " +
-	    		"strftime('%W', date(datetime('now'), '-14 day')) AS week3, " +
-	    		"strftime('%W', date(datetime('now'), '-21 day')) AS week4, " +
+              	"strftime('%W', date(datetime('now'), '7 day')) AS week1, " +
+	    		"strftime('%W', date(datetime('now'))) AS week2, " +
+	    		"strftime('%W', date(datetime('now'), '-7 day')) AS week3, " +
+	    		"strftime('%W', date(datetime('now'), '-14 day')) AS week4, " +
 	    		"ifNull(SW.last1,0) AS last1, " +
 	    		"ifNull(SW.last2,0) AS last2, " +
 	    		"ifNull(SW.last3,0) AS last3, " +
