@@ -108,7 +108,15 @@
 							</c:DockLayout>
 							<!-- <c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.CommonStock}  #brand#: {$item.Brand}" CssClass="description_row"></c:TextView> -->
 							<c:TextView Text="#price2# {$FormatValue($item.Price)}  #stock#: {$item.stockAnswer}  #edi#: {$item.EDICnt}" CssClass="description_row2"></c:TextView>
-							<c:TextView Text="{$item.week4}{:}{$item.last4}     {|}     {$item.week3}{:}{$item.last3}     {|}     {$item.week2}{:}{$item.last2}     {|}     {$item.week1}{:}{$item.last1}" CssClass="description_row3"></c:TextView>
+							<!-- <c:TextView Text="{$item.week4}{:}{$item.last4}     {|}     {$item.week3}{:}{$item.last3}     {|}     {$item.week2}{:}{$item.last2}     {|}     {$item.week1}{:}{$item.last1}" CssClass="description_row3"></c:TextView> -->
+							
+							<c:HorizontalLayout CssClass="weeksCnt">
+								<c:TextView Text="{$item.week4} {:} {$item.last4}" CssClass="description_row3"></c:TextView>
+								<c:TextView Text="{$item.week3} {:} {$item.last3}" CssClass="description_row3"></c:TextView>
+								<c:TextView Text="{$item.week2} {:} {$item.last2}" CssClass="description_row3"></c:TextView>
+								<c:TextView Text="{$item.week1} {:} {$item.last1}" CssClass="description_row3"></c:TextView>							
+							</c:HorizontalLayout>
+						
 						</c:VerticalLayout>
 					</c:DockLayout>
 				</c:SwipeHorizontalLayout>

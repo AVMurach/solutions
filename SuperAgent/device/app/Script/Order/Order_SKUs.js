@@ -58,27 +58,6 @@ function GetSKUAndGroups(searchText, thisDoc) {
     						"			GROUP BY EDI.Ref) EDI ON EDI.Ref = S.Id ";
     
     //данными продаж  за последние 4 недели в виде «Номер недели»: «средние дневные продажи (кол-во за неделю / 7 дней)
-/*    var averageSKUinWeek = 	"	LEFT JOIN (SELECT Ref, group_concat(DISTINCT (ifNull(Week,0) || ':' || ifNull(Cnt,0))) AS ddf FROM " +
-    		"Catalog_SKU_SalesByWeek " +
-    		"WHERE Id In ( " +
-    		"SELECT SSW.ID " +
-    		"FROM Catalog_SKU_SalesByWeek SSW " +
-    		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
-    		"WHERE SSW.Week In (SELECT DISTINCT Week " +
-    		" FROM Catalog_SKU_SalesByWeek " +
-    		" WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4)) " +
-    		"GROUP BY Ref) SW ON SW.Ref == S.Id ";*/
-    
-    /*var averageSKUinWeek = 	"	LEFT JOIN (SELECT SSW.Ref, group_concat((SSW.Week || ':' || SSW.Cnt), '  |  ') AS ddf FROM " +
-    		"Catalog_SKU_SalesByWeek SSW " +
-    		"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet WHERE SSW.Week In	" +
-    		"(SELECT DISTINCT Week	FROM Catalog_SKU_SalesByWeek WHERE Date  > date(datetime('now'), '-1 month') ORDER BY Week DESC LIMIT 4) " +
-    		"GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";*/
-    
-    /*averageSKUinWeek = 	" LEFT JOIN (SELECT SSW.Ref,	group_concat((SSW.Week || ':' || SSW.Cnt), '  |  ') AS ddf " +
-    					"FROM Catalog_SKU_SalesByWeek SSW " +
-    					"JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
-    					"WHERE Date  > date(datetime('now'), '-1 month') GROUP BY SSW.Ref) SW ON SW.Ref = S.Id ";*/
     
     var averageSKUinWeek = 	" LEFT JOIN (SELECT SSW.Ref, " +
     		"							MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '7 day')) THEN SSW.Cnt ELSE 0 END) AS last1, " +
