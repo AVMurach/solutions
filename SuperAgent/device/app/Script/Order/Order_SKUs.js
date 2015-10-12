@@ -72,7 +72,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     var recOrderVK = " LEFT JOIN (SELECT SSW.Ref, ifNull((Max(SSW.Cnt)/7),0)* ifNull(VP.daysToVisit,0) AS recOrderVK " +
     				"			FROM Catalog_SKU_SalesByWeek SSW " +
     				"			JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
-    				"			LEFT JOIN (SELECT ROUND(julianday(VP.Date) - julianday('now')) AS daysToVisit " +
+    				"			LEFT JOIN (SELECT cast((julianday('now') - julianday('now') +1)as int) AS daysToVisit " +
     				"						FROM Document_VisitPlan_Outlets VP WHERE VP.Outlet = @outlet) VP ON 1=1 " +
     				"			WHERE SSW.Week = strftime('%W', date(datetime('now'))) GROUP BY SSW.Ref) RCRDR ON RCRDR.Ref = S.Id ";
     
