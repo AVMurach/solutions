@@ -296,12 +296,15 @@ function CreateDocumentIfNotExists(executedOrder, visitId) {
 			//@ref[Catalog_OrderParameters]:0c15ae51-4fb6-11e5-80cf-d4ae5290bab1 | Без счет-фактуры | @ref[Enum_DataType]:978900d9-950e-a1ef-4268-a0203742b6db | Boolean
 			//@ref[Catalog_OrderParameters]:a3cfe7d7-4fb5-11e5-80cf-d4ae5290bab1 | Операция | @ref[Enum_DataType]:b4d13435-6c14-fe90-4b62-f5a31aaa6e9c | ValueList
 			//////@ref[Catalog_OrderParameters_ValueList]:c5453038-6863-e511-8e91-089e01d36b50 | @ref[Catalog_OrderParameters]:a3cfe7d7-4fb5-11e5-80cf-d4ae5290bab1 | Основной заказ
-			//@ref[Catalog_OrderParameters]:cadb777a-4fb5-11e5-80cf-d4ae5290bab1 | Самовывоз | @ref[Enum_DataType]:978900d9-950e-a1ef-4268-a0203742b6db | Boolean
+			//@ref[Catalog_OrderParameters]:cadb777a-4fb5-11e5-80cf-d4ae5290bab1 | Доставка | @ref[Enum_DataType]:978900d9-950e-a1ef-4268-a0203742b6db | Boolean
 			
 			if ($.workflow.currentDoc=="Order") {
-				var sf = "@ref[Catalog_OrderParameters]:0c15ae51-4fb6-11e5-80cf-d4ae5290bab1";
+				/*var sf = "@ref[Catalog_OrderParameters]:0c15ae51-4fb6-11e5-80cf-d4ae5290bab1";
 				var oper = "@ref[Catalog_OrderParameters]:a3cfe7d7-4fb5-11e5-80cf-d4ae5290bab1";
-				var sam = "@ref[Catalog_OrderParameters]:cadb777a-4fb5-11e5-80cf-d4ae5290bab1";
+				var sam = "@ref[Catalog_OrderParameters]:cadb777a-4fb5-11e5-80cf-d4ae5290bab1";*/
+				var sf = "@ref[Catalog_OrderParameters]:cc1c8884-731f-11e5-80eb-0cc47a427217";
+				var oper = "@ref[Catalog_OrderParameters]:d5b9f1f3-731f-11e5-80eb-0cc47a427217";
+				var sam = "@ref[Catalog_OrderParameters]:e13ddef0-731f-11e5-80eb-0cc47a427217";
 				
 				var query = new Query("SELECT OP.Id,OP.Description,OP.Code,OP.DataType,OP.Visible,OP.Editable " +
 									"	FROM Catalog_OrderParameters OP " +
@@ -319,7 +322,7 @@ function CreateDocumentIfNotExists(executedOrder, visitId) {
 					par.Parameter = orderParam.Id;
 					
 					if(orderParam.Id == sf){
-						par.Value = "Нет";					
+						par.Value = "Да";					
 					}
 					
 					if(orderParam.Id == oper){
@@ -327,7 +330,7 @@ function CreateDocumentIfNotExists(executedOrder, visitId) {
 					}
 					
 					if(orderParam.Id == sam){
-						par.Value = "Нет";					
+						par.Value = "Да";					
 					}
 					par.Save();
 				}
