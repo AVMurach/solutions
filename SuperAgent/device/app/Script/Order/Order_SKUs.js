@@ -41,6 +41,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     filterString = AddFilter(filterString, "brand_filter", "S.Brand", "BF");
 
   //AVMurach +    
+    //получение информации по остаткам на основании сегодняшнего анкетирования
     var stocksAnswer = " LEFT JOIN Document_Visit_SKUs VSKU ON VSKU.SKU = S.Id AND VSKU.Ref In " +
     		" (SELECT V.Id FROM Document_Visit V" +
     		" WHERE strftime('%d', V.Date) = strftime('%d','now')" +
