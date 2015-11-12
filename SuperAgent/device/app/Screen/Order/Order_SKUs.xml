@@ -71,7 +71,7 @@
 							<c:HorizontalLayout>
 								<c:HorizontalLayout OnClickAction="$FocusOnEditText(editText{$index}, 1)">
 									<c:EditText Id="editText{$index}" Text="0" Keyboard="numeric" />
-									<c:TextView Id="pack{$index}" Text=""/>
+									<c:EditText Id="pack{$index}" Text="" Enabled="False" CssClass="pack"/>
 								</c:HorizontalLayout>
 								<c:Button Text="+1" CssClass="add_button" OnClick="$AddToOrder(editText{$index})" />
 								<c:Button CssClass="cart_button" OnClick="$CreateOrderItem(editText{$index}, textView{$index}, pack{$index}, $item.Id, $item.Price, swipe_layout{$index}, $item.RecOrder, $item.UnitId)" />

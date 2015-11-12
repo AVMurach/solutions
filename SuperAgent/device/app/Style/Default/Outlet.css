@@ -1,44 +1,36 @@
 .trple {
-	width: 33.33%;
+	width: 37.495%;
 	height: 100%;
 	selected-color: #bacdce;
 }
 
-.trple TextView {
+.trple_center{
+	width: 25%;
+	height: 100%;
+	selected-color: #bacdce;	
+}
+
+.bottom_btn vl TextView {
 	width: 100%;
 	height: 100%;
 	text-align: center;
+	padding-top: 25%;
 	color: #2d89cf;
 	font: 37% arial;
 }
 
 .trpl_left_tv {
-	width: 100%;
-	height: 100%;
 	text-align: left;
-	padding-top: 25%;
 	margin-left: 2.4mm;
-	color: #2d89cf;
-	font: 37% arial;
 }
 
 .trpl_center_tv {
-	width: 100%;
-	height: 100%;
 	text-align: center;
-	padding-top: 25%;
-	color: #2d89cf;
-	font: 37% arial;
 }
 
 .trpl_right_tv {
-	width: 100%;
-	height: 100%;
 	text-align: right;
-	padding-top: 25%;
 	margin-right: 2.4mm;
-	color: #2d89cf;
-	font: 37% arial;
 }
 
 .swipe_layout {

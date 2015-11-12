@@ -55,13 +55,6 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout OnClickAction="$Workflow.DoRefresh($True,$encashmentAttribute.Text)">
-				<c:VerticalLayout>
-					<c:TextView Text="#spread#" CssClass="caption_row"></c:TextView>
-				</c:VerticalLayout>
-			</c:HorizontalLayout>
-			<c:HorizontalLine />
-
 			<c:HorizontalLayout CssClass="end_of_block" />
 
 			<c:HorizontalLayout CssClass="caption_grid">

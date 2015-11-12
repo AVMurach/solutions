@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:d="DefaultScope" StyleSheet="Order.css">
 
-	<s:Push Id="workflow.outlet" Value="$outlet"></s:Push>
-	<s:Push Id="executedOrder" Value="$param3"></s:Push>
+	<s:Push Id="workflow.outlet" Value="$GetOutlet()"></s:Push>
+	<s:Push Id="executedOrder" Value="$FindExecutedOrder()"></s:Push>
 
 
 	<s:Push Id="thisDoc" Value="$CreateDocumentIfNotExists($executedOrder, $workflow.visit)"></s:Push>
@@ -25,7 +25,10 @@
 			</c:HorizontalLayout>
 		</c:DockLayout>
 
-		<c:Image CssClass="5_scroll"></c:Image>
+		<s:If Test="$workflow.name=='Visit'">
+			<c:Image CssClass="5_scroll"></c:Image>			
+		</s:If>
+
 		<c:HorizontalLine />
 
 		<s:If Test="$IsNew($thisDoc)">
@@ -47,7 +50,7 @@
 			<c:DockLayout CssClass="grid" OnClickAction="$DoAction(ShowInfo,$sum,null,$thisDoc)">
 				<c:Image />
 				<c:VerticalLayout>
-					<c:TextView Text="$GetDescription($thisDoc.PriceList)" CssClass="description_row"></c:TextView>
+					<c:TextView Text="$GetDescription($thisDoc.PriceList)" CssClass="main_row_price_list"></c:TextView>
 					<c:TextView Text="{@sumTitle}:" CssClass="description_row"></c:TextView>
 					<c:TextView Text="$FormatValue($sum)" CssClass="main_row"></c:TextView>
 				</c:VerticalLayout>

@@ -24,6 +24,10 @@
 	padding-left: 2.4mm;
 }
 
+.select_zone TextView{
+	font: 2.1mm Arial;
+}
+
 .description_row {
 	width: 60%;
 	height: 40%;

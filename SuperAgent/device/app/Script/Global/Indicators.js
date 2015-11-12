@@ -1,4 +1,4 @@
-var scheduledVisits;
+﻿var scheduledVisits;
 var unscheduledVisits;
 var visitsTotal;
 var plannedVisits;
@@ -29,7 +29,7 @@ function SetOutletsCount() {
 	if (cnt == null)
 		outletsCount = 0;
 	else
-		outletsCount = cnt;
+		outletsCount = cnt.ToString();
 }
 
 function GetOutletsCount(){
@@ -82,9 +82,11 @@ function GetPlannedVisits() {
 
 
 function SetOrderSumm() {
-	var q = new Query("SELECT SUM(S.Qty * S.Total) FROM Document_Order_SKUs S LEFT JOIN Document_Order O ON (O.Id = S.Ref) WHERE O.Date >= @today AND O.Date < @tomorrow");
-	q.AddParameter("today", DateTime.Now.Date);
-	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
+	var q = new Query("SELECT SUM(S.Qty * S.Total) " +
+		" FROM Document_Order_SKUs S " +
+		" LEFT JOIN Document_Order O ON (O.Id = S.Ref) " +
+		" WHERE date(O.Date) >= date('now','start of day', 'localtime') " +
+		" AND date(O.Date) < date('now', 'start of day', '+1 day', 'localtime')");
 	var cnt = q.ExecuteScalar();
 	if (cnt == null)
 		orderSum = 0;

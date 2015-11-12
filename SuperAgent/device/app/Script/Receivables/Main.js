@@ -1,14 +1,10 @@
-var amount;
+﻿var amount;
 var overdueAmount;
 var editingItem;
 //var receivablesRecdset;
 
 function OnLoad() {
 	editingItem = null;
-}
-
-function WarMupFunction() {
-
 }
 
 function GetHeader(outlet) {

@@ -1,96 +1,104 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="About.css">
-	<c:VerticalLayout Id="VLayout">
+	
+	<c:SwipeHorizontalLayout Id="swipe_layout" Index="1">
 
-		<c:DockLayout CssClass="top_navigator">
-			<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnEvent="Back" OnClick="$DoRollback()">
-				<c:Image CssClass="menuIcon" />
-			</c:DockLayout>
-			<c:DockLayout CssClass="btn_space" />
-			<c:HorizontalLayout>
-				<c:TextView Text="#info#" />
-			</c:HorizontalLayout>
-		</c:DockLayout>
-		<c:HorizontalLine />
-		<c:HorizontalLine />
+		<s:Include File="\Components\SideMenu.xml"/>
 
-		<c:ScrollView Id="grScrollView">
+		<c:VerticalLayout Id="VLayout">
 
-			<c:HorizontalLayout CssClass="caption_grid">
-				<c:TextView Text="#about#:" />
-			</c:HorizontalLayout>
-
-			<c:VerticalLayout CssClass="extra_padding">
-				<c:HorizontalLayout CssClass="image_block">
-					<c:Image CssClass="super_agent"/>
+			<c:DockLayout CssClass="top_navigator">
+				<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnEvent="Back" OnClickAction="$OpenMenu($swipe_layout)">
+					<c:Image CssClass="menuIcon" />
+				</c:DockLayout>
+				<c:DockLayout CssClass="btn_space" />
+				<c:HorizontalLayout>
+					<c:TextView Text="#info#" />
 				</c:HorizontalLayout>
-			</c:VerticalLayout>
-
-			<c:TextView	Text="#version# {$sessionConst.solVersion}" CssClass="main_row" />
-			<c:TextView	Text="#superDescription#" CssClass="description_row" />
-
-			<c:VerticalLayout CssClass="extra_padding">
-				<c:HorizontalLine/>
-					<c:DockLayout CssClass="parameter_grid">
-						
-						<c:HorizontalLayout Id="dataSyncLayout" Visible="false" CssClass="sync">
-							<c:Indicator Id="dataSyncIndicator"/>							
-							<c:TextView Text="#sending#..." />							
-						</c:HorizontalLayout>
-
-						<c:Button Id="sendButton" OnClick="$SendLog()" Text="#send#" CssClass="add_button" />
-						<c:TextView Id="errorReport" Text="#errorMessage#"></c:TextView>
-					</c:DockLayout>
-				<c:HorizontalLine/>
-			</c:VerticalLayout>
-
-			<!-- <c:HorizontalLayout CssClass="end_of_block" />
-			<c:HorizontalLine/>
-			
-			<c:DockLayout CssClass="parameter_grid">
-				<c:TextView Text="#support#"></c:TextView>
-				<c:Image />
 			</c:DockLayout>
-			<c:HorizontalLine/>
-			<c:DockLayout CssClass="parameter_grid">
-				<c:TextView Text="#idea#"></c:TextView>
-				<c:Image />
-			</c:DockLayout>
-			<c:HorizontalLine/>
-			
-			<c:HorizontalLayout CssClass="end_of_block" /> -->
-			
-			<c:TextView	Text="#agreement#" CssClass="description_row" />
-			<c:TextView	Text="#icons#" CssClass="description_row" />
+			<c:HorizontalLine />
+			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="caption_grid">
-				<c:TextView Text="#developer#:" />
-			</c:HorizontalLayout>
-			
-			<c:VerticalLayout CssClass="extra_padding">
-				<c:HorizontalLayout CssClass="image_block">
-					<c:Image CssClass="firstBIT"/>
+			<c:ScrollView Id="grScrollView">
+
+				<c:HorizontalLayout CssClass="caption_grid">
+					<c:TextView Text="#about#:" />
 				</c:HorizontalLayout>
-			</c:VerticalLayout>
 
-			<c:TextView	Text="#firstBIT#" CssClass="description_row" />
-			<c:HorizontalLayout CssClass="end_of_block" />
-			
-			<!-- <c:HorizontalLine/>
-			<c:DockLayout CssClass="parameter_grid">
-				<c:TextView Text="#webSite#"></c:TextView>
-				<c:Image />
-			</c:DockLayout>
-			<c:HorizontalLine/>
-			<c:DockLayout CssClass="parameter_grid">
-				<c:TextView Text="#others#"></c:TextView>
-				<c:Image />
-			</c:DockLayout>
-			<c:HorizontalLine/>
-			
-			<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout> -->
-			
-		</c:ScrollView>
+				<c:VerticalLayout CssClass="extra_padding">
+					<c:HorizontalLayout CssClass="image_block">
+						<c:Image CssClass="super_agent"/>
+					</c:HorizontalLayout>
+				</c:VerticalLayout>
 
-	</c:VerticalLayout>
+				<c:TextView	Text="#version# {$sessionConst.solVersion}" CssClass="main_row" />
+				<c:TextView	Text="#superDescription#" CssClass="description_row" />
+
+				<c:VerticalLayout CssClass="extra_padding">
+					<c:HorizontalLine/>
+						<c:DockLayout CssClass="parameter_grid">
+							
+							<c:HorizontalLayout Id="dataSyncLayout" Visible="false" CssClass="sync">
+								<c:Indicator Id="dataSyncIndicator"/>							
+								<c:TextView Text="#sending#..." />							
+							</c:HorizontalLayout>
+
+							<c:Button Id="sendButton" OnClick="$SendLog()" Text="#send#" CssClass="add_button" />
+							<c:TextView Id="errorReport" Text="#errorMessage#"></c:TextView>
+						</c:DockLayout>
+					<c:HorizontalLine/>
+				</c:VerticalLayout>
+
+				<!-- <c:HorizontalLayout CssClass="end_of_block" />
+				<c:HorizontalLine/>
+				
+				<c:DockLayout CssClass="parameter_grid">
+					<c:TextView Text="#support#"></c:TextView>
+					<c:Image />
+				</c:DockLayout>
+				<c:HorizontalLine/>
+				<c:DockLayout CssClass="parameter_grid">
+					<c:TextView Text="#idea#"></c:TextView>
+					<c:Image />
+				</c:DockLayout>
+				<c:HorizontalLine/>
+				
+				<c:HorizontalLayout CssClass="end_of_block" /> -->
+				
+				<c:TextView	Text="#agreement#" CssClass="description_row" />
+				<c:TextView	Text="#icons#" CssClass="description_row" />
+
+				<c:HorizontalLayout CssClass="caption_grid">
+					<c:TextView Text="#developer#:" />
+				</c:HorizontalLayout>
+				
+				<c:VerticalLayout CssClass="extra_padding">
+					<c:HorizontalLayout CssClass="image_block">
+						<c:Image CssClass="firstBIT"/>
+					</c:HorizontalLayout>
+				</c:VerticalLayout>
+
+				<c:TextView	Text="#firstBIT#" CssClass="description_row" />
+				<c:HorizontalLayout CssClass="end_of_block" />
+				
+				<!-- <c:HorizontalLine/>
+				<c:DockLayout CssClass="parameter_grid">
+					<c:TextView Text="#webSite#"></c:TextView>
+					<c:Image />
+				</c:DockLayout>
+				<c:HorizontalLine/>
+				<c:DockLayout CssClass="parameter_grid">
+					<c:TextView Text="#others#"></c:TextView>
+					<c:Image />
+				</c:DockLayout>
+				<c:HorizontalLine/>
+				
+				<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout> -->
+				
+			</c:ScrollView>
+
+		</c:VerticalLayout>
+
+	</c:SwipeHorizontalLayout>
+
 </c:Screen>

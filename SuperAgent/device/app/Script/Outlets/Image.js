@@ -1,4 +1,4 @@
-var c_entity;
+﻿var c_entity;
 var c_attribute;
 var c_questionnaire;
 var c_tableName;

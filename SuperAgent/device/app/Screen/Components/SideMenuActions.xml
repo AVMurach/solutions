@@ -1,0 +1,11 @@
+<c:Component xmlns:c="BitMobile.Controls" xmlns:bp="BitMobile.BusinessProcess">
+
+	<bp:Action Name="Summary" NextStep="Summary"></bp:Action>
+	<bp:Action Name="Visits" NextStep="Visits"></bp:Action>	
+	<bp:Action Name="Outlets" NextStep="Outlets"></bp:Action>		
+	<bp:Action Name="Orders" NextStep="OrderList"></bp:Action>
+	<bp:Action Name="Returns" NextStep="ReturnList"></bp:Action>			
+	<bp:Action Name="Sync" NextStep="Sync" />
+	<bp:Action Name="About" NextStep="About" />
+
+</c:Component>

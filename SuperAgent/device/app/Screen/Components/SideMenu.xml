@@ -1,0 +1,84 @@
+
+<c:Component xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack">
+
+	<c:VerticalLayout CssClass="menu">
+
+		<s:Push Id="styles" Value="$GetItemsStyles()"></s:Push>
+
+		<c:DockLayout Id="Summary" CssClass="{$styles.Summary}" OnClickAction="$SwitchScreen(Summary)">
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_summary" />
+				<c:TextView Text="#summary#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
+
+		<c:DockLayout Id="Visits" CssClass="{$styles.Visits}" OnClickAction="$SwitchScreen(Visits)">
+			<c:TextView CssClass="menu_text" Text="{$GetCommitedScheduledVisits()} | {$GetPlannedVisits()}" />
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_visits" />
+				<c:TextView Text="#visits#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
+
+		<c:DockLayout Id="Outlets" CssClass="{$styles.Outlets}" OnClickAction="$SwitchScreen(Outlets)">
+			<c:TextView CssClass="menu_text" Text="$GetOutletsCount()" />
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_clients" />
+				<c:TextView Text="#clients#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
+
+		<s:If Test="$sessionConst.orderEnabled">
+			<c:DockLayout Id="Orders" CssClass="{$styles.Orders}" OnClickAction="$SwitchScreen(Orders)">
+				<c:TextView CssClass="menu_text" Text="{$GetOrderQty()} | {$GetOrderSumm()}"></c:TextView>
+				<c:HorizontalLayout>
+					<c:Image CssClass="btn_orders" />
+					<c:TextView Text="#orders#"></c:TextView>
+				</c:HorizontalLayout>
+			</c:DockLayout>
+			<c:HorizontalLine />
+		</s:If>
+
+		<s:If Test="$sessionConst.returnEnabled">
+			<c:DockLayout Id="Returns" CssClass="{$styles.Returns}" OnClickAction="$SwitchScreen(Returns)">
+				<c:TextView CssClass="menu_text" Text="{$GetReturnQty()} | {$GetReturnSum()}"></c:TextView>
+				<c:HorizontalLayout>
+					<c:Image CssClass="btn_returns" />
+					<c:TextView Text="#returns#"></c:TextView>
+				</c:HorizontalLayout>
+			</c:DockLayout>
+			<c:HorizontalLine />
+		</s:If>
+
+		<c:DockLayout Id="Sync" CssClass="{$styles.Sync}" OnClickAction="$SwitchScreen(Sync)">
+			<c:TextView Id="syncTitle" CssClass="menu_text" Text="$GetLastSyncTime()"></c:TextView>
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_sync" />
+				<c:TextView Text="#sync#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
+
+		<c:DockLayout Id="About" CssClass="{$styles.About}" OnClickAction="$SwitchScreen(About)">
+			<c:TextView CssClass="menu_text" Text="$GetMainVersion($sessionConst.solVersion)" />
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_info" />
+				<c:TextView Text="#info#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
+
+		<c:DockLayout OnClickAction="$LogoutQuery()">
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_logout" />
+				<c:TextView Text="#logout#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
+
+	</c:VerticalLayout>
+
+</c:Component>

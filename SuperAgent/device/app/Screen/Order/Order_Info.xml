@@ -44,7 +44,7 @@
 				<c:VerticalLayout>
 					<c:TextView Text="#priceList#" CssClass="description_row"/>
 					<s:If Test="$NotEmptyRef($thisDoc.PriceList)">
-						<c:TextView Id="priceListTextView" Text="$thisDoc.PriceList.Description" CssClass="main_row"/>
+						<c:TextView Id="priceListTextView" Text="$thisDoc.PriceList.Description" CssClass="main_row_price_list"/>
 					</s:If>
 					<s:Else>
 						<s:If Test="$priceLists == 0">
@@ -65,6 +65,12 @@
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
+
+			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectContractor($thisDoc)">
+				<c:TextView Text="#contractor#" />
+				<c:TextView Text="$RefOutput($thisDoc.Contractor)" CssClass="value" Id="contractor"/>
+			</c:DockLayout>
+			<c:HorizontalLine />
 
 				<c:HorizontalLayout CssClass="memo_block">
 					<c:VerticalLayout>

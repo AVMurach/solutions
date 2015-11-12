@@ -4,6 +4,8 @@ var checkVisitReason;
 var orderEnabled;
 var returnEnabled;
 var encashmentEnabled;
+var forwardIsntAllowed;
+var obligateNumber;
 
 function OnLoading() {
 	checkOrderReason = false;
@@ -133,23 +135,17 @@ function GetReturnSum(returnDoc) {
 
 function CheckAndCommit(order, visit, wfName) {
 
-	var check = VisitIsChecked(visit, order, wfName);
+    visit = visit.GetObject();
+	visit.EndTime = DateTime.Now;
 
-	if (check.Checked) {
-        visit = visit.GetObject();
-    	visit.EndTime = DateTime.Now;
-
-        if (OrderExists(visit.Id)) {
-            order.GetObject().Save();
-        }
-
-        CreateQuestionnaireAnswers();
-
-        visit.Save();
-        Workflow.Commit();
+    if (OrderExists(visit.Id)) {
+        order.GetObject().Save();
     }
-    else
-        Dialog.Message(check.Message);//Translate["#messageNulls#"]);
+
+    CreateQuestionnaireAnswers();
+
+    visit.Save();
+    Workflow.Commit();
 
 }
 
@@ -182,19 +178,21 @@ function DeliveryDateCallBack(state, args){
 
 }
 
-function VisitIsChecked(visit, order, wfName) {
+function VisitIsChecked(visit) {
 
-	var result = new Dictionary();
-	result.Add("Checked", false);
+	var result;
+	obligateNumber = parseInt(0);
 
-    if (checkOrderReason && visit.ReasonForNotOfTakingOrder.EmptyRef())
-    	result.Add("Message", Translate["#noOrder#"]);
-    else {
-        if (checkVisitReason && visit.ReasonForVisit.EmptyRef())
-        	result.Add("Message", Translate["#visitReasonMessage#"]);
-        else
-            result.Checked = true;
+    if (checkOrderReason && visit.ReasonForNotOfTakingOrder.EmptyRef()){
+    	obligateNumber = obligateNumber + 1;
     }
+    if (checkVisitReason && visit.ReasonForVisit.EmptyRef()){
+    	obligateNumber = obligateNumber + 1;
+    }
+    if (obligateNumber == 0)
+        result= true;
+    else
+    	result = false;
 
     return result;
 }
@@ -226,6 +224,13 @@ function NoTasks(skipTasks) {
 		return false;
 	else
 		return true;
+}
+
+function FormatOutput(value) {
+	if (String.IsNullOrEmpty(value) || IsEmptyValue(value))
+		return "—";
+	else
+		return value;
 }
 
 

@@ -1,98 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Main.css">
 
-	<s:Push Id="scheduledVisits" Value="$GetCommitedScheduledVisits()" />
 	<s:Push Id="unscheduledVisits" Value="$GetUnscheduledVisits()" />
-	<s:Push Id="visitsTotal" Value="$GetSum($scheduledVisits, $unscheduledVisits)"></s:Push>
-	<s:Push Id="plannedVisits" Value="$GetPlannedVisits()"></s:Push>
-	<s:Push Id="planVisitsLeft" Value="$GetDifference($plannedVisits, $scheduledVisits)"></s:Push>
-	<s:Push Id="outletsCount" Value="$GetOutletsCount()" />
-	<s:Push Id="orderSum" Value="$GetOrderSumm()" />
-	<s:Push Id="orderQty" Value="$GetOrderQty()"></s:Push>
 	<s:Push Id="encashmentSumm" Value="$GetEncashmentSumm()" />
 	<s:Push Id="receivablesSumm" Value="$GetReceivablesSumm()" />
 
-	<c:SwipeHorizontalLayout Id="swipe_layout">
-		<c:VerticalLayout CssClass="menu">
+	<c:SwipeHorizontalLayout Id="swipe_layout" Index="1">
+		
+		<s:Include File="\Components\SideMenu.xml"/>
 
-			<c:DockLayout CssClass="header" OnEvent="Forward" OnClickAction="$CloseMenu()">
-				<c:HorizontalLayout>
-					<c:Image CssClass="btn_summary" />
-					<c:TextView Text="#summary#" />
-				</c:HorizontalLayout>
-			</c:DockLayout>
-
-			<c:DockLayout OnClickAction="$DoAction(Visits)">
-				<c:TextView CssClass="menu_text" Text="{$scheduledVisits} | {$plannedVisits}" />
-				<c:HorizontalLayout>
-					<c:Image CssClass="btn_visits" />
-					<c:TextView Text="#visits#" />
-				</c:HorizontalLayout>
-			</c:DockLayout>
-			<c:HorizontalLine />
-
-			<c:DockLayout OnClickAction="$DoAction(Outlets)">
-				<c:TextView CssClass="menu_text" Text="$outletsCount" />
-				<c:HorizontalLayout>
-					<c:Image CssClass="btn_clients" />
-					<c:TextView Text="#clients#" />
-				</c:HorizontalLayout>
-			</c:DockLayout>
-			<c:HorizontalLine />
-
-			<s:If Test="$sessionConst.orderEnabled">
-				<c:DockLayout OnClickAction="$DoAction(Order)">
-					<c:TextView CssClass="menu_text" Text="{$orderQty} | {$FormatValue($orderSum)}"></c:TextView>
-					<c:HorizontalLayout>
-						<c:Image CssClass="btn_orders" />
-						<c:TextView Text="#orders#"></c:TextView>
-					</c:HorizontalLayout>
-				</c:DockLayout>
-				<c:HorizontalLine />
-			</s:If>
-
-			<s:If Test="$sessionConst.returnEnabled">
-				<c:DockLayout OnClickAction="$DoAction(Return)">
-					<c:TextView CssClass="menu_text" Text="{$GetReturnQty()} | {$GetReturnSum()}"></c:TextView>
-					<c:HorizontalLayout>
-						<c:Image CssClass="btn_returns" />
-						<c:TextView Text="#returns#"></c:TextView>
-					</c:HorizontalLayout>
-				</c:DockLayout>
-				<c:HorizontalLine />
-			</s:If>
-
-			<c:DockLayout OnClickAction="$DoAction(Sync)">
-				<c:TextView Id="syncTitle" CssClass="menu_text" Text="$GetLastSyncTime()"></c:TextView>
-				<c:HorizontalLayout>
-					<c:Image CssClass="btn_sync" />
-					<c:TextView Text="#sync#" />
-				</c:HorizontalLayout>
-			</c:DockLayout>
-			<c:HorizontalLine />
-
-			<c:DockLayout OnClickAction="$DoAction(About)">
-				<c:TextView CssClass="menu_text" Text="$GetMainVersion($sessionConst.solVersion)" />
-				<c:HorizontalLayout>
-					<c:Image CssClass="btn_info" />
-					<c:TextView Text="#info#" />
-				</c:HorizontalLayout>
-			</c:DockLayout>
-			<c:HorizontalLine />
-
-			<c:DockLayout OnClickAction="$LogoutQuery()">
-				<c:HorizontalLayout>
-					<c:Image CssClass="btn_logout" />
-					<c:TextView Text="#logout#" />
-				</c:HorizontalLayout>
-			</c:DockLayout>
-			<c:HorizontalLine />
-
-		</c:VerticalLayout>
 		<c:VerticalLayout>
 
 			<c:DockLayout CssClass="top_navigator">
-				<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnClickAction="$Facade.OpenMenu()">
+				<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnClickAction="$OpenMenu($swipe_layout)">
 					<c:Image CssClass="menuIcon" />
 				</c:DockLayout>
 				<c:DockLayout CssClass="btn_space" />
@@ -108,7 +28,7 @@
 				<c:DockLayout>
 					<c:VerticalLayout CssClass="left">
 						<c:DockLayout CssClass="caption_big">
-							<c:TextView Text="$visitsTotal" />
+							<c:TextView Text="$GetTotal()" />
 							<c:TextView Text="#vpVisits#" CssClass="descr" />
 							<c:TextView Text="#vpPerformed#" CssClass="descr" />
 						</c:DockLayout>
@@ -116,7 +36,7 @@
 						<c:VerticalLayout CssClass="simple">
 							<c:HorizontalLayout>
 								<c:TextView Text="#further#" CssClass="descr" />
-								<c:TextView Text="$planVisitsLeft" CssClass="mark" />
+								<c:TextView Text="$GetVisitsLeft()" CssClass="mark" />
 								<c:TextView Text="#vpVisits#" />
 							</c:HorizontalLayout>
 							<c:TextView Text="#scheduled#" CssClass="descr" />
@@ -126,7 +46,7 @@
 					<c:VerticalLayout CssClass="right">
 						<c:DockLayout CssClass="grid">
 							<c:VerticalLayout>
-								<c:TextView Text="$scheduledVisits" CssClass="main_row"></c:TextView>
+								<c:TextView Text="$GetCommitedScheduledVisits()" CssClass="main_row"></c:TextView>
 								<c:TextView Text="#planned#" CssClass="description_row" />
 								<c:TextView Text="#vpVisits#" CssClass="description_row" />
 							</c:VerticalLayout>
@@ -147,7 +67,7 @@
 					<c:DockLayout CssClass="short_panel">
 						<c:DockLayout CssClass="grid">
 							<c:VerticalLayout>
-								<c:TextView Text="{$FormatValue($orderSum)} #currency#" CssClass="main_row"></c:TextView>
+								<c:TextView Text="{$GetOrderSumm()} #currency#" CssClass="main_row"></c:TextView>
 								<c:TextView Text="#amountOfOrdersForToday#" CssClass="description_row" />
 							</c:VerticalLayout>
 						</c:DockLayout>

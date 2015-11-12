@@ -13,22 +13,22 @@ var curr_item;
 var curr_sku;
 var skuValueGl;
 var questionValueGl;
+var forwardAllowed;
+
 
 //
 //-------------------------------Header handlers-------------------------
 //
 
-
 function OnLoading(){
-	obligateredLeft = parseInt(0);
+	obligateredLeft = '0';
+	SetIndicators();
 	SetListType();
 	if (String.IsNullOrEmpty(setScroll))
 		setScroll = true;
 	if ($.param2==true) //works only in case of Forward from Filters
 		ClearIndex();
-}
-
-function WarMupFunction() {
+	forwardAllowed = true;
 
 }
 
@@ -39,7 +39,12 @@ function OnLoad() {
 
 function SetListType(){
 	if (regularAnswers==null)
-		regularAnswers = true;
+	{
+		if (parseInt(regular_total) == parseInt(0))
+			regularAnswers = false;
+		else
+			regularAnswers = true;
+	}
 }
 
 function ChangeListAndRefresh(control, param) {
@@ -77,6 +82,13 @@ function CountResultAndForward() {
 //--------------------------------Questions list handlers--------------------------
 //
 
+function HasQuestions(){
+	if (regularAnswers && parseInt(regular_total)==parseInt(0))
+		return false;
+	if (!regularAnswers && parseInt(single_total)==parseInt(0))
+		return false;
+	return true;
+}
 
 function GetSKUsFromQuesionnaires(search) {
 
@@ -84,7 +96,7 @@ function GetSKUsFromQuesionnaires(search) {
 	if (regularAnswers)
 		single = 0;
 
-	SetIndicators();
+	// SetIndicators();
 
 	//getting left obligated
 	var q = new Query("SELECT DISTINCT S.Question, S.Description, S.SKU " +
@@ -93,7 +105,8 @@ function GetSKUsFromQuesionnaires(search) {
 			"AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT SS.Question FROM USR_SKUQuestions SS " +
 				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
-	obligateredLeft = q.ExecuteCount();
+	obligateredLeft = q.ExecuteCount().ToString();
+	forwardAllowed = obligateredLeft == '0';
 
 	//getting SKUs list
 	var searchString = "";
@@ -103,14 +116,14 @@ function GetSKUsFromQuesionnaires(search) {
 	}
 
 	var filterString = "";
-	var filterJoin = "";
+
 	filterString += AddFilter(filterString, "group_filter", "OwnerGroup", " AND ");
 	filterString += AddFilter(filterString, "brand_filter", "Brand", " AND ");
 
 	var q = new Query();
-	q.Text="SELECT DISTINCT S.SKU, S.SKUDescription " +
+	q.Text="SELECT S.SKU, S.SKUDescription " +
 			", COUNT(DISTINCT S.Question) AS Total " +
-			", COUNT(S.Answer) AS Answered " +
+			", COUNT(DISTINCT S.Answer) AS Answered " +
 			", MAX(CAST (Obligatoriness AS INT)) AS Obligatoriness " +
 			", (SELECT COUNT(DISTINCT U1.Question) FROM USR_SKUQuestions U1 " +
 				" WHERE U1.Single=@single AND (Answer='' OR Answer IS NULL) " +
@@ -122,10 +135,10 @@ function GetSKUsFromQuesionnaires(search) {
 				" WHERE S.SKU=AMS.SKU) AS BaseUnitQty " +
 			", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 0 END AS ShowChild " +
 
-			"FROM USR_SKUQuestions S " + filterJoin +
+			"FROM USR_SKUQuestions S " +
 
-			"WHERE Single=@single AND " + searchString + filterString +
-			" (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions SS " +
+			"WHERE S.Single=@single AND " + searchString + filterString +
+			" (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT Question FROM USR_SKUQuestions SS " +
 				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))" +
 			"GROUP BY S.SKU, S.SKUDescription " +
 			" ORDER BY BaseUnitQty DESC, S.SKUDescription ";
@@ -141,31 +154,24 @@ function GetSKUsFromQuesionnaires(search) {
 }
 
 function SetIndicators() {
-	regular_total = CalculateTotal('0');
-	single_total = CalculateTotal('1');
-	regular_answ = CalculateQty('0');
-	single_answ = CalculateQty('1');
-}
+	var q = new Query("SELECT " +
+		"SUM(CASE WHEN Single = 0 THEN 1 ELSE 0 END) AS RegularTotal, " +
+		"SUM(CASE WHEN Single = 1 THEN 1 ELSE 0 END) AS SingleTotal, " +
+		"SUM(CASE WHEN Single = 0 AND TRIM(IFNULL(Answer, '')) != '' THEN 1 ELSE 0 END) AS RegularAnsw, " +
+		"SUM(CASE WHEN Single = 1 AND TRIM(IFNULL(Answer, '')) != '' THEN 1 ELSE 0 END) AS SingleAnsw " +
 
-function CalculateTotal(single) {
-	var q = new Query("SELECT COUNT(U1.Question) FROM USR_SKUQuestions U1 WHERE U1.Single=@single " +
-	" AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions U2 " +
-	" WHERE (Answer='Yes' OR Answer='Да') AND U1.SKU=U2.SKU))");
-	q.AddParameter("single", single);
-	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
-	return q.ExecuteScalar();
-}
-
-function CalculateQty(single) {
-	var q = new Query("SELECT COUNT(U1.Answer) AS Answered " +
+		"FROM (SELECT DISTINCT Question, SKU, Single, Answer " +
 			"FROM USR_SKUQuestions U1 " +
-			"WHERE U1.Single=@single " +
-			"AND RTRIM(U1.Answer)!='' AND U1.Answer IS NOT NULL " +
-			"AND (ParentQuestion=@emptyRef OR ParentQuestion IN " +
-				"(SELECT Question FROM USR_SKUQuestions U2 WHERE (Answer='Yes' OR Answer='Да') AND U2.SKU = U1.SKU))");
-	q.AddParameter("single", single);
+			"WHERE ParentQuestion=@emptyRef OR ParentQuestion IN " +
+				"(SELECT Question FROM USR_SKUQuestions U2 WHERE (Answer='Yes' OR Answer='Да') AND U1.SKU=U2.SKU))");
+
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
-	return q.ExecuteScalar();
+	var result = q.Execute();
+
+	regular_total = result.RegularTotal;
+	single_total = result.SingleTotal;
+	regular_answ = result.RegularAnsw;
+	single_answ = result.SingleAnsw;
 }
 
 function AddFilter(filterString, filterName, condition, connector) {
@@ -186,13 +192,6 @@ function AddFilter(filterString, filterName, condition, connector) {
 
 }
 
-function ForwardIsntAllowed() {
-	if (parseInt(obligateredLeft)!=parseInt(0))
-		return true;
-	else
-		return false;
-}
-
 function ShowChilds(index) {
 	var s = "p" + index;
 	if (s == parentId)
@@ -207,21 +206,28 @@ function GetChilds(sku) {
 	if (regularAnswers)
 		single = 0;
 
-	var q = new Query("SELECT *, " +
+var q = new Query("SELECT S.Description, S.Obligatoriness, S.AnswerType, S.Question, S.Answer, S.IsInputField, S.KeyboardType, " +
 			"CASE WHEN IsInputField='1' THEN Answer ELSE " +
 				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput, " +
-				"CASE WHEN S.AnswerType=@snapshot THEN 1 END AS IsSnapshot " +
+				"CASE WHEN S.AnswerType=@snapshot THEN 1 END AS IsSnapshot, " +
+			"CASE WHEN S.AnswerType=@snapshot THEN " +
+				" CASE WHEN TRIM(IFNULL(VFILES.FullFileName, '')) != '' THEN LOWER(VFILES.FullFileName) ELSE " +
+					" CASE WHEN TRIM(IFNULL(OFILES.FullFileName, '')) != '' THEN LOWER(OFILES.FullFileName) ELSE '/shared/result.jpg' END END ELSE NULL END AS FullFileName " +
 			"FROM USR_SKUQuestions S " +
-			"WHERE SKU=@sku AND Single=@single AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions " +
+			"LEFT JOIN Document_Visit_Files VFILES ON VFILES.FileName = S.Answer AND VFILES.Ref = @visit " +
+			"LEFT JOIN Catalog_Outlet_Files OFILES ON OFILES.FileName = S.Answer AND OFILES.Ref = @outlet " +
+			"WHERE S.SKU=@sku AND S.Single=@single AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT Question FROM USR_SKUQuestions " +
 			"WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) " +
-			"ORDER BY DocDate, QuestionOrder ");
+			"ORDER BY S.DocDate, S.QuestionOrder ");
 	q.AddParameter("sku", sku);
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	q.AddParameter("single", single);
 	q.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
 	q.AddParameter("attached", Translate["#snapshotAttached#"]);
-
-	return q.Execute();
+	q.AddParameter("visit", $.workflow.visit);
+	q.AddParameter("outlet", $.workflow.outlet);
+	result = q.Execute();
+	return result;
 }
 
 function GetImagePath(visitID, outletID, pictID, pictExt) {
@@ -230,14 +236,22 @@ function GetImagePath(visitID, outletID, pictID, pictExt) {
 	return (pathFromVisit == "/shared/result.jpg" ? pathFromOutlet : pathFromVisit);
 }
 
-function RefreshScreen(control, search) {
+function RefreshScreen(control, search, sku, question, answerType) {
+
+	var answer = control.Text;
+
+	if (!String.IsNullOrEmpty(answer) && answerType == DB.Current.Constant.DataType.Integer){
+
+		control.Text = RoundToInt(answer);
+
+		AssignAnswer(control, question, sku, answer, answerType);
+	}
+
 	Workflow.Refresh([search]);
 }
 
-function SnapshotExists(visit, outlet, filename) {
-	existsInVisit = Images.SnapshotExists(visit, filename, "Document_Visit_Files");
-	existsInOutlet = Images.SnapshotExists(outlet, filename, "Catalog_Outlet_Files");
-	return existsInVisit || existsInOutlet;
+function SnapshotExists(filename) {
+	return FileSystem.Exists(filename);
 }
 // ------------------------SKU----------------------
 
@@ -270,7 +284,7 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 
 	if ((answerType).ToString() == (DB.Current.Constant.DataType.ValueList).ToString()) {
 		var q = new Query();
-		q.Text = "SELECT Value, Value FROM Catalog_Question_ValueList WHERE Ref=@ref";
+		q.Text = "SELECT Value, Value FROM Catalog_Question_ValueList WHERE Ref=@ref UNION SELECT '', '—' ORDER BY Value";
 		q.AddParameter("ref", question);
 		//Dialogs.DoChoose(q.Execute(), question, null, editControl, DialogCallBack);
 		DoChoose(q.Execute(), question, null, editControl, DialogCallBack, title);
@@ -308,7 +322,7 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 	setScroll = false;
 }
 
-function AssignAnswer(control, question, sku, answer) {
+function AssignAnswer(control, question, sku, answer, answerType) {
 
 	if (control != null) {
 		answer = control.Text;
@@ -316,7 +330,7 @@ function AssignAnswer(control, question, sku, answer) {
 		if (answer!=null)
 			answer = answer.ToString();
 	}
-	if (answer == "—" || answer == "")
+	if (answer == "—" || answer == "" || answer=="-")
 		answer = null;
 
 	var answerString;
@@ -326,7 +340,7 @@ function AssignAnswer(control, question, sku, answer) {
 		answerString = "@answer ";
 
 	var q =	new Query("UPDATE USR_SKUQuestions SET Answer=" + answerString + ", AnswerDate=DATETIME('now', 'localtime') WHERE Question=@question AND SKU=@sku");
-	q.AddParameter("answer", answer);
+	q.AddParameter("answer", (question.AnswerType == DB.Current.Constant.DataType.DateTime ? Format("{0:dd.MM.yyyy HH:mm}", Date(answer)) : answer));
 	q.AddParameter("sku", sku);
 	q.AddParameter("question", question);
 	q.Execute();
@@ -353,7 +367,7 @@ function ObligatedAnswered(answer, obligatoriness) {
 
 function GetActionAndBack() {
 	var q = new Query("SELECT NextStep " +
-		" FROM USR_WorkflowSteps" + 
+		" FROM USR_WorkflowSteps" +
 		" WHERE Value=0 AND StepOrder<'3' ORDER BY StepOrder DESC");
 	var step = q.ExecuteScalar();
 	if (step==null)
@@ -485,7 +499,7 @@ function ChooseBool(entity, attribute, control, func, title) {
 	else
 		var startKey = entity[attribute];
 
-	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
 	if (func == null)
 		func = CallBack;
 	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);

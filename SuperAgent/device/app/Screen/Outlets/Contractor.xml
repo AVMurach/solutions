@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="CreateOutlet.css">
+
+	<s:Push Id="contractor" Value="$param1"></s:Push>
+
+	<c:DockLayout>
+
+		<c:DockLayout CssClass="top_navigator">
+			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$SaveContractorAndBack($contractor)" SubmitScope="INN;KPP;phone_number;email">
+				<c:Image />
+				<c:TextView Text="#list#" />
+			</c:DockLayout>
+			<c:DockLayout Id="btnForward" CssClass="btn_forward" />
+			<c:HorizontalLayout>
+				<c:TextView Text="#contractor#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+
+		<c:HorizontalLine />
+
+		<c:ScrollView Id="grScrollView">
+
+			<c:HorizontalLayout CssClass="margin_top" />
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(legal_name, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#legal_name#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.LegalName" Placeholder="—" CssClass="main_row" Id="legal_name" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(legal_address, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#legal_address#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.LegalAddress" Placeholder="—" CssClass="main_row" Id="legal_address"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid">
+				<c:VerticalLayout Id="ownership_vl" OnClickAction="$SelectOwnership($OwnershipType, $contractor)">
+					<c:TextView Text="#ownership#" CssClass="description_row"></c:TextView>
+					<s:If Test="$NotEmptyRef($contractor.OwnershipType)">
+						<c:TextView Id="OwnershipType" Text="#{$contractor.OwnershipType.Description}#" CssClass="main_row"/>
+					</s:If>
+					<s:Else>
+						<c:TextView Id="OwnershipType" Text="—" CssClass="main_row"/>
+					</s:Else>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(INN, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#inn#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.INN" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="INN" Mask="#inn_regexp#"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(KPP, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#kpp#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.KPP" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="KPP" Length="9" Mask="#kpp_regexp#"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(phone_number, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#phone#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.PhoneNumber" Placeholder="—" Keyboard="phone" CssClass="main_row" Id="phone_number" Mask="#phone_regexp#"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(email, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#email#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.Email" Placeholder="—" CssClass="main_row" Keyboard="email" Id="email" Mask="#email_regexp#"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(website, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#web_site#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.WebSite" Placeholder="—" CssClass="main_row" Id="website"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+		</c:ScrollView>
+
+	</c:DockLayout>
+
+</c:Screen>
