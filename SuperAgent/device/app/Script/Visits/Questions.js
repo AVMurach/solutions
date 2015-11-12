@@ -345,11 +345,11 @@ function AssignQuestionValue(control, question) {
 			Dialog.Message("Текст не должен превышать 100 символов");
 			return 0;
 		}else{
-			return 0;
+			CreateVisitQuestionValueIfNotExists(question, control.Text, false);
 		}		
 	//AVMurach-
 	
-	CreateVisitQuestionValueIfNotExists(question, control.Text, false);
+	
 }
 
 function DialogCallBack(control, key) {
