@@ -48,7 +48,7 @@
 				</s:Else>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
-
+			
 			<c:DockLayout CssClass="search">
 				<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 				<c:DockLayout>
@@ -59,6 +59,28 @@
 			<c:HorizontalLayout CssClass="shadowLine"></c:HorizontalLayout>
 
 			<s:If Test="$visitsType=='planned'">
+				
+				<!-- <c:HorizontalLayout CssClass="parameter_grid" onClickAction="$Workflow.DoAction(EditFilter)">
+			        <c:TextView Text="#period#" CssClass="periodcaption"></c:TextView>
+			       	<c:TextView Id="Period" Text="{$filterDateCaption(@recvStartPeriod)} - {$filterDateCaption(@recvStopPeriod)}"   CssClass="filtervalue"></c:TextView>
+			        <c:Image />
+	    		</c:HorizontalLayout> -->
+	    		
+	    		<c:HorizontalLayout CssClass="parameter_grid" onClickAction="$Workflow.DoAction(EditFilter)">
+			        <!-- <c:TextView Text="#period#" ></c:TextView> -->
+			       	<!-- <c:TextView Id="Period" Text="{$filterDateCaption(@recvStartPeriod)} - {$filterDateCaption(@recvStopPeriod)}" ></c:TextView> -->
+			       	<c:TextView Id="Period" Text="$StrDatePeriod(@recvStartPeriod,@recvStopPeriod)" ></c:TextView>
+			        <c:Image />
+	    		</c:HorizontalLayout>
+	    		
+	    		<!-- <c:HorizontalLayout CssClass="grey_swipe" OnClickAction="$ClearFilter()">
+					<c:VerticalLayout>
+						<c:TextView Text="#Clear#"></c:TextView>
+			        </c:VerticalLayout>
+				</c:HorizontalLayout> -->			
+			
+				<c:HorizontalLine />
+				
 				<c:ScrollView Id="grScrollView">
 					<s:Push Id="hasRow" Value="false" />
 

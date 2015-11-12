@@ -12,6 +12,7 @@
 			<bp:Action Name="Select" NextWorkflow="Visit"></bp:Action>
 			<bp:Action Name="SelectUnscheduled" NextWorkflow="Visit"></bp:Action>
 			<s:Include File="\Components\SideMenuActions.xml"/>
+			<bp:Action Name="EditFilter" NextStep="EditFilter"></bp:Action>
 		</bp:Step>
 
 		<bp:Step Name="OrderList" Screen="Order\OrderList.xml" Controller="Order\Main.js">
@@ -44,6 +45,9 @@
 
 		<bp:Step Name="ShowMap" Screen="ScheduledVisits_Map.xml">
 		</bp:Step>
+		
+		<bp:Step Name="EditFilter" Screen="Visit\filter.xml" Controller="Visits\Main.js">     
+    	</bp:Step>
 
 	</bp:Workflow>
 
