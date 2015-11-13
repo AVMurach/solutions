@@ -37,3 +37,47 @@
 	font: 42% Arial;
 	/*background-color: #bbaa00;*/
 }
+   
+.filterarrow {
+        height: 35%;
+        margin-left: 15%;
+        margin-top: 50%;
+        background-image: url(arrow.png);
+        
+    }
+    
+.parameter_grid vl {
+    width: 91.0%;
+    height: 100%;
+    padding-top: 13%;
+    padding-left: 2.7%;
+}
+
+	.parameter_grid vl TextView {
+			            width: 15% auto;
+						height: 100%;
+						white-space: normal;
+						padding-right: 7%;
+						padding-left: 25%;
+						padding-top: 25%;
+						color: #2d89cf;
+						font: 42% Arial;
+			        }
+
+.parameter_grid clear {
+    width: 7.0%;
+    height: 100%;
+    padding-top: 13%;
+    padding-left: 2.7%;
+}
+
+	.parameter_grid clear TextView {
+			            width: 15% auto;
+						height: 100%;
+						white-space: normal;
+						padding-right: 7%;
+						padding-left: 75%;
+						padding-top: 25%;
+						color: #2d89cf;
+						font: 42% Arial;
+			        }

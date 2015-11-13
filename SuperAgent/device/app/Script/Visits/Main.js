@@ -20,6 +20,20 @@ function ChangeListAndRefresh(control) {
 
 function GetUncommitedScheduledVisits(searchText) {
 
+	//AVMurach +
+	if(recvStartPeriod == undefined){
+		if(recvStopPeriod == undefined){
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @today AND V.Date < @tomorrow AND V.Plan<>@emptyRef ";
+		}
+	}else{
+		if(recvStopPeriod == undefined){
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @StartPeriod AND V.Plan<>@emptyRef ";
+		}else{
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @StartPeriod AND V.Date < @StopPeriod AND V.Plan<>@emptyRef ";
+		}
+	}			
+	//AVMurach -		
+	
 	var search = "";
 	var q = new Query();
 	if (String.IsNullOrEmpty(searchText)==false) {
@@ -31,13 +45,16 @@ function GetUncommitedScheduledVisits(searchText) {
 			OutletStatusText() +
 			" FROM Catalog_Outlet O " +
 			" JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) " +
-			" LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @today AND V.Date < @tomorrow AND V.Plan<>@emptyRef " +
+			visitTable +
 			" LEFT JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus = OSS.Status AND OSS.DoVisitInMA=1 " +
 			" WHERE V.Id IS NULL AND NOT OSS.Status IS NULL " + search + " ORDER BY O.Description LIMIT 100");
 	q.AddParameter("date", DateTime.Now.Date);
 	q.AddParameter("today", DateTime.Now.Date);
 	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
 	q.AddParameter("emptyRef", DB.EmptyRef("Document_VisitPlan"));
+	q.AddParameter("StartPeriod", recvStartPeriod);
+	q.AddParameter("StopPeriod", recvStopPeriod);
+	
 	return q.Execute();
 
 }
@@ -161,8 +178,7 @@ function MakeFilterSettingsBackUp(){
 		$.Add("BUFilterCopy", new Dictionary());
 		$.BUFilterCopy.Add("Start", recvStartPeriod);
 		$.BUFilterCopy.Add("Stop", recvStopPeriod);
-	}
-	
+	}			
 }
 
 function RollBackAndBack(){
@@ -240,6 +256,12 @@ function StrDatePeriod(firstDate, secondDate){
 	}
 			
 	return strPeriod
+}
+
+function ClearFilter(){
+	recvStartPeriod = undefined;
+	recvStopPeriod = undefined;
+	Workflow.Refresh([]);
 }
 
 

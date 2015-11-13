@@ -66,13 +66,25 @@
 			        <c:Image />
 	    		</c:HorizontalLayout> -->
 	    		
-	    		<c:HorizontalLayout CssClass="parameter_grid" onClickAction="$Workflow.DoAction(EditFilter)">
-			        <!-- <c:TextView Text="#period#" ></c:TextView> -->
-			       	<!-- <c:TextView Id="Period" Text="{$filterDateCaption(@recvStartPeriod)} - {$filterDateCaption(@recvStopPeriod)}" ></c:TextView> -->
-			       	<c:TextView Id="Period" Text="$StrDatePeriod(@recvStartPeriod,@recvStopPeriod)" ></c:TextView>
-			        <c:Image />
+	    		<c:HorizontalLayout CssClass="parameter_grid">
+			        <c:VerticalLayout onClickAction="$Workflow.DoAction(EditFilter)">
+				        <!-- <c:TextView Text="#period#" ></c:TextView> -->
+				       	<!-- <c:TextView Id="Period" Text="{$filterDateCaption(@recvStartPeriod)} - {$filterDateCaption(@recvStopPeriod)}" ></c:TextView> -->
+				       	<s:Push Id="strText" Value="$StrDatePeriod(@recvStartPeriod,@recvStopPeriod)" />
+				       	<c:TextView Id="Period" Text="$strText" ></c:TextView>
+				        <!-- <c:Image /> -->
+			        </c:VerticalLayout>
+			        
+					<s:If Test="$strText != 'Сегодня'">
+					
+						<c:VerticalLayout CssClass="clear" OnClickAction="$ClearFilter()">
+							<c:TextView Text="X"></c:TextView>
+						</c:VerticalLayout> 
+					
+					</s:If>
+			        
 	    		</c:HorizontalLayout>
-	    		
+	    			    			    		
 	    		<!-- <c:HorizontalLayout CssClass="grey_swipe" OnClickAction="$ClearFilter()">
 					<c:VerticalLayout>
 						<c:TextView Text="#Clear#"></c:TextView>
