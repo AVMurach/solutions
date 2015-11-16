@@ -106,31 +106,83 @@
 					<s:Iterator Id="pOutlet" Value="$uncommitedVisits">
 						<s:Push Id="planOutlet" Value="$pOutlet.Outlet"></s:Push>
 
-						<c:DockLayout CssClass="grid" OnClickAction="$AddGlobalAndAction($pOutlet.Ref, $planOutlet, Select)">
-							<s:If Test="$pOutlet.OutletStatus == 0">
-								<c:Image CssClass="blue_mark" />
-							</s:If>
-							<s:If Test="$pOutlet.OutletStatus == 1">
-								<c:Image CssClass="yellow_mark" />
-							</s:If>
-							<s:If Test="$pOutlet.OutletStatus == 2">
-								<c:Image CssClass="y_blue_mark" />
-							</s:If>
-							<s:If Test="$pOutlet.OutletStatus == 3">
-								<c:VerticalLayout CssClass="no_mark"></c:VerticalLayout>
-							</s:If>
-							<c:Image />
-							<c:VerticalLayout>
-								<c:TextView Text="$planOutlet.Description" CssClass="main_row"></c:TextView>
-								<c:HorizontalLayout>
-									<s:If Test="$pOutlet.Time != ''">
-										<c:TextView Text="$pOutlet.Time" CssClass="bl_description_row" />
-									</s:If>
-									<c:TextView Text="{$planOutlet.Address}" CssClass="description_row"></c:TextView>
-								</c:HorizontalLayout>
-							</c:VerticalLayout>
-							
-						</c:DockLayout>
+						<s:If Test="$pOutlet.todayTrue == 1">
+							<c:DockLayout CssClass="grid" OnClickAction="$AddGlobalAndAction($pOutlet.Ref, $planOutlet, Select)">
+								<s:If Test="$pOutlet.OutletStatus == 0">
+									<c:Image CssClass="blue_mark" />
+								</s:If>
+								<s:If Test="$pOutlet.OutletStatus == 1">
+									<c:Image CssClass="yellow_mark" />
+								</s:If>
+								<s:If Test="$pOutlet.OutletStatus == 2">
+									<c:Image CssClass="y_blue_mark" />
+								</s:If>
+								<s:If Test="$pOutlet.OutletStatus == 3">
+									<c:VerticalLayout CssClass="no_mark"></c:VerticalLayout>
+								</s:If>
+								<c:Image />
+								<c:VerticalLayout>
+									<c:HorizontalLayout>																		
+										<c:TextView Text="$planOutlet.Description" CssClass="main_row"></c:TextView>
+									</c:HorizontalLayout>
+									<c:HorizontalLayout>
+										<s:If Test="$strText != 'Сегодня'">
+											<s:If Test="$pOutlet.Time != ''">
+												<c:TextView Text="{$pOutlet.DateV} {$pOutlet.Time}" CssClass="bl_description_row" />
+											</s:If>
+											<s:Else>
+												<c:TextView Text="{$pOutlet.DateV}" CssClass="bl_description_row" />
+											</s:Else>																															
+										</s:If>
+										<s:Else>
+											<s:If Test="$pOutlet.Time != ''">
+												<c:TextView Text="{$pOutlet.Time}" CssClass="bl_description_row" />
+											</s:If>
+										</s:Else>
+										<c:TextView Text="{$planOutlet.Address}" CssClass="description_row"></c:TextView>
+									</c:HorizontalLayout>
+								</c:VerticalLayout>
+								
+							</c:DockLayout>
+						</s:If>
+						<s:Else>
+							<c:DockLayout CssClass="grid" >
+								<s:If Test="$pOutlet.OutletStatus == 0">
+									<c:Image CssClass="blue_mark" />
+								</s:If>
+								<s:If Test="$pOutlet.OutletStatus == 1">
+									<c:Image CssClass="yellow_mark" />
+								</s:If>
+								<s:If Test="$pOutlet.OutletStatus == 2">
+									<c:Image CssClass="y_blue_mark" />
+								</s:If>
+								<s:If Test="$pOutlet.OutletStatus == 3">
+									<c:VerticalLayout CssClass="no_mark"></c:VerticalLayout>
+								</s:If>
+								
+								<c:VerticalLayout>
+									<c:HorizontalLayout>																		
+										<c:TextView Text="$planOutlet.Description" CssClass="main_row"></c:TextView>
+									</c:HorizontalLayout>
+									<c:HorizontalLayout>
+										<s:If Test="$strText != 'Сегодня'">
+											<s:If Test="$pOutlet.Time != ''">
+												<c:TextView Text="{$pOutlet.DateV} {$pOutlet.Time}" CssClass="bl_description_row" />
+											</s:If>
+											<s:Else>
+												<c:TextView Text="{$pOutlet.DateV}" CssClass="bl_description_row" />
+											</s:Else>																															
+										</s:If>
+										<s:Else>
+											<s:If Test="$pOutlet.Time != ''">
+												<c:TextView Text="{$pOutlet.Time}" CssClass="bl_description_row" />
+											</s:If>
+										</s:Else>
+										<c:TextView Text="{$planOutlet.Address}" CssClass="description_row"></c:TextView>
+									</c:HorizontalLayout>
+								</c:VerticalLayout>								
+							</c:DockLayout>
+						</s:Else>
 						<c:HorizontalLine />
 
 					</s:Iterator>

@@ -319,3 +319,7 @@ selectOwner		Принадлежность контакта не выбрана
 no_questions_list	НЕТ ВОПРОСОВ
 requiredFieldsLeft	Обязательных полей осталось:
 Clear	Очистить
+period	Период
+begin	Начало
+end	Окончание
+ClearFilter	Очистить фильтр

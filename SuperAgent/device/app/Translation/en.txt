@@ -318,3 +318,7 @@ selectOwner		Owner isn't selected
 no_questions_list	NO QUESTIONS
 requiredFieldsLeft	Required fields left
 Clear	Clear
+period	Period
+begin	Begin
+end	End
+ClearFilter	Clear filter

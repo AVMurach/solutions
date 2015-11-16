@@ -23,16 +23,28 @@ function GetUncommitedScheduledVisits(searchText) {
 	//AVMurach +
 	if(recvStartPeriod == undefined){
 		if(recvStopPeriod == undefined){
+			var listValue = "SELECT DISTINCT VP.Outlet, VP.Ref, ";
+			var todayTrue = " 1 AS todayTrue, "
 			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @today AND V.Date < @tomorrow AND V.Plan<>@emptyRef ";
+			var orderBy = " ORDER BY O.Description LIMIT 100";	
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) "
 		}
 	}else{
 		if(recvStopPeriod == undefined){
-			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @StartPeriod AND V.Plan<>@emptyRef ";
+			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
+			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, "
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
+			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod "
 		}else{
-			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @StartPeriod AND V.Date < @StopPeriod AND V.Plan<>@emptyRef ";
+			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
+			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, "
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
+			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod "
 		}
 	}			
-	//AVMurach -		
+			
 	
 	var search = "";
 	var q = new Query();
@@ -40,14 +52,14 @@ function GetUncommitedScheduledVisits(searchText) {
 		searchText = StrReplace(searchText, "'", "''");
 		search = "AND Contains(O.Description, '" + searchText + "') ";
 	}
-	q.Text = ("SELECT DISTINCT VP.Outlet, VP.Ref, " +
+	q.Text = (listValue + todayTrue +
 			" CASE WHEN strftime('%H:%M', VP.Date)='00:00' THEN '' ELSE strftime('%H:%M', VP.Date) END AS Time, " + 
 			OutletStatusText() +
 			" FROM Catalog_Outlet O " +
-			" JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) " +
+			visitPlanTable +
 			visitTable +
 			" LEFT JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus = OSS.Status AND OSS.DoVisitInMA=1 " +
-			" WHERE V.Id IS NULL AND NOT OSS.Status IS NULL " + search + " ORDER BY O.Description LIMIT 100");
+			" WHERE V.Id IS NULL AND NOT OSS.Status IS NULL " + search + orderBy);
 	q.AddParameter("date", DateTime.Now.Date);
 	q.AddParameter("today", DateTime.Now.Date);
 	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
@@ -55,7 +67,10 @@ function GetUncommitedScheduledVisits(searchText) {
 	q.AddParameter("StartPeriod", recvStartPeriod);
 	q.AddParameter("StopPeriod", recvStopPeriod);
 	
+	Console.WriteLine(q.Text);
 	return q.Execute();
+	
+	//AVMurach -
 
 }
 
@@ -281,4 +296,10 @@ function OutletStatusText(){
 		os = " 3 AS OutletStatus ";
 
 	return os;
+}
+
+
+function Test(par){
+	Dialog.Debug(par);
+	return par
 }

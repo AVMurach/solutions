@@ -28,8 +28,14 @@
 	/*background-color: #ccaacc;*/
 }
 
+.grid vl hl main_row{
+	height: 100%;
+	font: 42% Arial;
+	/*background-color: #ccaacc;*/
+}
+
 .bl_description_row{
-	width: 15% auto;
+	width: 15%;
 	height: 100%;
 	white-space: normal;
 	padding-right: 7%;

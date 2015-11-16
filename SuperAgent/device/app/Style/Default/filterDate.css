@@ -96,7 +96,7 @@ dl {
     height: 23%;
     white-space: normal;
     font: 80% Arial;
-    color: #e6891b;
+    color: #000000;
 }
 
 .periodcaption {
@@ -104,7 +104,7 @@ dl {
         height: 100%;
         margin-left: 3.5%;
         padding-top: 45%;
-        color: #e6891b;
+        color: #000000;
         font: 40% arial;
 }
 
@@ -133,7 +133,7 @@ dl {
         height: 100%;
         margin-left: 3.5%;
         padding-top: 30%;
-        color: #e6891b;
+        /* color: #e6891b; */
         dock-align: left;
         font: 36% arial;
     }
@@ -152,7 +152,7 @@ dl {
             margin-left: 5%;
             padding-top: 25%;
             text-align: center;
-            color: #e6891b;
+            color: #2d89cf;
             font: 38% Arial;
         }
 
@@ -170,6 +170,6 @@ background-color: #ffffff;
             margin-left: 0%;
             padding-top: 25%;
             text-align: center;
-            color: #e6891b;
+            color: #2d89cf;
             font: 38% Arial;
         }
