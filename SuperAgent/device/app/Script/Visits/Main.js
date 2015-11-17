@@ -66,8 +66,7 @@ function GetUncommitedScheduledVisits(searchText) {
 	q.AddParameter("emptyRef", DB.EmptyRef("Document_VisitPlan"));
 	q.AddParameter("StartPeriod", recvStartPeriod);
 	q.AddParameter("StopPeriod", recvStopPeriod);
-	
-	Console.WriteLine(q.Text);
+		
 	return q.Execute();
 	
 	//AVMurach -
@@ -75,29 +74,73 @@ function GetUncommitedScheduledVisits(searchText) {
 }
 
 function GetUncommitedScheduledVisitsCount(searchText) {
-
+	
+	//AVMurach +
+	if(recvStartPeriod == undefined){
+		if(recvStopPeriod == undefined){
+			var listValue = "SELECT DISTINCT VP.Outlet, VP.Ref, ";
+			var todayTrue = " 1 AS todayTrue, "
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @today AND V.Date < @tomorrow AND V.Plan<>@emptyRef ";
+			var orderBy = " ORDER BY O.Description LIMIT 100";	
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) "
+		}
+	}else{
+		if(recvStopPeriod == undefined){
+			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
+			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, "
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
+			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod "
+		}else{
+			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
+			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, "
+			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
+			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod "
+		}
+	}
+	
+	
 	var search = "";
 	var q = new Query();
 	if (String.IsNullOrEmpty(searchText)==false) {
 		searchText = StrReplace(searchText, "'", "''");
 		search = "AND Contains(O.Description, '" + searchText + "') ";
 	}
-	q.Text = ("SELECT COUNT(DISTINCT VP.Outlet) " +
-			" FROM Catalog_Outlet O JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) " +
-			" LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @today AND V.Date < @tomorrow AND V.Plan<>@emptyRef LEFT JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus = OSS.Status AND OSS.DoVisitInMA=1 " +
-			" WHERE V.Id IS NULL AND NOT OSS.Status IS NULL " + search + " ORDER BY O.Description LIMIT 100");
+	q.Text = ("SELECT COUNT(VP.Outlet) " +
+			" FROM Catalog_Outlet O " +
+			visitPlanTable +
+			visitTable +
+			" LEFT JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus = OSS.Status AND OSS.DoVisitInMA=1 " +
+			" WHERE V.Id IS NULL AND NOT OSS.Status IS NULL " + search + orderBy);
 	q.AddParameter("date", DateTime.Now.Date);
 	q.AddParameter("today", DateTime.Now.Date);
 	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
 	q.AddParameter("emptyRef", DB.EmptyRef("Document_VisitPlan"));
+	q.AddParameter("StartPeriod", recvStartPeriod);
+	q.AddParameter("StopPeriod", recvStopPeriod);
 	return q.ExecuteScalar();
 
 }
 
 function GetScheduledVisitsCount() {
+	
+	if(recvStartPeriod == undefined){
+		var startDate = DateTime.Now.Date;
+	}else{
+		var startDate = recvStartPeriod;
+	}
+	
+	if(recvStopPeriod == undefined){
+		var endDate = DateTime.Now.Date.AddDays(1);
+	}else{
+		var endDate = recvStopPeriod;
+	}
+	
+	
 	var q = new Query("SELECT COUNT(VPO.Id) FROM Document_VisitPlan_Outlets VPO LEFT JOIN Catalog_Outlet O ON VPO.Outlet = O.Id LEFT JOIN Catalog_OutletsStatusesSettings OSS ON O.OutletStatus = OSS.Status AND OSS.DoVisitInMA = 1 WHERE Date >= @today AND Date < @tomorrow AND NOT OSS.Status IS NULL");
-	q.AddParameter("today", DateTime.Now.Date);
-	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
+	q.AddParameter("today", startDate);
+	q.AddParameter("tomorrow", endDate);
 	var cnt = q.ExecuteScalar();
 	if (cnt == null)
 		return 0;
