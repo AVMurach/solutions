@@ -73,6 +73,12 @@
 				<c:TextView Text="#main#:"></c:TextView>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
+			
+			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet, Distributor, $outletDistr, #partner#, $sessionConst.editOutletParameters, 000000006)">
+				<c:TextView Text="#partner#"></c:TextView>
+				<c:TextView Id="outletDistr" Text="$GetDescr($outlet.Distributor.Description)" CssClass="value"></c:TextView>
+			</c:DockLayout>
+			<c:HorizontalLine />
 
 			<s:Push Id="snapshots" Value="$GetSnapshots($outlet)" />
 
@@ -163,13 +169,13 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClickAction="$SelectIfNotAVisit($outlet, OutletStatus, $status, #status#, $sessionConst.editOutletParameters, 000000007)">
+			<!-- <c:HorizontalLayout CssClass="grid" OnClickAction="$SelectIfNotAVisit($outlet, OutletStatus, $status, #status#, $sessionConst.editOutletParameters, 000000007)">
 				<c:VerticalLayout>
 					<c:TextView Text="#status#" CssClass="description_row" />
 					<c:TextView Id="status" Text="$GetStatusDescription($outlet)" CssClass="main_row" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
-			<c:HorizontalLine />
+			<c:HorizontalLine /> -->
 
 			<c:DockLayout CssClass="grid" OnClickAction="$FocusIfHasEditText(outletAddress, $sessionConst.editOutletParameters, 000000002)">
 				<c:Button Id="clearButton" CssClass="clear" Visible="false" OnClick="$ClearField($outletAddress, $outlet, Address)"/>
@@ -185,7 +191,14 @@
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-
+			<c:DockLayout CssClass="grid" >
+				<c:VerticalLayout>
+					<c:TextView Text="#nextVisitDate#" CssClass="description_row"></c:TextView>
+					<c:TextView Id="nextVisitD" Text="$GetNextVisit($outlet)" CssClass="main_row" />
+				</c:VerticalLayout>
+			</c:DockLayout>
+			<c:HorizontalLine />
+			
 			<c:DockLayout CssClass="grid">
 				<s:If Test="$outlet != null &amp;&amp; $outlet.Lattitude != 0 &amp;&amp; $outlet.Longitude != 0">
 					<c:Button OnClickAction="$DoAction(ShowMap, $outlet)" />
@@ -223,12 +236,6 @@
 			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet,Type,$outletType,#outlet_type#, $sessionConst.editOutletParameters, 000000004)">
 				<c:TextView Text="#outlet_type#"></c:TextView>
 				<c:TextView Id="outletType" Text="$outlet.Type.Description" CssClass="value"></c:TextView>
-			</c:DockLayout>
-			<c:HorizontalLine />
-
-			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet, Distributor, $outletDistr, #partner#, $sessionConst.editOutletParameters, 000000006)">
-				<c:TextView Text="#partner#"></c:TextView>
-				<c:TextView Id="outletDistr" Text="$GetDescr($outlet.Distributor.Description)" CssClass="value"></c:TextView>
 			</c:DockLayout>
 			<c:HorizontalLine />
 

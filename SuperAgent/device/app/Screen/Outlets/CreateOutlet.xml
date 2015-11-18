@@ -50,6 +50,15 @@
 			</s:Else>
 			<c:HorizontalLine />
 
+			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Distributor,$outletDistr,#partner#)">
+				<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+				<c:VerticalLayout>
+					<c:TextView Text="#partner#" CssClass="description_row"></c:TextView>
+					<c:EditText Id="outletDistr" Text="$outlet.Distributor.Description" Placeholder="—" Enabled="False" CssClass="main_row" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+			
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(outletName, 1)">
 				<c:HorizontalLayout CssClass="$sideStyle.outletName"></c:HorizontalLayout>
 				<c:VerticalLayout>
@@ -77,7 +86,7 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Class,$outletClass,#outlet_class#)">
+			<c:HorizontalLayout CssClass="grid" >
 				<c:HorizontalLayout CssClass="$sideStyle.outletClass"></c:HorizontalLayout>
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_class#" CssClass="description_row"></c:TextView>
@@ -91,15 +100,6 @@
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_type#" CssClass="description_row"></c:TextView>
 					<c:EditText Id="outletType" Text="$outlet.Type.Description" Placeholder="—" Enabled="False" CssClass="main_row" />
-				</c:VerticalLayout>
-			</c:HorizontalLayout>
-			<c:HorizontalLine />
-
-			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Distributor,$outletDistr,#partner#)">
-				<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
-				<c:VerticalLayout>
-					<c:TextView Text="#partner#" CssClass="description_row"></c:TextView>
-					<c:EditText Id="outletDistr" Text="$outlet.Distributor.Description" Placeholder="—" Enabled="False" CssClass="main_row" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />

@@ -9,6 +9,11 @@ function CreateOutlet(outlet) {
 	{
 		outlet = DB.Create("Catalog.Outlet");
 		outlet.OutletStatus = DB.Current.Constant.OutletStatus.Potential;
+		
+		var q = new Query("SELECT Id From Catalog_OutletClass ORDER BY Code LIMIT 1");
+		var outletClass = q.ExecuteScalar();
+		outlet.Class = outletClass;		
+		
 		outlet.Save();
 		return outlet.Id;
 	}

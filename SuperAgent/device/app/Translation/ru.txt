@@ -31,7 +31,7 @@ sync		Синхронизация
 syncPhoto	Обмен фото
 search		Поиск
 outlet		Торговая точка
-outlet_class	Класс торговой точки
+outlet_class	Категория
 outlet_type	Тип торговой точки
 distributor	Дистрибьютор
 answer		Ответ
@@ -127,7 +127,7 @@ startTime	Время начала
 newOutlet	Создать новую торговую точку
 messageNulls	Все поля на экране должны быть заполнены.
 countPrice	Пересчитать цену
-address		Адрес
+address		Факт. адрес
 description	Наименование
 coordinates	Координаты
 set			Установить
@@ -305,8 +305,8 @@ no_contacts	НЕТ КОНТАКТОВ
 contractors		Контрагенты
 contractor		Контрагент
 outletContacts	КОНТАКТЫ ТОРГ. ТОЧКИ
-partnerContacts	КОНТАКТЫ ПАРТНЕРА
-partner			Партнер
+partnerContacts	КОНТАКТЫ ЮР.ЛИЦА
+partner			Юр.лицо
 owner			Принадлежность контакта
 emptyContactOwner	Поле Принадлежность контакта не заполнено
 noContractors	Нет контрагентов

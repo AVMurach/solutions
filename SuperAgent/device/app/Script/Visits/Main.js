@@ -24,24 +24,25 @@ function GetUncommitedScheduledVisits(searchText) {
 	if(recvStartPeriod == undefined){
 		if(recvStopPeriod == undefined){
 			var listValue = "SELECT DISTINCT VP.Outlet, VP.Ref, ";
-			var todayTrue = " 1 AS todayTrue, "
+			var todayTrue = " 1 AS todayTrue, ";
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) ";
 			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @today AND V.Date < @tomorrow AND V.Plan<>@emptyRef ";
-			var orderBy = " ORDER BY O.Description LIMIT 100";	
-			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) "
+			var orderBy = " ORDER BY O.Description LIMIT 100";
+			
 		}
 	}else{
 		if(recvStopPeriod == undefined){
 			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
-			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, "
+			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, ";
 			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
 			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
-			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod "
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod ";
 		}else{
 			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
-			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, "
+			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, ";
 			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
 			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
-			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod "
+			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod ";
 		}
 	}			
 			
