@@ -151,6 +151,16 @@
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
+			
+			<c:DockLayout CssClass="parameter_grid">
+				<c:TextView Text="#SKU#"></c:TextView>
+				<c:TextView Text="{Реком} {8} {В заказе} {8}" CssClass="value"></c:TextView>
+			</c:DockLayout>
+			
+			<c:DockLayout CssClass="parameter_grid">
+				<c:TextView Text="#SKU#"></c:TextView>
+				<c:TextView Text="{Реком} {8} {В заказе} {8}" CssClass="value"></c:TextView>
+			</c:DockLayout>
 
 		</c:ScrollView>
 
