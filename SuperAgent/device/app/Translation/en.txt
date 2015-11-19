@@ -322,3 +322,4 @@ period	Period
 begin	Begin
 end	End
 ClearFilter	Clear filter
+specialty	Specialty

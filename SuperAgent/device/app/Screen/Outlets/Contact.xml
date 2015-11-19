@@ -69,6 +69,14 @@
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
+			
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$CheckAndFocus(specialty, 1)">
+				<c:VerticalLayout>
+					<c:TextView Text="#specialty#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contact.Specialty" Placeholder="—" CssClass="main_row" Id="specialty"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
 
 			<c:DockLayout CssClass="grid" OnClickAction="$CheckAndFocus(phone_number, 1)">
 				<c:HorizontalLayout CssClass="phone">

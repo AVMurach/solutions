@@ -323,3 +323,4 @@ period	Период
 begin	Начало
 end	Окончание
 ClearFilter	Очистить фильтр
+specialty	Специальность
