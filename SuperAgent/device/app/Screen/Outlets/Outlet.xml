@@ -74,10 +74,12 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 			
-			<c:DockLayout CssClass="parameter_grid" OnClickAction="$SelectIfNotAVisit($outlet, Distributor, $outletDistr, #partner#, $sessionConst.editOutletParameters, 000000006)">
-				<c:TextView Text="#partner#"></c:TextView>
-				<c:TextView Id="outletDistr" Text="$GetDescr($outlet.Distributor.Description)" CssClass="value"></c:TextView>
-			</c:DockLayout>
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$SelectIfNotAVisit($outlet, Distributor, $outletDistr, #partner#, $sessionConst.editOutletParameters, 000000006)">
+				<c:VerticalLayout>
+					<c:TextView Text="#partner#" CssClass="description_row"></c:TextView>
+					<c:TextView Id="outletDistr" Text="$GetDescr($outlet.Distributor.Description)" CssClass="main_row"></c:TextView>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
 			<s:Push Id="snapshots" Value="$GetSnapshots($outlet)" />
