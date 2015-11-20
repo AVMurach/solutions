@@ -158,7 +158,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     }
 
     query.AddParameter("Ref", priceList);
-
+    Console.WriteLine(query.Text);
     return query.Execute();
 
 }

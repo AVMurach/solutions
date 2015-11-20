@@ -127,7 +127,7 @@
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
-
+			
 			<s:If Test="@orderEnabled">
 				<c:DockLayout CssClass="parameter_grid">
 					<c:TextView Text="#orderSum#"></c:TextView>
@@ -135,6 +135,31 @@
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
+			
+			<c:DockLayout CssClass="parameter_grid_table">
+				<c:TextView Text="#sku#"></c:TextView>
+				<c:TextView Text="{Заказ}" CssClass="valueTable"></c:TextView>
+				<c:TextView Text="{Реком}" CssClass="valueTable"></c:TextView>				
+			</c:DockLayout>
+			
+			<s:Iterator Id="orderTable" Value="$GetOrderTable($workflow.order, $workflow.outlet, $workflow.visit)">
+			
+				<s:If Test="$orderTable.Qty == 0">								
+					<c:DockLayout CssClass="parameter_grid">
+						<c:TextView Text="$orderTable.SKU.Description" CssClass="textView_red"></c:TextView>
+						<c:TextView Text="$orderTable.Qty" CssClass="valueTable_red"></c:TextView>
+						<c:TextView Text="$orderTable.CommonStock" CssClass="valueTable_red"></c:TextView>
+					</c:DockLayout>
+				</s:If>							
+				<s:Else>
+					<c:DockLayout CssClass="parameter_grid">
+						<c:TextView Text="$orderTable.SKU.Description"></c:TextView>
+						<c:TextView Text="$orderTable.Qty" CssClass="valueTable"></c:TextView>
+						<c:TextView Text="$orderTable.CommonStock" CssClass="valueTable"></c:TextView>
+					</c:DockLayout>
+				</s:Else>
+			</s:Iterator>
+			<c:HorizontalLine />
 
 			<s:If Test="@returnEnabled">
 				<c:DockLayout CssClass="parameter_grid">
@@ -151,17 +176,7 @@
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
-			
-			<c:DockLayout CssClass="parameter_grid">
-				<c:TextView Text="#SKU#"></c:TextView>
-				<c:TextView Text="{Реком} {8} {В заказе} {8}" CssClass="value"></c:TextView>
-			</c:DockLayout>
-			
-			<c:DockLayout CssClass="parameter_grid">
-				<c:TextView Text="#SKU#"></c:TextView>
-				<c:TextView Text="{Реком} {8} {В заказе} {8}" CssClass="value"></c:TextView>
-			</c:DockLayout>
-
+						
 		</c:ScrollView>
 
 	</c:VerticalLayout>
