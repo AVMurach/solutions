@@ -155,9 +155,9 @@ function GetOrderTable(order, outlet, visit) {
     		"JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMO.Id = AMS.Ref AND AMO.Outlet = @Outlet " +
     		"WHERE Ref = @Ref");*/
 				
-	var query = new Query("SELECT O.SKU, O.Qty, AMS.CommonStock" +
+	var query = new Query("SELECT O.SKU, AS OSKU, ifnull(O.Qty, 0), AMS.Id AS AMSSKU, ifnull(AMS.RecOrder, 0)" +
 						" FROM Document_Order_SKUs O " +
-						"LEFT OUTER JOIN " +						
+						"LEFT JOIN " +						
 			
 						"	(SELECT DISTINCT S.Id" +
 						"		, S.Description" +
@@ -170,13 +170,36 @@ function GetOrderTable(order, outlet, visit) {
 						"	FROM _Catalog_SKU S " +
 						"		JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id" +
 						"		LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet" +
-						"		LEFT JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS  JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref     WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1)" +
+						"		JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS  JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref     WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1)" +
 						"		LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id" +
 						"		LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@stock)" +
 						
 						"	WHERE S.IsTombstone = 0  ORDER BY  OrderRecOrder DESC,  S.Description LIMIT 100) AS AMS ON AMS.Id = O.SKU " +
 						
-						"WHERE Ref = @Ref ");
+						"WHERE Ref = @Ref " +
+						
+						"UNION " +
+						
+						"SELECT O.SKU, O.Qty, AMS.Id, AMS.RecOrder" +
+						" FROM (SELECT DISTINCT S.Id" +
+						"		, S.Description" +
+						"		, S.CommonStock AS CommonStock" +
+						"		, CASE WHEN V.Answer IS NULL THEN U.Description ELSE UB.Description END AS RecUnit" +
+						"		, CASE WHEN V.Answer IS NULL THEN U.Id ELSE UB.Id END AS UnitId" +
+						"		, CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder" +
+						"		, CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder" +
+						
+						"	FROM _Catalog_SKU S " +
+						"		JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id" +
+						"		LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet" +
+						"		JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS  JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref     WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1)" +
+						"		LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id" +
+						"		LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@stock)" +
+						
+						"	WHERE S.IsTombstone = 0  ORDER BY  OrderRecOrder DESC,  S.Description LIMIT 100) AS AMS " +
+						"LEFT JOIN " +
+						"Document_Order_SKUs O ON AMS.Id = O.SKU AND Ref = @Ref " +
+						"GROUP BY O.SKU, ifnull(O.Qty, 0), AMS.Id, ifnull(AMS.RecOrder, 0) ");
         
     query.AddParameter("Ref", order);
     query.AddParameter("outlet", outlet);

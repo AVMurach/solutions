@@ -143,21 +143,31 @@
 			</c:DockLayout>
 			
 			<s:Iterator Id="orderTable" Value="$GetOrderTable($workflow.order, $workflow.outlet, $workflow.visit)">
-			
-				<s:If Test="$orderTable.Qty == 0">								
+				<c:HorizontalLine />
+				<s:If Test="$orderTable.Qty == null">								
 					<c:DockLayout CssClass="parameter_grid">
-						<c:TextView Text="$orderTable.SKU.Description" CssClass="textView_red"></c:TextView>
+						<s:If Test="$orderTable.OSKU != null">
+							<c:TextView Text="$orderTable.OSKU.Description" CssClass="textView_red"></c:TextView>
+						</s:If>
+						<s:Else>
+							<c:TextView Text="$orderTable.AMSSKU.Description" CssClass="textView_red"></c:TextView>
+						</s:Else>
 						<c:TextView Text="$orderTable.Qty" CssClass="valueTable_red"></c:TextView>
-						<c:TextView Text="$orderTable.CommonStock" CssClass="valueTable_red"></c:TextView>
+						<c:TextView Text="$orderTable.RecOrder" CssClass="valueTable_red"></c:TextView>						
 					</c:DockLayout>
 				</s:If>							
 				<s:Else>
 					<c:DockLayout CssClass="parameter_grid">
-						<c:TextView Text="$orderTable.SKU.Description"></c:TextView>
+						<s:If Test="$orderTable.OSKU != null">
+							<c:TextView Text="$orderTable.OSKU.Description"></c:TextView>
+						</s:If>
+						<s:Else>
+							<c:TextView Text="$orderTable.AMSSKU.Description"></c:TextView>
+						</s:Else>
 						<c:TextView Text="$orderTable.Qty" CssClass="valueTable"></c:TextView>
-						<c:TextView Text="$orderTable.CommonStock" CssClass="valueTable"></c:TextView>
+						<c:TextView Text="$orderTable.RecOrder" CssClass="valueTable"></c:TextView>
 					</c:DockLayout>
-				</s:Else>
+				</s:Else>				
 			</s:Iterator>
 			<c:HorizontalLine />
 
