@@ -144,7 +144,7 @@
 			
 			<s:Iterator Id="orderTable" Value="$GetOrderTable($workflow.order, $workflow.outlet, $workflow.visit)">
 				<c:HorizontalLine />
-				<s:If Test="$orderTable.Qty == null">								
+				<s:If Test="$orderTable.Qty == 0">								
 					<c:DockLayout CssClass="parameter_grid">
 						<s:If Test="$orderTable.OSKU != null">
 							<c:TextView Text="$orderTable.OSKU.Description" CssClass="textView_red"></c:TextView>

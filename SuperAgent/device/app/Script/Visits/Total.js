@@ -155,7 +155,7 @@ function GetOrderTable(order, outlet, visit) {
     		"JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMO.Id = AMS.Ref AND AMO.Outlet = @Outlet " +
     		"WHERE Ref = @Ref");*/
 				
-	var query = new Query("SELECT O.SKU, AS OSKU, ifnull(O.Qty, 0), AMS.Id AS AMSSKU, ifnull(AMS.RecOrder, 0)" +
+	var query = new Query("SELECT O.SKU AS OSKU, ifnull(O.Qty, 0) AS Qty, AMS.Id AS AMSSKU, ifnull(AMS.RecOrder, 0) AS RecOrder " +
 						" FROM Document_Order_SKUs O " +
 						"LEFT JOIN " +						
 			
@@ -180,7 +180,7 @@ function GetOrderTable(order, outlet, visit) {
 						
 						"UNION " +
 						
-						"SELECT O.SKU, O.Qty, AMS.Id, AMS.RecOrder" +
+						"SELECT O.SKU AS OSKU, ifnull(O.Qty, 0) AS Qty, AMS.Id  AS AMSSKU, ifnull(AMS.RecOrder, 0) AS RecOrder " +
 						" FROM (SELECT DISTINCT S.Id" +
 						"		, S.Description" +
 						"		, S.CommonStock AS CommonStock" +
