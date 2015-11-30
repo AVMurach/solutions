@@ -323,3 +323,5 @@ begin	Begin
 end	End
 ClearFilter	Clear filter
 specialty	Specialty
+selling_initiatives	Selling initiatives
+conduct_training	Conduct training

@@ -108,6 +108,20 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
+			<!-- AVMurach+ -->		
+			<c:DockLayout CssClass="parameter_grid">
+				<c:TextView Text="#selling_initiatives#"></c:TextView>
+				<c:TextView Text="12" CssClass="value"></c:TextView>
+			</c:DockLayout>
+			<c:HorizontalLine />
+		
+			<c:DockLayout CssClass="parameter_grid">
+				<c:TextView Text="#conduct_training#"></c:TextView>
+				<c:TextView Text="32" CssClass="value"></c:TextView>
+			</c:DockLayout>
+			<c:HorizontalLine />		
+			<!-- AVMurach- -->
+			
 			<s:If Test="$ShowQuestionnaires()">
 				<c:DockLayout CssClass="parameter_grid">
 					<s:Push Id="answered" Value="$GetSum($workflow.questions_answ, $workflow.questions_answ_sku)"></s:Push>
@@ -136,6 +150,7 @@
 				<c:HorizontalLine />
 			</s:If>
 			
+			<!-- AVMurach+ -->			
 			<c:DockLayout CssClass="parameter_grid_table">
 				<c:TextView Text="#sku#"></c:TextView>
 				<c:TextView Text="{Заказ}" CssClass="valueTable"></c:TextView>
@@ -170,6 +185,7 @@
 				</s:Else>				
 			</s:Iterator>
 			<c:HorizontalLine />
+			<!-- AVMurach- -->
 
 			<s:If Test="@returnEnabled">
 				<c:DockLayout CssClass="parameter_grid">

@@ -324,3 +324,5 @@ begin	Начало
 end	Окончание
 ClearFilter	Очистить фильтр
 specialty	Специальность
+selling_initiatives	Продажа инициатив
+conduct_training	Проведение обучения
