@@ -124,7 +124,7 @@ function GetUncommitedScheduledVisitsCount(searchText) {
 	q.AddParameter("emptyRef", DB.EmptyRef("Document_VisitPlan"));
 	q.AddParameter("StartPeriod", recvStartPeriod);
 	q.AddParameter("StopPeriod", recvStopPeriod);
-	Dialog.Debug(recvStopPeriod);
+	
 	return q.ExecuteScalar();
 	
 }
