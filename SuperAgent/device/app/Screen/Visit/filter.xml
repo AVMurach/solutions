@@ -20,7 +20,7 @@
 			<c:TextView Text="Отмена" />
 		</c:DockLayout>
 		
-		<c:DockLayout CssClass="btn_right_footer" OnClickAction="$DoBack()" >
+		<c:DockLayout CssClass="btn_right_footer" OnClickAction="$ChekAndBack()" >
 			<c:TextView Text="Применить" />
 		</c:DockLayout>		
 	</c:DockLayout>

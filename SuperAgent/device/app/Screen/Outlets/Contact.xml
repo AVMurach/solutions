@@ -14,7 +14,7 @@
 				<c:VerticalLayout OnClickAction="$DoBack()">
 					<c:TextView Text="#cancel#" CssClass="left_tv"></c:TextView>
 				</c:VerticalLayout>
-				<c:VerticalLayout OnClickAction="$SaveAndBack($contact, $contactOwner)" SubmitScope="contact_name;phone_number;email">
+				<c:VerticalLayout OnClickAction="$SaveAndBack($contact, $contactOwner)" SubmitScope="contact_name;specialty;phone_number;email">
 					<c:TextView Text="#save#" CssClass="right_tv"></c:TextView>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
@@ -23,7 +23,7 @@
 
 		<s:Else>
 			<c:DockLayout CssClass="top_navigator">
-				<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$SaveAndBack($contact, $contactOwner)" SubmitScope="contact_name;phone_number;email">
+				<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$SaveAndBack($contact, $contactOwner)" SubmitScope="contact_name;specialty;phone_number;email">
 					<c:Image />
 					<c:TextView Text="#list#" />
 				</c:DockLayout>

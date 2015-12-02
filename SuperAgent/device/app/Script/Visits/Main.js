@@ -27,7 +27,7 @@ function GetUncommitedScheduledVisits(searchText) {
 			var todayTrue = " 1 AS todayTrue, ";
 			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND DATE(VP.Date)=DATE(@date) ";
 			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND V.Date >= @today AND V.Date < @tomorrow AND V.Plan<>@emptyRef ";
-			var orderBy = " ORDER BY O.Description LIMIT 100";
+			var orderBy = " ORDER BY Time, O.Description LIMIT 100";
 			
 		}
 	}else{
@@ -35,13 +35,13 @@ function GetUncommitedScheduledVisits(searchText) {
 			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
 			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, ";
 			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
-			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
+			var orderBy = " ORDER BY VP.Date, Time, O.Description LIMIT 100";
 			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod ";
 		}else{
 			var listValue = "SELECT VP.Outlet, VP.Ref, strftime('%d.%m', VP.Date) AS DateV, ";
 			var todayTrue = " CASE WHEN strftime('%d.%m', VP.Date)=strftime('%d.%m', 'now') THEN 1 ELSE 0 END AS todayTrue, ";
 			var visitTable = " LEFT JOIN Document_Visit V ON VP.Outlet=V.Outlet AND strftime('%d.%m', V.Date)=strftime('%d.%m', VP.Date) AND V.Plan<>@emptyRef ";
-			var orderBy = " ORDER BY VP.Date, O.Description LIMIT 100";
+			var orderBy = " ORDER BY DateV, Time, O.Description, Time LIMIT 100";
 			var visitPlanTable = " JOIN Document_VisitPlan_Outlets VP ON O.Id = VP.Outlet AND VP.Date >= @StartPeriod AND VP.Date < @StopPeriod ";
 		}
 	}			
@@ -66,8 +66,12 @@ function GetUncommitedScheduledVisits(searchText) {
 	q.AddParameter("tomorrow", DateTime.Now.Date.AddDays(1));
 	q.AddParameter("emptyRef", DB.EmptyRef("Document_VisitPlan"));
 	q.AddParameter("StartPeriod", recvStartPeriod);
-	q.AddParameter("StopPeriod", recvStopPeriod);
 		
+	if(recvStopPeriod != undefined){
+		q.AddParameter("StopPeriod", Date(recvStopPeriod).AddSeconds(1));		
+	}else{
+		q.AddParameter("StopPeriod", recvStopPeriod);
+	}
 	return q.Execute();
 	
 	//AVMurach -
@@ -120,8 +124,9 @@ function GetUncommitedScheduledVisitsCount(searchText) {
 	q.AddParameter("emptyRef", DB.EmptyRef("Document_VisitPlan"));
 	q.AddParameter("StartPeriod", recvStartPeriod);
 	q.AddParameter("StopPeriod", recvStopPeriod);
+	Dialog.Debug(recvStopPeriod);
 	return q.ExecuteScalar();
-
+	
 }
 
 function GetScheduledVisitsCount() {
@@ -247,6 +252,28 @@ function RollBackAndBack(){
 	
 }
 
+function ChekAndBack(){
+	if (recvStartPeriod > recvStopPeriod) {
+		Dialog.Message(Translate["#endDateLessStartDate#"]);  //"Дата окончания не может быть меньше даты начала.
+		return;
+	}
+	
+	if (recvStartPeriod != undefined) {
+		if (recvStopPeriod == undefined) {			
+			Dialog.Message(Translate["#endDateUndefined#"]);  //"Дата начала не установлена.
+			return;
+		}		
+	}else{
+		if (recvStopPeriod != undefined) {			
+			Dialog.Message(Translate["#startDateUndefined#"]);  //"Дата окончания не установлена.
+			return;
+		}
+	}
+	
+	Workflow.Back();
+	
+}
+
 function clearmyfilter(){
 	$.beginDate.Text = "";
 	recvStartPeriod = undefined;
@@ -257,28 +284,38 @@ function clearmyfilter(){
 function SetBeginDate() {
 	var header = Translate["#enterDateTime#"];
 	if(recvStartPeriod != undefined){
-		Dialog.ShowDateTime(header, recvStartPeriod, SetBeginDateNow);
+		Dialog.DateTime(header, recvStartPeriod, SetBeginDateNow);
 	} else {
-		Dialog.ShowDateTime(header, SetBeginDateNow);
+		Dialog.DateTime(header, SetBeginDateNow);
 	}
 }
 
-function SetBeginDateNow(key) {
-	$.beginDate.Text = filterDate(key);
-	recvStartPeriod = BegOfDay(key);
+function SetBeginDateNow(state, args) {
+	var key = args.Result;
+	
+	if(BegOfDay(key) < BegOfDay(DateTime.Now)){
+		var setDate = BegOfDay(DateTime.Now);		
+	}else{
+		var setDate = BegOfDay(key);
+	};
+		
+	$.beginDate.Text = filterDate(setDate);
+		
+	recvStartPeriod = setDate;
 	//Workflow.Refresh([]);
 }
 
 function SetEndDate() {
 	var header = Translate["#enterDateTime#"];
 	if(recvStopPeriod != undefined){
-		Dialog.ShowDateTime(header, recvStopPeriod, SetEndDateNow);
+		Dialog.DateTime(header, recvStopPeriod, SetEndDateNow);
 	} else {
-		Dialog.ShowDateTime(header, SetEndDateNow);
+		Dialog.DateTime(header, SetEndDateNow);
 	}
 }
 
-function SetEndDateNow(key) {
+function SetEndDateNow(state, args) {
+	var key = args.Result;
 	$.endDate.Text = filterDate(key);
 	recvStopPeriod = EndOfDay(key);
 	//Dialog.Debug(BegOfDay(key));

@@ -130,6 +130,7 @@ function SetEnabledToContactScope(value){
 	$.position.Enabled = value;
 	$.phone_number.Enabled = value;
 	$.email.Enabled = value;
+	$.specialty.Enabled = value;
 }
 
 function SaveAndBack(entity, owner) {	

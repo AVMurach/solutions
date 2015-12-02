@@ -325,3 +325,6 @@ ClearFilter	Clear filter
 specialty	Specialty
 selling_initiatives	Selling initiatives
 conduct_training	Conduct training
+endDateLessStartDate	The end date may not be less than the start date of
+endDateUndefined	End date undefined
+startDateUndefined	Start date undefined
