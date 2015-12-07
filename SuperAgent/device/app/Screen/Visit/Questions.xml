@@ -12,16 +12,16 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<s:If Test="$ForwardIsntAllowed()">
+			<s:If Test="@forwardIsntAllowed">
 				<c:DockLayout Id="btnForward" CssClass="forward">
 					<c:VerticalLayout></c:VerticalLayout>
-					<c:TextView Id="obligateredButton" Text="{$ToString(@obligateredLeft)})" />
+					<c:TextView Id="obligateredButton" Text="{@obligateNumber})" />
 					<c:Image />
 					<c:TextView Text="#forward# (" />
 				</c:DockLayout>
 			</s:If>
 			<s:Else>
-				<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$DoForward()" >
+				<c:DockLayout Id="btn_forward" CssClass="btn_forward" OnEvent="Forward" OnClickAction="$DoForward()">
 					<c:TextView Id="btnForward" Text="#forward#" />
 				</c:DockLayout>
 			</s:Else>
@@ -63,80 +63,101 @@
 		<c:HorizontalLine />
 
 
-		<c:ScrollView Id="grScrollView">
+			<c:ScrollView Id="grScrollView">
 
-			<s:If Test="$ForwardIsntAllowed()">
-				<c:HorizontalLayout CssClass="required_grid">
-					<c:TextView Text="#requiredLeft# "></c:TextView>
-					<c:Image />
-					<c:TextView Id="obligateredInfo" Text="$ToString(@obligateredLeft)"></c:TextView>
-				</c:HorizontalLayout>
-				<c:HorizontalLine />
-			</s:If>
-			<s:Else>
-				<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
-			</s:Else>
-			<c:HorizontalLine />
+				<s:If Test="$HasQuestions()">
 
-			<s:Iterator Id="question" Value="$questions" Status="statusCount">
-
-				<s:Push Id="index" Value="{$statusCount.Index}"></s:Push>
-
-				<c:DockLayout CssClass="grid" OnClickAction="$FocusOnEditText(control{$index}, $question.IsInputField)">
-					<s:If Test="$question.Obligatoriness=='1'">
-						<s:If Test="$IsNullOrEmpty($question.Answer)">
-							<c:HorizontalLayout CssClass="required_side_wh"></c:HorizontalLayout>
-						</s:If>
-						<s:Else>
-							<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
-						</s:Else>
+					<s:If Test="@forwardIsntAllowed">
+						<c:HorizontalLayout CssClass="required_grid">
+							<c:TextView Text="#requiredLeft# "></c:TextView>
+							<c:Image />
+							<c:TextView Id="obligateredInfo" Text="@obligateNumber"></c:TextView>
+						</c:HorizontalLayout>
+						<c:HorizontalLine />
 					</s:If>
 					<s:Else>
-						<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+						<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
 					</s:Else>
-					<s:If Test="$question.IsSnapshot==1">
-						<c:HorizontalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
-							<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
-							<s:If Test="$IsNullOrEmpty($question.Answer)">
-								<c:VerticalLayout>
-									<c:VerticalLayout CssClass="no_answer">
-										<c:Image Id="control{$index}" />
-									</c:VerticalLayout>
-								</c:VerticalLayout>
-							</s:If>
-							<s:Else>
-								<s:If Test="$SnapshotExists($visit, $outlet, $question.Answer)">
-									<c:VerticalLayout>
-										<c:Image Id="control{$index}" CssClass="answer_snapshot" Source="$GetImagePath($visit.Id, $outlet.Id, $question.Answer)"></c:Image>
-									</c:VerticalLayout>
+					<c:HorizontalLine />
+
+					<s:Iterator Id="question" Value="$questions" Status="statusCount">
+
+						<s:Push Id="index" Value="{$statusCount.Index}"></s:Push>
+
+						<c:DockLayout CssClass="grid" OnClickAction="$FocusOnEditText(control{$index}, $question.IsInputField)">
+							<s:If Test="$question.Obligatoriness=='1'">
+								<s:If Test="$question.Answer == null || $question.Answer == ''">
+									<c:HorizontalLayout CssClass="required_side_wh"></c:HorizontalLayout>
 								</s:If>
 								<s:Else>
-									<c:VerticalLayout>
-										<c:VerticalLayout CssClass="no_image">
-											<c:Image Id="control{$index}" />
-										</c:VerticalLayout>
-									</c:VerticalLayout>
+									<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
 								</s:Else>
-							</s:Else>
-						</c:HorizontalLayout>
-					</s:If>
-					<s:Else>
-						<c:VerticalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
-							<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
-							<s:If Test="$question.IsInputField=='1'">
-								<c:MemoEdit Id="control{$index}" Text="$question.Answer" Placeholder="—" OnChange="$AssignAnswer($question.Question)" OnLostFocus="$Workflow.DoRefresh()" Keyboard="$question.KeyboardType" CssClass="answer_main_row"></c:MemoEdit>
 							</s:If>
 							<s:Else>
-								<c:TextView Id="control{$index}" Text="$question.AnswerOutput" CssClass="answer_main_row"></c:TextView>
+								<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 							</s:Else>
-						</c:VerticalLayout>
-					</s:Else>
-				</c:DockLayout>
-				<c:HorizontalLine />
+							<s:If Test="$question.FullFileName != null">
+								<c:HorizontalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
+									<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
+									<s:If Test="$question.Answer == null || $question.Answer == ''">
+										<c:VerticalLayout>
+											<c:VerticalLayout CssClass="no_answer">
+												<c:Image Id="control{$index}" />
+											</c:VerticalLayout>
+										</c:VerticalLayout>
+									</s:If>
+									<s:Else>
+										<s:If Test="$question.FullFileName != '/shared/result.jpg'">
+											<s:If Test="$SnapshotExists($question.FullFileName)">
+												<c:VerticalLayout>
+													<c:Image Id="control{$index}" CssClass="answer_snapshot" Source="$question.FullFileName"></c:Image>
+												</c:VerticalLayout>
+											</s:If>
+											<s:Else>
+												<c:VerticalLayout>
+													<c:VerticalLayout CssClass="no_image">
+														<c:Image Id="control{$index}" />
+													</c:VerticalLayout>
+												</c:VerticalLayout>
+											</s:Else>
+										</s:If>
+										<s:Else>
+											<c:VerticalLayout>
+												<c:VerticalLayout CssClass="no_image">
+													<c:Image Id="control{$index}" />
+												</c:VerticalLayout>
+											</c:VerticalLayout>
+										</s:Else>
+									</s:Else>
+								</c:HorizontalLayout>
+							</s:If>
+							<s:Else>
+								<c:VerticalLayout OnClickAction="$GoToQuestionAction($question.AnswerType, $visit, control{$index}, $question.Question, $question.Answer, $question.Description)">
+									<c:TextView Text="$question.Description" CssClass="description_row"></c:TextView>
+									<s:If Test="$question.IsInputField=='1'">
+										<s:Push Id="submitCollectionString" Value="$AddToSubmitCollection($submitCollectionString, control{$index})"></s:Push>
+										<c:MemoEdit Id="control{$index}" Text="$question.Answer" Placeholder="—" OnChange="$AssignAnswer($question.Question, null, $question.AnswerType)" OnLostFocus="$FormatAndRefresh($question.Question, $question.AnswerType)" Keyboard="$question.KeyboardType" CssClass="answer_main_row" Length="140"></c:MemoEdit>
+									</s:If>
+									<s:Else>
+										<c:TextView Id="control{$index}" Text="$question.AnswerOutput" CssClass="answer_main_row"></c:TextView>
+									</s:Else>
+								</c:VerticalLayout>
+							</s:Else>
+						</c:DockLayout>
+						<c:HorizontalLine />
 
-			</s:Iterator>
+					</s:Iterator>
 
-		</c:ScrollView>
+					<c:HorizontalLayout CssClass="end_of_block" />
+
+				</s:If>
+
+				<s:Else>
+					<c:HorizontalLayout CssClass="margin_top" />
+					<c:TextView Text="#no_questions_list#" CssClass="no_contacts" />
+				</s:Else>
+
+			</c:ScrollView>
 
 	</c:VerticalLayout>
 

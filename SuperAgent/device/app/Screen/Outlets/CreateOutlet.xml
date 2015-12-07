@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="CreateOutlet.css">
 
-	<s:Push Id="outlet" Value="$CreateOutlet()"></s:Push>
+	<s:Push Id="outlet" Value="$CreateOutlet($param2)"></s:Push>
+	<s:Push Id="territory" Value="$GetTerritory()"></s:Push>
+	<s:Push Id="sideStyle" Value="$SetSideStyles($outlet)"></s:Push>
 
 	<c:DockLayout>
 
@@ -14,56 +16,90 @@
 		<c:HorizontalLine />
 
 		<c:HorizontalLayout Id="btnCancel" CssClass="bottom_btn">
-			<c:VerticalLayout OnEvent="Back" OnClickAction="$DeleteAndBack($outlet)">
+			<c:VerticalLayout OnEvent="Back" OnClickAction="$DoRollback()">
 				<c:TextView CssClass="left_tv" Text="#cancel#" />
 			</c:VerticalLayout>
-			<c:VerticalLayout Id="btnSave" OnClickAction="$SaveNewOutlet($outlet)">
-				<c:TextView CssClass="right_tv" Text="#save#" />
-			</c:VerticalLayout>
+
+			<s:If Test="$NoRequired()">
+				<c:VerticalLayout Id="btnSave" OnClickAction="$SaveNewOutlet($outlet)">
+					<c:TextView CssClass="right_tv" Text="#save#" />
+				</c:VerticalLayout>
+			</s:If>
+			<s:Else>
+				<c:DockLayout Id="btnSave">
+					<c:VerticalLayout CssClass="gr_right_tv_mrg"></c:VerticalLayout>
+					<c:TextView Text="{@requiredLeft})" CssClass="gr_right_tv"/>
+					<c:Image CssClass="gr_right_tv_img"/>
+					<c:TextView Text="#forward# (" CssClass="gr_right_tv"/>
+				</c:DockLayout>
+			</s:Else>
 		</c:HorizontalLayout>
 		<c:HorizontalLine CssClass="b_line" />
 
 		<c:ScrollView Id="grScrollView">
 
-			<c:HorizontalLayout CssClass="margin_top" />
+			<s:If Test="$NoRequired()">
+				<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
+			</s:If>
+			<s:Else>
+				<c:HorizontalLayout CssClass="required_grid">
+					<c:TextView Text="#requiredFieldsLeft# "></c:TextView>
+					<c:Image />
+					<c:TextView Id="obligateredInfo" Text="{@requiredLeft}"></c:TextView>
+				</c:HorizontalLayout>
+			</s:Else>
 			<c:HorizontalLine />
 
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(outletName, 1)">
+				<c:HorizontalLayout CssClass="$sideStyle.outletName"></c:HorizontalLayout>
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_description#" CssClass="description_row"></c:TextView>
-					<c:MemoEdit Id="outletName" AutoFocus="True" Value="$outlet.Description" CssClass="main_row" />
+					<c:MemoEdit Id="outletName" Value="$outlet.Description" Placeholder="—" CssClass="main_row" OnLostFocus="$DoRefresh($outlet)"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($territory,Id,$outletTerritory,#outlet_territory#)">
+				<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+				<c:VerticalLayout>
+					<c:TextView Text="#outlet_territory#" CssClass="description_row"></c:TextView>
+					<c:TextView Id="outletTerritory" Text="$territory.Description" CssClass="main_row" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(outletAddress, 1)">
+				<c:HorizontalLayout CssClass="$sideStyle.outletAddress"></c:HorizontalLayout>
 				<c:VerticalLayout>
 					<c:TextView Text="#address#" CssClass="description_row"></c:TextView>
-					<c:MemoEdit Id="outletAddress" Value="$outlet.Address" CssClass="main_row" />
+					<c:MemoEdit Id="outletAddress" Value="$outlet.Address" Placeholder="—" CssClass="main_row" OnLostFocus="$DoRefresh($outlet)"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
 			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Class,$outletClass,#outlet_class#)">
+				<c:HorizontalLayout CssClass="$sideStyle.outletClass"></c:HorizontalLayout>
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_class#" CssClass="description_row"></c:TextView>
-					<c:TextView Id="outletClass" Text="$outlet.Class.Description" CssClass="main_row" />
+					<c:EditText Id="outletClass" Text="$outlet.Class.Description" Placeholder="—" Enabled="False" CssClass="main_row" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
 			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Type,$outletType,#outlet_type#)">
+				<c:HorizontalLayout CssClass="$sideStyle.outletType"></c:HorizontalLayout>
 				<c:VerticalLayout>
 					<c:TextView Text="#outlet_type#" CssClass="description_row"></c:TextView>
-					<c:TextView Id="outletType" Text="$outlet.Type.Description" CssClass="main_row" />
+					<c:EditText Id="outletType" Text="$outlet.Type.Description" Placeholder="—" Enabled="False" CssClass="main_row" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Distributor,$outletDistr,#distributor#)">
+			<c:HorizontalLayout CssClass="grid" OnClick="$DoSelect($outlet,Distributor,$outletDistr,#partner#)">
+				<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 				<c:VerticalLayout>
-					<c:TextView Text="#distributor#" CssClass="description_row"></c:TextView>
-					<c:TextView Id="outletDistr" Text="$outlet.Distributor.Description" CssClass="main_row" />
+					<c:TextView Text="#partner#" CssClass="description_row"></c:TextView>
+					<c:EditText Id="outletDistr" Text="$outlet.Distributor.Description" Placeholder="—" Enabled="False" CssClass="main_row" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />

@@ -2,6 +2,7 @@
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Visit_Total.css">
 
 	<s:Push Id="nextVisit" Value="$GetNextVisit($workflow.outlet)"></s:Push>
+	<s:Push Id="result" Value="$VisitIsChecked($workflow.visit)"></s:Push>
 
 	<c:VerticalLayout>
 
@@ -10,9 +11,20 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CheckAndCommit($workflow.order, $workflow.visit, $workflow.name)" >
-				<c:TextView Id="btnForward" Text="#ready#" />
-			</c:DockLayout>
+			<s:If Test="$result">
+				<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$AskEndVisit($workflow.order, $workflow.visit, $workflow.name)" >
+					<c:TextView Id="btnForward" Text="#ready#" />
+				</c:DockLayout>
+			</s:If>
+			<s:Else>
+				<c:DockLayout Id="btnForward" CssClass="forward">
+					<c:VerticalLayout></c:VerticalLayout>
+					<c:TextView Id="obligateredButton" Text="{@obligateNumber})" />
+					<c:Image />
+					<c:TextView Text="#forward# (" />
+				</c:DockLayout>
+			</s:Else>
+
 			<c:HorizontalLayout>
 				<c:TextView Text="#visitTotal#" />
 			</c:HorizontalLayout>
@@ -44,7 +56,7 @@
 					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 					<c:VerticalLayout>
 						<c:TextView Text="#nextVisitDate#" CssClass="description_row"></c:TextView>
-						<c:TextView Id="nextVisitControl" Text="$FormatDate($nextVisit.PlanDate, f)" CssClass="main_row"></c:TextView>
+						<c:TextView Id="nextVisitControl" Text="$FormatDate($nextVisit.PlanDate, dd.MM.yyyy HH:mm)" CssClass="main_row"></c:TextView>
 					</c:VerticalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLine />

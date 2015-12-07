@@ -1,5 +1,6 @@
-var defFeature;
+﻿var defFeature;
 var defPack;
+var defMultiplier;
 var packDescription;
 var swipedRow;
 var rec_order;
@@ -15,10 +16,6 @@ function OnLoading() {
         alreadyOrdered = Translate["#alreadyOrdered#"];
     else
         alreadyOrdered = Translate["#alreadyReturned#"]
-}
-
-function WarMupFunction() {
-
 }
 
 function GetCurrentDoc(){
@@ -87,7 +84,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
         var recOrderSort = " OrderRecOrder DESC, ";
 
-    } else {
+    } else if ($.workflow.name=='Order'){
 
         var recOrderFields = ", NULL AS RecUnit " +
                              ", NULL AS UnitId " +
@@ -102,12 +99,21 @@ function GetSKUAndGroups(searchText, thisDoc) {
         query.AddParameter("visit", $.workflow.visit);
 
         var recOrderSort = " OrderRecOrder DESC, ";
+    }
+    else{
+        var recOrderFields = ", NULL AS RecUnit " +
+                     ", NULL AS UnitId " +
+                     ", 0 AS RecOrder " +
+                     ", 0 AS OrderRecOrder ";
+        
+        var recOrderStr = "";
 
+        var recOrderSort = "";
     }
 
     if (stock.EmptyRef()==true){
 
-    	if ($.sessionConst.NoStkEnbl) {
+    	if ($.sessionConst.NoStkEnbl || $.workflow.currentDoc=='Return') {
             var stockCondition = "";
         } else {
             var stockCondition = " AND S.CommonStock > 0 ";
@@ -128,7 +134,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
     } else {
 
-    	if ($.sessionConst.NoStkEnbl) {
+    	if ($.sessionConst.NoStkEnbl || $.workflow.currentDoc=='Return') {
             var stockCondition = "";
         } else {
             var stockCondition = " AND SS.StockValue > 0 ";
@@ -188,11 +194,13 @@ function GetQuickOrder(control, skuId, itemPrice, packField, editField, textView
         if (doRecommend && recUnit!=null){ //&& parseInt(quickOrderItem.Qty)==parseInt(0)) {
             defPack = recUnitId;
             packDescription = recUnit;
+            defMultiplier = quickOrderItem.Multiplier;
             Variables[editField].Text = recOrder;
 
         } else {
             defPack = quickOrderItem.DefaultUnit;
             packDescription = quickOrderItem.Pack;
+            defMultiplier = quickOrderItem.Multiplier;
         }
 
         Variables[packField].Text = packDescription;
@@ -202,6 +210,19 @@ function GetQuickOrder(control, skuId, itemPrice, packField, editField, textView
     }
 
     swipedRow = control;
+}
+
+function SelectSKU(sku, price, recOrder, unit, thisDoc){
+    var args = new Dictionary();
+    args.Add("SKU", sku);
+    args.Add("basePrice", price);
+    args.Add("recOrder", recOrder);
+    args.Add("Units", unit);
+    args.Add("Ref", thisDoc);
+
+    OrderItem.InitItem(args);
+
+    DoAction('SelectSKU');
 }
 
 function AddToOrder(control, editFieldName) {
@@ -226,12 +247,15 @@ function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, 
                 p.Ref = $.workflow.Return;
             p.SKU = sku;
             p.Feature = defFeature;
-            p.Price = price;
+            p.Price = price * defMultiplier;
             p.Qty = Converter.ToDecimal(Variables[editFieldName].Text);
-            p.Total = p.Price * multiplier;
+
+            var d = GlobalWorkflow.GetMassDiscount(thisDoc);
+            p.Discount = String.IsNullOrEmpty(d) ? 0 : d;
+
+            p.Total = p.Price * (1 + p.Discount/100);
             p.Amount = p.Total * p.Qty;
-            p.Units = defPack;
-            p.Discount = 0;
+            p.Units = defPack;            
             p.Save();
 
             Global.FindTwinAndUnite(p);

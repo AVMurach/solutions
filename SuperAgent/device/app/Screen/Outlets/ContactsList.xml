@@ -6,6 +6,11 @@
 	<c:DockLayout>
 
 		<c:DockLayout CssClass="top_navigator">
+			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$DoBack()">
+				<c:Image />
+				<c:TextView Text="@back" />
+			</c:DockLayout>
+			<c:DockLayout Id="btnForward" CssClass="btn_forward" />
 			<c:HorizontalLayout>
 				<c:TextView Text="#contacts#" />
 			</c:HorizontalLayout>
@@ -13,35 +18,71 @@
 
 		<c:HorizontalLine />
 
-		<c:HorizontalLayout Id="btnCancel" CssClass="bottom_btn">
-			<c:VerticalLayout Id="btnBack" OnEvent="Back" OnClickAction="$DoBack()">
-				<c:TextView Text="#back#" CssClass="left_tv"></c:TextView>
-			</c:VerticalLayout>
-			<c:VerticalLayout Id="btnAdd" OnEvent="Forward" OnClickAction="$DoAction(Select, null, $outlet)">
-				<c:TextView Text="#add#" CssClass="right_tv"></c:TextView>
-			</c:VerticalLayout>
-		</c:HorizontalLayout>
-		<c:HorizontalLine CssClass="b_line" />
+		<s:If Test="$AddEnabled()">
+			<c:HorizontalLayout Id="btnAdd" CssClass="bottom_btn" OnClickAction="$DoAction(Select, null, null)">
+				<c:TextView Text="#add#"></c:TextView>
+			</c:HorizontalLayout>
+			<c:HorizontalLine CssClass="b_line" />
+		</s:If>
 
 		<c:ScrollView Id="grScrollView">
 
-			<c:HorizontalLayout CssClass="margin_top" />
-			<c:HorizontalLine />
+			<s:If Test="$HasContacts($outlet)">
 
-			<s:Iterator Id="contact" Value="$GetContacts($outlet)" Status="statusCount">
+				<s:If Test="@hasOutletContacts">
 
-				<c:SwipeHorizontalLayout CssClass="swipe_layout">
-					<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoAction(Select, $contact.Id, $outlet)">
-						<c:Image />
-						<c:TextView Text="$contact.ContactName"></c:TextView>						
-					</c:DockLayout>
-					<c:HorizontalLayout CssClass="red_swipe" OnClickAction="$DeleteContact($contact.Id)">
-						<c:TextView Text="#delete#"></c:TextView>
+					<c:HorizontalLayout CssClass="caption_grid">
+						<c:TextView Text="#outletContacts#:"></c:TextView>
 					</c:HorizontalLayout>
-				</c:SwipeHorizontalLayout>
-				<c:HorizontalLine />
+					<c:HorizontalLine />
 
-			</s:Iterator>
+					<s:Iterator Id="contact" Value="$GetOutletContacts($outlet)" Status="statusCount">
+						<c:SwipeHorizontalLayout CssClass="swipe_layout">
+							<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoAction(Select, $contact.Id, $contact.OutletContact)">
+								<c:Image />
+								<c:TextView Text="$contact.ContactName"></c:TextView>
+							</c:DockLayout>
+							<c:HorizontalLayout CssClass="red_swipe" OnClickAction="$DeleteContact($contact.OutletContact)">
+								<c:TextView Text="#delete#"></c:TextView>
+							</c:HorizontalLayout>
+						</c:SwipeHorizontalLayout>
+						<c:HorizontalLine />
+					</s:Iterator>
+				</s:If>
+
+
+				<s:If Test="@hasPartnerContacts">
+
+					<c:HorizontalLayout CssClass="caption_grid">
+						<c:TextView Text="#partnerContacts#:"></c:TextView>
+					</c:HorizontalLayout>
+					<c:HorizontalLine />
+
+					<s:Iterator Id="contact" Value="$GetPartnerContacts($outlet)" Status="statusCount">
+						<c:SwipeHorizontalLayout CssClass="swipe_layout">
+							<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoAction(Select, $contact.Id, $contact.PartnerContact)">
+								<c:Image />
+								<c:TextView Text="$contact.ContactName"></c:TextView>
+							</c:DockLayout>
+							<s:If Test="$sessionConst.outletContactEditable">
+								<c:HorizontalLayout CssClass="red_swipe" OnClickAction="$DeleteContact($contact.PartnerContact)">
+									<c:TextView Text="#delete#"></c:TextView>
+								</c:HorizontalLayout>
+							</s:If>
+						</c:SwipeHorizontalLayout>
+						<c:HorizontalLine />
+					</s:Iterator>
+
+				</s:If>
+
+			</s:If>
+
+			<s:Else>
+				<c:HorizontalLayout CssClass="margin_top" />
+				<c:TextView Text="#no_contacts#" CssClass="no_contacts" />
+			</s:Else>
+
+			<c:HorizontalLayout CssClass="end_of_block" />
 
 		</c:ScrollView>
 

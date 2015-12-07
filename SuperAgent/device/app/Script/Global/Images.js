@@ -1,4 +1,4 @@
-var parameters;
+﻿var parameters;
 var tableName;
 var question;
 var sku;
@@ -22,7 +22,7 @@ function AddSnapshot(objectRef, valueRef, func, title, path, noPreview) { // opt
 		if ($.sessionConst.galleryChoose) //if Gallery is allowed
 			listChoice.Add([0, Translate["#addFromGallery#"]]);
 		listChoice.Add([1, Translate["#makeSnapshot#"]]);
-		if (String.IsNullOrEmpty(path)==false && (noPreview==false || noPreview==null)) //if not an Image.xml screen
+		if (!String.IsNullOrEmpty(path) && FileSystem.Exists(path) && (noPreview==false || noPreview==null)) //if not an Image.xml screen
 			listChoice.Add([3, Translate["#show#"]]);
 		if (!isEmpty && (noPreview==false || noPreview==null))
 			listChoice.Add([2, Translate["#clearValue#"]]);
@@ -182,17 +182,18 @@ function AddQuestionSnapshot(tableName, question, sku, answer, previewAllowed, t
 	if (String.IsNullOrEmpty(answer) && !$.sessionConst.galleryChoose)
 		MakeSnapshot($.workflow.visit, func);
 	else{
+
+		if (String.IsNullOrEmpty(answer)==false)
+		path = FindImage($.workflow.visit, answer, ".jpg", "Document_Visit_Files");
+
 		var listChoice = new List;
 		if ($.sessionConst.galleryChoose) //if Gallery is allowed
 			listChoice.Add([0, Translate["#addFromGallery#"]]);
 		listChoice.Add([1, Translate["#makeSnapshot#"]]);
-		if (previewAllowed && String.IsNullOrEmpty(answer)==false) //if not an Image.xml screen
+		if (previewAllowed && String.IsNullOrEmpty(answer)==false && FileSystem.Exists(path)) //if not an Image.xml screen
 			listChoice.Add([3, Translate["#show#"]]);
 		if (String.IsNullOrEmpty(answer)==false && previewAllowed)
 			listChoice.Add([2, Translate["#clearValue#"]]);
-
-		if (String.IsNullOrEmpty(answer)==false)
-			path = FindImage($.workflow.visit, answer, ".jpg", "Document_Visit_Files");
 
 		Dialog.Choose(title, listChoice, AddSnapshotHandler, [$.workflow.visit, func, tableName, path, question, sku]);
 	}

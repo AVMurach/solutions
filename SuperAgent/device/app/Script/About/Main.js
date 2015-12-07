@@ -1,4 +1,4 @@
-
+﻿
 function SendLog(){
 	// $.sendButton.Visible = false;
 	// $.dataSyncLayout.Visible = true;

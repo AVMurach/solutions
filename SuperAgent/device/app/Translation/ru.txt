@@ -84,7 +84,7 @@ available	Доступность
 facing		Фейсинг
 stock		Остатки
 price		Цена
-markUp		Наценка
+markUp		Наценка, %
 outOfStock	Наличие на складе
 false		Нет
 true		Да
@@ -94,7 +94,12 @@ pcs			шт.
 orders		Заказы
 newOrder	Создать новый заказ
 add			Добавить
-discount	Скидка
+discount	Скидка, %
+OrderDiscount	Скидка на заказ, %
+OrderMarkUp	Наценка на заказ, %
+ReturnDiscount	Скидка на возврат, %
+ReturnMarkUp	Наценка на возврат, %
+orderDiscountReset	Скидки пересчитаны
 noNumber	Нет номера
 showImage	Показать фото
 hideImage	Скрыть фото
@@ -260,6 +265,7 @@ skuList			СПИСОК ТОВАРОВ
 OrderskuWillBeDeleted	Часть товаров из заказа будет удалена. Продолжить?
 logout			Выход
 logoutQuery		При выходе будут удалены все данные
+noLogout		Не выполнена синхронизация
 cancel			Отменить
 logoutConfirm	Выйти
 visitReasonMessage		Поле "Причина визита" должно быть заполнено
@@ -293,3 +299,36 @@ sending			Отправка..
 editSKU			Изменить
 returnParameters	ПАРАМЕТРЫ ВОЗВРАТА:
 returnHistory	ИСТОРИЯ ВОЗВРАТОВ
+ZAO				ЗАО
+OOO				OOO
+IP				ИП
+NKO				НКО
+OAO				OAO
+OP				ОП
+TSJ				ТСЖ
+outlet_territory	Территория
+no_contacts	НЕТ КОНТАКТОВ
+contractors		Контрагенты
+contractor		Контрагент
+outletContacts	КОНТАКТЫ ТОРГ. ТОЧКИ
+partnerContacts	КОНТАКТЫ ПАРТНЕРА
+partner			Партнер
+owner			Принадлежность контакта
+emptyContactOwner	Поле Принадлежность контакта не заполнено
+noContractors	Нет контрагентов
+noContractorsMessage	У данной торговой точки нет контрагентов
+phone_regexp	^(((8|\+7)[\- ]?)?(\(?\d{3,4}\)?[\- ]?)?[\d\- ]{5,10})?$
+email_regexp	^(([а-яА-ЯёЁa-zA-Z0-9_-]+\.)*[а-яА-ЯёЁa-zA-Z0-9_-]+@[а-яА-ЯёЁa-zA-Z0-9_-]+(\.[а-яА-ЯёЁa-zA-Z0-9_-]+)*\.[а-яА-ЯёЁa-zA-Z]{2,6})?$
+kpp_regexp		^(\d{9}|)?$
+inn_regexp		^((\d{10})|(\d{12})|)?$
+selectOwner		Принадлежность контакта не выбрана
+no_questions_list	НЕТ ВОПРОСОВ
+requiredFieldsLeft	Обязательных полей осталось:
+outlet_short	ТТ
+visit_end_question	После завершения визита редактирование недоступно
+end	Завершить
+go_back	Вернуться
+sumMarkUp	Наценка, руб.
+sumDiscount	Скидка, руб.
+newPrice	Новая цена
+enc_amount_regexp	^(\d{1,8}((\.|,)\d{1,2})?)?$

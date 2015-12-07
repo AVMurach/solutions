@@ -4,6 +4,8 @@ var checkVisitReason;
 var orderEnabled;
 var returnEnabled;
 var encashmentEnabled;
+var forwardIsntAllowed;
+var obligateNumber;
 
 function OnLoading() {
 	checkOrderReason = false;
@@ -131,26 +133,24 @@ function GetReturnSum(returnDoc) {
 	return FormatValue(sum);
 }
 
-function CheckAndCommit(order, visit, wfName) {
+function AskEndVisit(order, visit, wfName) {
+	Dialog.Alert(Translate["#visit_end_question#"], CheckAndCommit, [order, visit, wfName], Translate["#end#"], Translate["#go_back#"]);
+}
 
-	var check = VisitIsChecked(visit, order, wfName);
-
-	if (check.Checked) {
-        visit = visit.GetObject();
-    	visit.EndTime = DateTime.Now;
-
-        if (OrderExists(visit.Id)) {
-            order.GetObject().Save();
-        }
-
-        CreateQuestionnaireAnswers();
-
-        visit.Save();
-        Workflow.Commit();
+function CheckAndCommit(state, args) {
+	if (args.Result == 0) {
+		order = state[0];
+		visit = state[1];
+		wfName = state[2];
+	  visit = visit.GetObject();
+		visit.EndTime = DateTime.Now;
+    if (OrderExists(visit.Id)) {
+        order.GetObject().Save();
     }
-    else
-        Dialog.Message(check.Message);//Translate["#messageNulls#"]);
-
+    CreateQuestionnaireAnswers();
+    visit.Save();
+    Workflow.Commit();
+	}
 }
 
 
@@ -159,7 +159,7 @@ function CheckAndCommit(order, visit, wfName) {
 
 function NextDateHandler(state, args){
 
-	var newVistPlan = state[0]; 
+	var newVistPlan = state[0];
 
 	if (newVistPlan.Id==null){
 		newVistPlan = DB.Create("Document.MobileAppPlanVisit");
@@ -182,19 +182,21 @@ function DeliveryDateCallBack(state, args){
 
 }
 
-function VisitIsChecked(visit, order, wfName) {
+function VisitIsChecked(visit) {
 
-	var result = new Dictionary();
-	result.Add("Checked", false);
+	var result;
+	obligateNumber = parseInt(0);
 
-    if (checkOrderReason && visit.ReasonForNotOfTakingOrder.EmptyRef())
-    	result.Add("Message", Translate["#noOrder#"]);
-    else {
-        if (checkVisitReason && visit.ReasonForVisit.EmptyRef())
-        	result.Add("Message", Translate["#visitReasonMessage#"]);
-        else
-            result.Checked = true;
+    if (checkOrderReason && visit.ReasonForNotOfTakingOrder.EmptyRef()){
+    	obligateNumber = obligateNumber + 1;
     }
+    if (checkVisitReason && visit.ReasonForVisit.EmptyRef()){
+    	obligateNumber = obligateNumber + 1;
+    }
+    if (obligateNumber == 0)
+        result= true;
+    else
+    	result = false;
 
     return result;
 }
@@ -226,6 +228,13 @@ function NoTasks(skipTasks) {
 		return false;
 	else
 		return true;
+}
+
+function FormatOutput(value) {
+	if (String.IsNullOrEmpty(value) || IsEmptyValue(value))
+		return "—";
+	else
+		return value;
 }
 
 

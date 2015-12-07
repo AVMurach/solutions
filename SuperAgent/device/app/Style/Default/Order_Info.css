@@ -9,3 +9,12 @@
 .value{
 	placeholder-color: #8e8e93;
 }
+
+.main_row_price_list {
+	color: #2d89cf;
+	width: 100%;
+	height: 40%;
+	white-space: nowrap;
+	placeholder-color: #2d89cf;
+	font: 42% Arial;
+}

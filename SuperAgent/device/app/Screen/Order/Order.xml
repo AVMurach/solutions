@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:d="DefaultScope" StyleSheet="Order.css">
 
-	<s:Push Id="workflow.outlet" Value="$outlet"></s:Push>
-	<s:Push Id="executedOrder" Value="$param3"></s:Push>
+	<s:Push Id="executedOrder" Value="$FindExecutedOrder()"></s:Push>
 
 
 	<s:Push Id="thisDoc" Value="$CreateDocumentIfNotExists($executedOrder, $workflow.visit)"></s:Push>
@@ -15,7 +14,7 @@
 		<c:DockLayout CssClass="top_navigator">
 			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$OrderBack()">
 				<c:Image />
-				<c:TextView Text="#back#" />
+				<c:TextView Text="@back" />
 			</c:DockLayout>
 			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CheckIfEmptyAndForward($thisDoc, $workflow.name)">
 				<c:TextView Id="btnForward" Text="#forward#" />
@@ -25,7 +24,10 @@
 			</c:HorizontalLayout>
 		</c:DockLayout>
 
-		<c:Image CssClass="5_scroll"></c:Image>
+		<s:If Test="$workflow.name=='Visit'">
+			<c:Image CssClass="5_scroll"></c:Image>
+		</s:If>
+
 		<c:HorizontalLine />
 
 		<s:If Test="$IsNew($thisDoc)">
@@ -47,7 +49,7 @@
 			<c:DockLayout CssClass="grid" OnClickAction="$DoAction(ShowInfo,$sum,null,$thisDoc)">
 				<c:Image />
 				<c:VerticalLayout>
-					<c:TextView Text="$GetDescription($thisDoc.PriceList)" CssClass="description_row"></c:TextView>
+					<c:TextView Text="$GetDescription($thisDoc.PriceList)" CssClass="main_row_price_list"></c:TextView>
 					<c:TextView Text="{@sumTitle}:" CssClass="description_row"></c:TextView>
 					<c:TextView Text="$FormatValue($sum)" CssClass="main_row"></c:TextView>
 				</c:VerticalLayout>
@@ -66,7 +68,7 @@
 
 				<s:If Test="$orderitem != null">
 					<c:SwipeHorizontalLayout Id="swipe_layout2" CssClass="swipe_layout">
-						<c:DockLayout CssClass="grid" OnClickAction="$EditIfNew($thisDoc,$orderitem.SKU,null,$orderitem.Id)">
+						<c:DockLayout CssClass="grid" OnClickAction="$EditIfNew($thisDoc,$orderitem.Id)">
 							<s:If Test="$IsNew($thisDoc)">
 								<c:Image />
 							</s:If>

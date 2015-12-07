@@ -1,64 +1,90 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="CreateOutlet.css">
 
-	<s:Push Id="contact" Value="$CreateContactIfNotExist($param1, $param2)" />
+	<s:Push Id="contactOwner" Value="$param2"></s:Push>
+	<s:Push Id="contact" Value="$CreateContactIfNotExist($param1, $contactOwner)" />	
+	<s:Push Id="ownerType" Value="$GetOwnerType($contactOwner)"></s:Push>
 
 	<c:DockLayout>
 
-		<c:DockLayout CssClass="top_navigator">
-			<c:HorizontalLayout>
-				<s:If Test="$param1==null">
-					<c:TextView Text="#newContact#" />
-				</s:If>
-				<s:Else>
-					<c:TextView Text="#contact#" />
-				</s:Else>
+
+
+		<s:If Test="@newContact">
+			<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn">
+				<c:VerticalLayout OnClickAction="$DeleteAndBack($contact)">
+					<c:TextView Text="#cancel#" CssClass="left_tv"></c:TextView>
+				</c:VerticalLayout>
+				<c:VerticalLayout OnClickAction="$SaveAndBack($contact, $contactOwner)" SubmitScope="contact_name;phone_number;email">
+					<c:TextView Text="#save#" CssClass="right_tv"></c:TextView>
+				</c:VerticalLayout>
 			</c:HorizontalLayout>
-		</c:DockLayout>
+			<c:HorizontalLine CssClass="b_line" />
+		</s:If>
 
-		<c:HorizontalLine />
+		<s:Else>
+			<c:DockLayout CssClass="top_navigator">
+				<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$SaveAndBack($contact, $contactOwner)" SubmitScope="contact_name;phone_number;email">
+					<c:Image />
+					<c:TextView Text="#list#" />
+				</c:DockLayout>
+				<c:DockLayout Id="btnForward" CssClass="btn_forward" />
+				<c:HorizontalLayout>
+					<s:If Test="$param1==null">
+						<c:TextView Text="#newContact#" />
+					</s:If>
+					<s:Else>
+						<c:TextView Text="#contact#" />
+					</s:Else>
+				</c:HorizontalLayout>
+			</c:DockLayout>
 
-		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$SaveAndBack($contact)">
-			<c:TextView Text="#ready#"></c:TextView>
-		</c:HorizontalLayout>
-		<c:HorizontalLine CssClass="b_line" />
+			<c:HorizontalLine />
+		</s:Else>
 
 		<c:ScrollView Id="grScrollView">
 			
 			<c:HorizontalLayout CssClass="margin_top" />
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(contact_name, 1)">
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$SelectOwner($contactOwner)">
+				<c:VerticalLayout>
+					<c:TextView Text="#owner#" CssClass="description_row"></c:TextView>
+					<c:TextView Text="$ownerType" CssClass="main_row" Id="owner"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$CheckAndFocus(contact_name, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#contactName#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$contact.ContactName" Placeholder="-" CssClass="main_row" Id="contact_name" />
+					<c:EditText Value="$contact.Description" Placeholder="—" CssClass="main_row" Id="contact_name" Required="true"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(position, 1)">
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$CheckAndFocus(position, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#position#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$contact.Position" Placeholder="-" CssClass="main_row" Id="position "/>
+					<c:EditText Value="$contact.Position" Placeholder="—" CssClass="main_row" Id="position"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<c:DockLayout CssClass="grid" OnClickAction="$FocusOnEditText(phone_number, 1)">
+			<c:DockLayout CssClass="grid" OnClickAction="$CheckAndFocus(phone_number, 1)">
 				<c:HorizontalLayout CssClass="phone">
-					<c:VerticalLayout  OnClickAction="$SavePhoneAndCall($contact)"></c:VerticalLayout>
+					<c:VerticalLayout  OnClickAction="$GetPhoneAndCall($contact)"></c:VerticalLayout>
 				</c:HorizontalLayout>
 				<c:VerticalLayout CssClass="partialW">
 					<c:TextView Text="#phone#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$contact.PhoneNumber" Placeholder="-" Keyboard="numeric" CssClass="main_row" Id="phone_number" />
+					<c:EditText Value="$contact.PhoneNumber" Placeholder="—" Keyboard="phone" CssClass="main_row" Id="phone_number" Mask="#phone_regexp#"/>
 				</c:VerticalLayout>
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(email, 1)">
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$CheckAndFocus(email, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#email#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$contact.Email" Placeholder="-" CssClass="main_row" Id="email" />
+					<c:EditText Value="$contact.Email" Placeholder="—" CssClass="main_row" Keyboard="email" Id="email" Mask="#email_regexp#"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
