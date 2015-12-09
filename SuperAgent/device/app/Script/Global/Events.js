@@ -34,9 +34,18 @@ function OnWorkflowStart(name) {
 			CreateQuestionnareTable($.outlet);
 			CreateQuestionsTable($.outlet);
 			CreateSKUQuestionsTable($.outlet);
-
+			
+		//AVMurach+
+			CreateRecOrderVKTable($.outlet);
+		//AVMurach-
 			SetSteps($.outlet);
 	}
+	
+//AVMurach+
+	if (name == "CreateOrder") {
+			CreateRecOrderVKTable($.outlet);			
+	}
+//AVMurach-
 
 	Variables["workflow"].Add("name", name);
 
@@ -552,6 +561,49 @@ function GetRegionQueryText() {
 
 	return text;
 }
+
+//AVMurach+
+function CreateRecOrderVKTable(outlet) {
+
+	var tableCommand = Global.CreateUserTableIfNotExists("USR_RecOrderVK");
+
+	var query = new Query(tableCommand +
+					"SELECT SSW.Ref AS SSWRef, ifNull((Max(SSW.Cnt)/7),0)* ifNull(VP.daysToVisit,0) AS recOrderVK, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last4, " +
+					"		strftime('%W', date(datetime('now'), '7 day')) AS week1, " +
+		    		"		strftime('%W', date(datetime('now'))) AS week2, " +
+		    		"		strftime('%W', date(datetime('now'), '-7 day')) AS week3, " +
+		    		"		strftime('%W', date(datetime('now'), '-14 day')) AS week4 " +
+    				"			FROM Catalog_SKU_SalesByWeek SSW " +
+    				"			JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
+    				"			LEFT JOIN (SELECT cast((julianday('now') - julianday('now') +1)as int) AS daysToVisit " +
+    				"						FROM Document_VisitPlan_Outlets VP WHERE VP.Outlet = @outlet) VP ON 1=1 " +
+    				"			WHERE SSW.Week = strftime('%W', date(datetime('now'))) AND SSW.Date  > date(datetime('now'), '-1 month') GROUP BY SSW.Ref");
+	
+	query.AddParameter("outlet", outlet);
+	query.Execute();	
+	
+	//var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_ROVK ON USR_RecOrderVK(SKU)");
+	//indexQuery.Execute();
+	
+	var tableCommand = Global.CreateUserTableIfNotExists("USR_SKUinLastOrder");
+	
+	var query = new Query(tableCommand +
+					"SELECT EDI.Ref AS EDIRef, Sum(EDI.Cnt) AS Cnt " +
+					"		FROM Catalog_SKU_Edi EDI " +
+					"		JOIN Catalog_Outlet O ON O.Description = EDI.Outlet " +
+					"		AND O.Id = @outlet " +
+					"		WHERE DeliveryDate > date(datetime('now')) " +
+					"		GROUP BY EDI.Ref");
+	
+	query.AddParameter("outlet", outlet);
+	query.Execute();
+	
+}
+//AVMurach-
 
 
 //-----Questions count-----------
