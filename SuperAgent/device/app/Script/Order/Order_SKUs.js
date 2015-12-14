@@ -132,7 +132,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     	
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
 	    		//AVMurach+
-	    		"ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.Cnt,0) AS EDICnt, RCRDR.recOrderVK, NULL AS UnitId, NULL AS RecUnit, " +
+	    		"ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt, RCRDR.recOrderVK - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - S.CommonStock AS recOrderVKNew, " +
 	    		"ifNull(RCRDR.week1,0) AS week1, " +
 	    		"ifNull(RCRDR.week2,0) AS week2, " +
 	    		"ifNull(RCRDR.week3,0) AS week3, " +
@@ -145,7 +145,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	    		groupFields +
 	            "CB.Description AS Brand " +
 	            //AVMurach+
-	            //recOrderFields +
+	            recOrderFields +
 	            //AVMurach-
 	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
 	            "JOIN _Catalog_SKU S " +
@@ -159,13 +159,13 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
 	          //AVMurach+
-	            //recOrderStr +
+	            recOrderStr +
 	          //AVMurach-
 	            filterString +
 	            " WHERE PL.Ref = @Ref AND PL.IsTombstone = 0 AND S.IsTombstone = 0 " + stockCondition + searchString +
 	            " ORDER BY " + groupSort + 
 	          //AVMurach+
-	            //recOrderSort +
+	            recOrderSort +
 	          //AVMurach-
 	            " S.Description LIMIT 50";
 
@@ -183,7 +183,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
     			" FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
               "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
               //AVMurach+
-              	"ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.Cnt,0) AS EDICnt, RCRDR.recOrderVK, NULL AS UnitId, NULL AS RecUnit, " +
+              "ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt, RCRDR.recOrderVK - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - S.CommonStock AS recOrderVKNew, " +
               	"ifNull(RCRDR.week1,0) AS week1, " +
 	    		"ifNull(RCRDR.week2,0) AS week2, " +
 	    		"ifNull(RCRDR.week3,0) AS week3, " +
@@ -196,7 +196,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
               	groupFields +
 	            "CB.Description AS Brand " +
 	            //AVMurach+
-	            //recOrderFields +
+	            recOrderFields +
 	            //AVMurach-
 	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
 	            "JOIN _Catalog_SKU S " +
@@ -210,13 +210,13 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
 	          //AVMurach+
-	            //recOrderStr +
+	            recOrderStr +
 	          //AVMurach- 
 	            filterString +
 	            " WHERE PL.Ref = @Ref AND PL.IsTombstone = 0 AND S.IsTombstone = 0 " + groupWhere + searchString +
 	            ") INQ ON SS.Ref = INQ.Id WHERE SS.Stock=@stock AND SS.IsTombstone = 0 " + stockCondition + " ORDER BY " + groupSort + 
 	          //AVMurach+
-	            //recOrderSort +
+	            recOrderSort +
 	          //AVMurach-
 	            " INQ.Description LIMIT 50";
 

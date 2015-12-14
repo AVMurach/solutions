@@ -568,7 +568,8 @@ function CreateRecOrderVKTable(outlet) {
 	var tableCommand = Global.CreateUserTableIfNotExists("USR_RecOrderVK");
 
 	var query = new Query(tableCommand +
-					"SELECT SSW.Ref AS SSWRef, ifNull((Max(SSW.Cnt)/7),0)* ifNull(VP.daysToVisit,0) AS recOrderVK, " +
+					"SELECT SSW.Ref AS SSWRef, ifNull((Max(SSW.Cnt)/7),0)*3 AS recOrderVK, " +
+					//"SELECT SSW.Ref AS SSWRef, ifNull((Max(SSW.Cnt)/7),0)* ifNull(VP.daysToVisit,0) AS recOrderVK, " +
 					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1, " +
 					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
 					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3, " +
@@ -577,11 +578,11 @@ function CreateRecOrderVKTable(outlet) {
 		    		"		strftime('%W', date(datetime('now'))) AS week2, " +
 		    		"		strftime('%W', date(datetime('now'), '-7 day')) AS week3, " +
 		    		"		strftime('%W', date(datetime('now'), '-14 day')) AS week4 " +
-    				"			FROM Catalog_SKU_SalesByWeek SSW " +
+    				"	FROM Catalog_SKU_SalesByWeek SSW " +
     				"			JOIN Catalog_Outlet O ON O.Description = SSW.Outlet AND O.Id = @outlet " +
     				"			LEFT JOIN (SELECT cast((julianday('now') - julianday('now') +1)as int) AS daysToVisit " +
     				"						FROM Document_VisitPlan_Outlets VP WHERE VP.Outlet = @outlet) VP ON 1=1 " +
-    				"			WHERE SSW.Week = strftime('%W', date(datetime('now'))) AND SSW.Date  > date(datetime('now'), '-1 month') GROUP BY SSW.Ref");
+    				"	WHERE SSW.Week = strftime('%W', date(datetime('now'))) AND SSW.Date  > date(datetime('now'), '-1 month') GROUP BY SSW.Ref");
 	
 	query.AddParameter("outlet", outlet);
 	query.Execute();	
@@ -592,12 +593,27 @@ function CreateRecOrderVKTable(outlet) {
 	var tableCommand = Global.CreateUserTableIfNotExists("USR_SKUinLastOrder");
 	
 	var query = new Query(tableCommand +
-					"SELECT EDI.Ref AS EDIRef, Sum(EDI.Cnt) AS Cnt " +
+					/*"SELECT EDI.Ref AS EDIRef, Sum(EDI.Cnt) AS Cnt " +
 					"		FROM Catalog_SKU_Edi EDI " +
 					"		JOIN Catalog_Outlet O ON O.Description = EDI.Outlet " +
 					"		AND O.Id = @outlet " +
-					"		WHERE DeliveryDate > date(datetime('now')) " +
-					"		GROUP BY EDI.Ref");
+					"		WHERE date(DeliveryDate) >= date(datetime('now')) AND date(DeliveryDate) <= date(datetime('now'),'1 day') " +
+					"		GROUP BY EDI.Ref");*/
+			"SELECT EDI.Ref AS EDIRef, Sum(EDI_nowDay.Cnt) AS EDI_nowDayCnt, Sum(EDI_addDay.Cnt) AS EDI_addDayCnt " +
+			"			FROM Catalog_SKU_Edi EDI " +
+			"					JOIN Catalog_Outlet O ON O.Description = EDI.Outlet AND O.Id = '@ref[Catalog_Outlet]:efe103d5-fb30-11e2-b700-0025900ed61d' " +
+			"			LEFT JOIN (SELECT EDI.Ref, EDI.Cnt" +
+			"					FROM Catalog_SKU_Edi EDI" +
+			"					JOIN Catalog_Outlet O ON O.Description = EDI.Outlet" +
+			"					AND O.Id = '@ref[Catalog_Outlet]:efe103d5-fb30-11e2-b700-0025900ed61d'" +
+			"					WHERE date(DeliveryDate) == date(datetime('now'))) AS EDI_nowDay" +
+			"			LEFT JOIN (SELECT EDI.Ref, EDI.Cnt" +
+			"					FROM Catalog_SKU_Edi EDI" +
+			"					JOIN Catalog_Outlet O ON O.Description = EDI.Outlet" +
+			"					AND O.Id = '@ref[Catalog_Outlet]:efe103d5-fb30-11e2-b700-0025900ed61d'" +
+			"					WHERE date(DeliveryDate) == date(datetime('now'),'1 day')) AS EDI_addDay ON EDI_nowDay.Ref = EDI_addDay.Ref" +
+			"			WHERE date(DeliveryDate) >= date(datetime('now')) AND date(DeliveryDate) <= date(datetime('now'),'1 day')" +
+			"			GROUP BY EDI.Ref");
 	
 	query.AddParameter("outlet", outlet);
 	query.Execute();

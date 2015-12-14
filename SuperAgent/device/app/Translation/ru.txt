@@ -294,3 +294,5 @@ editSKU			Изменить
 returnParameters	ПАРАМЕТРЫ ВОЗВРАТА:
 returnHistory	ИСТОРИЯ ВОЗВРАТОВ
 edi	EDI
+coming	Приход
+orderTomorrow	Заказ на завтра

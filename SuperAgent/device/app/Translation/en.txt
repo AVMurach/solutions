@@ -294,3 +294,5 @@ editSKU			Edit
 returnParameters	RETURN PARAMETERS
 returnHistory	RETURN HISTORY
 edi	EDI
+coming	Coming
+orderTomorrow	Order for tomorrow
