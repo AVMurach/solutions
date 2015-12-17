@@ -41,6 +41,14 @@
 			<c:HorizontalLine />
 
 			<s:If Test="$OrderExists($workflow.visit)">
+				<c:DockLayout CssClass="grid" OnClickAction= "$DoSelectContactPersons($workflow.outlet)" >
+					<c:VerticalLayout>
+						<c:TextView Text="#Заказ передан#" CssClass="description_row"></c:TextView>
+						<c:TextView Text="Петрова А.А." CssClass="main_row"></c:TextView>
+					</c:VerticalLayout>
+				</c:DockLayout>
+				<c:HorizontalLine />
+				
 				<c:HorizontalLayout CssClass="grid" OnClickAction="$SetDeliveryDate($workflow.order, $deliveryDate)">
 					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 					<c:VerticalLayout>
@@ -107,7 +115,7 @@
 				<c:TextView Text="#caps_summary#:"></c:TextView>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
-
+		
 			<s:If Test="$ShowQuestionnaires()">
 				<c:DockLayout CssClass="parameter_grid">
 					<s:Push Id="answered" Value="$GetSum($workflow.questions_answ, $workflow.questions_answ_sku)"></s:Push>
