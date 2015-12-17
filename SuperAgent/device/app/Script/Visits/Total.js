@@ -154,6 +154,38 @@ function CheckAndCommit(state, args) {
 }
 
 
+function GetPercentageMatrix(outlet, visit) {
+	var query = new Query("SELECT AMS.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
+			"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet"); 
+	query.AddParameter("outlet", outlet);
+    var SKUMatrix = query.ExecuteCount();
+    
+    var query = new Query("SELECT AMS.SKU, ANSW.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
+    		"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet " +
+    		"	JOIN (SELECT DISTINCT U1.SKU FROM USR_SKUQuestions U1" +
+    		"	WHERE Description = @stok AND (Answer != '' AND Answer IS NOT NULL)) AS ANSW ON ANSW.SKU = AMS.SKU"); 
+	query.AddParameter("outlet", outlet);
+	query.AddParameter("stok", Translate["#stockQue#"]);
+		
+	var SKUAnswer = query.ExecuteCount();
+    
+    if(SKUMatrix == null){
+    	SKUMatrix = 0;
+    }
+	
+    if(SKUMatrix != 0 ){
+    	percent = FormatValue(SKUAnswer*100/SKUMatrix);
+    }else{
+    	percent = FormatValue(0);
+    }
+    
+    var doc = visit.GetObject();
+    doc.PercentageCompletionMatrix = percent;
+    doc.Save();
+    		
+	return percent
+}
+
 //--------------------------internal functions--------------
 
 

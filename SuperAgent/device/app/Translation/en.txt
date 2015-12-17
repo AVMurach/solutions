@@ -331,3 +331,5 @@ sumMarkUp	Sum markup
 sumDiscount	Sum discount
 newPrice	New price
 enc_amount_regexp	^(\d{1,8}((\.|,)\d{1,2})?)?$
+percentageCompletionMatrix	% compl matrix
+stockQue	Остаток

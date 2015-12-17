@@ -117,6 +117,13 @@
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>
+			
+			<c:DockLayout CssClass="parameter_grid">
+				<s:Push Id="percentageMatrix" Value="$GetPercentageMatrix($workflow.outlet, $workflow.visit)"></s:Push>
+				<c:TextView Text="#percentageCompletionMatrix#:"></c:TextView>
+				<c:TextView Text="$percentageMatrix" CssClass="value"></c:TextView>
+			</c:DockLayout>
+			<c:HorizontalLine />
 
 			<s:If Test="$NoTasks()">
 				<c:DockLayout CssClass="parameter_grid">
