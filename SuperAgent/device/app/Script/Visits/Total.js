@@ -186,6 +186,33 @@ function GetPercentageMatrix(outlet, visit) {
 	return percent
 }
 
+function DoSelectOrderGiven(visit, attribute, control, visitOrderGiven, title, outlet) {
+	var query = new Query("SELECT CP.Id,CP.Description FROM Catalog_Outlet_Contacts OCP " +
+			"	LEFT JOIN Catalog_ContactPersons CP ON CP.Id = OCP.ContactPerson WHERE Ref = @outlet"); 
+	query.AddParameter("outlet", outlet);
+			
+	//var listChoice = query.Execute();
+	
+	//Dialogs.DoChoose("#sdfsdfg#", listChoice, visitOrderGiven, MySelectCallBack, [visit, attribute, control]);
+	Dialogs.DoChoose(query.Execute(), attribute, null, control, MySelectCallBack, title);
+}
+
+function MySelectCallBack(state, args) {
+	MyAssignDialogValue(state, args);
+	Workflow.Refresh([]);
+}
+
+function MyAssignDialogValue(state, args) {
+	Dialog.Debug("args " + args);
+	Dialog.Debug("state" + state);
+	
+	//var entity = state[0];
+	//var attribute = state[1];
+	//entity[attribute] = args.Result;
+	//entity.GetObject().Save();
+	//return entity;
+}
+
 //--------------------------internal functions--------------
 
 
