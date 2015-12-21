@@ -194,7 +194,7 @@ function DoSelectOrderGiven(visit, attribute, control, visitOrderGiven, title, o
 	//var listChoice = query.Execute();
 	
 	//Dialogs.DoChoose("#sdfsdfg#", listChoice, visitOrderGiven, MySelectCallBack, [visit, attribute, control]);
-	Dialogs.DoChoose(query.Execute(), attribute, null, control, MySelectCallBack, title);
+	Dialogs.DoChoose(query.Execute(), visit, attribute, control, MySelectCallBack, title);
 }
 
 function MySelectCallBack(state, args) {
@@ -203,14 +203,28 @@ function MySelectCallBack(state, args) {
 }
 
 function MyAssignDialogValue(state, args) {
-	Dialog.Debug("args " + args);
-	Dialog.Debug("state" + state);
+	/*Dialog.Debug("args " + args.Result);
+	Dialog.Debug("state" + state);*/
 	
-	//var entity = state[0];
-	//var attribute = state[1];
-	//entity[attribute] = args.Result;
-	//entity.GetObject().Save();
-	//return entity;
+	var entity = state[0];
+	var attribute = state[1];
+	entity[attribute] = args.Result.Description;
+	entity.GetObject().Save();
+	return;
+}
+
+function GetContactDesc(idCont){
+	if(idCont != null){
+		var query = new Query("SELECT CP.Description FROM Catalog_ContactPersons CP " +
+		"	WHERE Id = @idCont"); 
+		query.AddParameter("idCont", idCont);
+		
+		return query.ExecuteScalar();
+		
+	}else{
+		return "";
+	}
+	
 }
 
 //--------------------------internal functions--------------

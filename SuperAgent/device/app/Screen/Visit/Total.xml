@@ -41,7 +41,7 @@
 			<c:HorizontalLine />
 
 			<s:If Test="$OrderExists($workflow.visit)">
-				<c:DockLayout CssClass="grid" OnClickAction= "$DoSelectOrderGiven($workflow.visit,OrderGiven,$orderGivenId, $workflow.visit.OrderGiven, #whoHanded#, $workflow.outlet)" >
+				<c:DockLayout CssClass="grid" OnClickAction= "$DoSelectOrderGiven($workflow.visit.Id,OrderGiven,$orderGivenId, $workflow.visit.OrderGiven, #whoHanded#, $workflow.outlet)" >
 					<c:VerticalLayout>
 						<c:TextView Text="#Заказ передан#" CssClass="description_row"></c:TextView>
 						<c:TextView Id="orderGivenId" Text="$workflow.visit.OrderGiven" CssClass="main_row"></c:TextView>
