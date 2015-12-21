@@ -67,6 +67,9 @@
 	    		</c:HorizontalLayout> -->
 	    		
 	    		<c:HorizontalLayout CssClass="parameter_grid">
+			        <c:VerticalLayout CssClass="desk_vl">
+			        	<c:TextView Id="Desc" Text="#period#:" CssClass="descTextView" />
+			        </c:VerticalLayout>
 			        <c:VerticalLayout onClickAction="$Workflow.DoAction(EditFilter)">
 				        <!-- <c:TextView Text="#period#" ></c:TextView> -->
 				       	<!-- <c:TextView Id="Period" Text="{$filterDateCaption(@recvStartPeriod)} - {$filterDateCaption(@recvStopPeriod)}" ></c:TextView> -->

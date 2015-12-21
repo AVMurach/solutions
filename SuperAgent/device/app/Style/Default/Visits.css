@@ -53,10 +53,11 @@
     }
     
 .parameter_grid vl {
-    width: 91.0%;
+    width: 63.0%;
     height: 100%;
     padding-top: 13%;
     padding-left: 2.7%;
+    /* background-color: #bbaa00; */
 }
 
 	.parameter_grid vl TextView {
@@ -64,10 +65,29 @@
 						height: 100%;
 						white-space: normal;
 						padding-right: 7%;
-						padding-left: 25%;
+						padding-left: 1%;
 						padding-top: 25%;
 						color: #2d89cf;
 						font: 42% Arial;
+						/* background-color: #bb0000; */
+			        }
+		
+.parameter_grid desk_vl {
+    width: 25%;
+    height: 100%;
+    padding-top: 13%;
+    padding-left: 7%;    
+}
+
+	.descTextView {
+			            width: 100%;
+						height: 100%;
+						white-space: normal;
+						padding-right: 0%;
+						padding-left: 14%;
+						padding-top: 25%;
+						color: #4d4d4d;
+						font: 42% Arial;						
 			        }
 
 .parameter_grid clear {
@@ -82,7 +102,7 @@
 						height: 100%;
 						white-space: normal;
 						padding-right: 7%;
-						padding-left: 75%;
+						padding-left: 60%;
 						padding-top: 25%;
 						color: #2d89cf;
 						font: 42% Arial;

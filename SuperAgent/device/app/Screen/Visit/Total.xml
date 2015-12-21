@@ -111,13 +111,13 @@
 			<!-- AVMurach+ -->		
 			<c:DockLayout CssClass="parameter_grid">
 				<c:TextView Text="#selling_initiatives#"></c:TextView>
-				<c:TextView Text="12" CssClass="value"></c:TextView>
+				<c:TextView Text="-" CssClass="value"></c:TextView>
 			</c:DockLayout>
 			<c:HorizontalLine />
 		
 			<c:DockLayout CssClass="parameter_grid">
 				<c:TextView Text="#conduct_training#"></c:TextView>
-				<c:TextView Text="32" CssClass="value"></c:TextView>
+				<c:TextView Text="-" CssClass="value"></c:TextView>
 			</c:DockLayout>
 			<c:HorizontalLine />		
 			<!-- AVMurach- -->
