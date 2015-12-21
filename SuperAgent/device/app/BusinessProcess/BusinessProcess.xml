@@ -89,14 +89,20 @@
 			<bp:Action Name="Sk" NextStep="Image" />
 		</bp:Step>
 
+		<!-- AVMurach+ -->
 		<bp:Step Name="SKUs" Screen="Visit\SKUs.xml" Controller="Visits\SKU_Questions.js">
 			<bp:Action Name="ShowFilters1" NextStep="Filters1"/>
+			<bp:Action Name="Forward" NextStep="ResultsAnswers"></bp:Action>			
+			<bp:Action Name="ShowImage" NextStep="Image" />
+		</bp:Step>
+				
+		<bp:Step Name="ResultsAnswers" Screen="Visit\ResultsAnswers.xml" Controller="Visits\ResultsAnswers.js">
 			<bp:Action Name="Forward" NextStep="Order"></bp:Action>
 			<bp:Action Name="SkipOrder" NextStep="Return"></bp:Action>
 			<bp:Action Name="SkipReturn" NextStep="Receivables"></bp:Action>
-			<bp:Action Name="SkipEncashment" NextStep="Total"></bp:Action>
-			<bp:Action Name="ShowImage" NextStep="Image" />
+			<bp:Action Name="SkipEncashment" NextStep="Total"></bp:Action>			
 		</bp:Step>
+		<!-- AVMurach- -->
 
 		<bp:Step Name="Order" Screen="Order\Order.xml" Controller="Order\Main.js">
 			<bp:Action Name="Add" NextStep="AddSKU"></bp:Action>
