@@ -570,14 +570,22 @@ function CreateRecOrderVKTable(outlet) {
 	var query = new Query(tableCommand +
 					"SELECT SSW.SKU AS SSWRef, ifNull((Max(SSW.Cnt)/7),0)*3 AS recOrderVK, " +
 					//"SELECT SSW.Ref AS SSWRef, ifNull((Max(SSW.Cnt)/7),0)* ifNull(VP.daysToVisit,0) AS recOrderVK, " +
-					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1, " +
+					/*"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1, " +
 					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
 					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3, " +
-					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last4, " +
-					"		strftime('%W', date(datetime('now'), '7 day')) AS week1, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last4, " +*/
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3, " +
+					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-21 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last4, " +
+					/*"		strftime('%W', date(datetime('now'), '7 day')) AS week1, " +
 		    		"		strftime('%W', date(datetime('now'))) AS week2, " +
 		    		"		strftime('%W', date(datetime('now'), '-7 day')) AS week3, " +
-		    		"		strftime('%W', date(datetime('now'), '-14 day')) AS week4 " +
+		    		"		strftime('%W', date(datetime('now'), '-14 day')) AS week4 " +*/
+		    		"		strftime('%W', date(datetime('now'))) AS week1, " +
+		    		"		strftime('%W', date(datetime('now'), '-7 day')) AS week2, " +
+		    		"		strftime('%W', date(datetime('now'), '-14 day')) AS week3, " +
+		    		"		strftime('%W', date(datetime('now'), '-21 day')) AS week4 " +
     				"	FROM Catalog_Outlet_SalesByWeek SSW " +
     				"			
     				"			LEFT JOIN (SELECT cast((julianday('now') - julianday('now') +1)as int) AS daysToVisit " +
