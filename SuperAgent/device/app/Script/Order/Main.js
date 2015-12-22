@@ -523,13 +523,13 @@ function OrderBack() {
 
 	else {
 		ClearFilters();
-
+		//AVMurach+
 		var stepNumber;
 		if ($.workflow.currentDoc=="Order")
-			stepNumber = '4';
-		else
 			stepNumber = '5';
-
+		else
+			stepNumber = '6';
+		//AVMurach-
 		var q = new Query("SELECT NextStep FROM USR_WorkflowSteps WHERE StepOrder<@stepNumber AND Value=0 ORDER BY StepOrder DESC");
 		q.AddParameter("stepNumber", stepNumber);
 		var step = q.ExecuteScalar();

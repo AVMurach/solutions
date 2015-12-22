@@ -257,18 +257,18 @@ function SetSteps(outlet) {
 	var statusValues = q.Execute();
 	while (statusValues.Next()) {
 		if (EvaluateBoolean(statusValues.CreateOrderInMA) && $.sessionConst.orderEnabled && hasContractors)
-			InsertIntoSteps("4", "SkipOrder", false, "Order", "SKUs");
+			InsertIntoSteps("5", "SkipOrder", false, "Order", "ResultsAnswers");
 		else
-			InsertIntoSteps("4", "SkipOrder", true, "Order", "SKUs");
+			InsertIntoSteps("5", "SkipOrder", true, "Order", "ResultsAnswers");
 		if (EvaluateBoolean(statusValues.CreateReturnInMA) && $.sessionConst.returnEnabled && hasContractors) {
-			InsertIntoSteps("5", "SkipReturn", false, "Return", "Order");
+			InsertIntoSteps("6", "SkipReturn", false, "Return", "Order");
 		}
 		else
-			InsertIntoSteps("5", "SkipReturn", true, "Return", "Order");
+			InsertIntoSteps("6", "SkipReturn", true, "Return", "Order");
 		if (EvaluateBoolean(statusValues.DoEncashmentInMA) && $.sessionConst.encashEnabled)
-			InsertIntoSteps("6", "SkipEncashment", false, "Receivables", "Return");
+			InsertIntoSteps("7", "SkipEncashment", false, "Receivables", "Return");
 		else
-			InsertIntoSteps("6", "SkipEncashment", true, "Receivables", "Return");
+			InsertIntoSteps("7", "SkipEncashment", true, "Receivables", "Return");
 		if (EvaluateBoolean(statusValues.FillQuestionnaireInMA))
 			skipQuest = false;
 		else
@@ -289,7 +289,13 @@ function SetSteps(outlet) {
 		InsertIntoSteps("3", "SkipSKUs", true, "SKUs", "Questions");
 	else
 		InsertIntoSteps("3", "SkipSKUs", false, "SKUs", "Questions");
-
+	
+	//AVMurach+
+	if (parseInt(GetSKUQuestionsCount()) == parseInt(0) || skipQuest)
+		InsertIntoSteps("4", "SkipResultsAnswers", true, "ResultsAnswers", "Questions");
+	else
+		InsertIntoSteps("4", "SkipResultsAnswers", false, "ResultsAnswers", "Questions");	
+	//AVMurach-
 }
 
 function InsertIntoSteps(stepOrder, skip, value, action, previousStep) {
