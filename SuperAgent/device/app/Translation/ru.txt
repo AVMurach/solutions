@@ -335,3 +335,4 @@ enc_amount_regexp	^(\d{1,8}((\.|,)\d{1,2})?)?$
 percentageCompletionMatrix	% вып матрицы
 stockQue	Остаток
 whoHanded	Кому передан
+missingItems	ОТСУТСТВУЮЩИЕ ПОЗИЦИИ

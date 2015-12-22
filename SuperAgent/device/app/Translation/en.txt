@@ -334,3 +334,4 @@ enc_amount_regexp	^(\d{1,8}((\.|,)\d{1,2})?)?$
 percentageCompletionMatrix	% compl matrix
 stockQue	Остаток
 whoHanded	who handed
+missingItems	Missing items
