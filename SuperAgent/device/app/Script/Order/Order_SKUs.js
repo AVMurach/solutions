@@ -89,7 +89,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
                              ", CASE WHEN V.Answer IS NULL THEN U.Id ELSE UB.Id END AS UnitId " +
                              ", CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder " +
                              ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder " +
-                             ", RCRDR.recOrderVK - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - ifNull(V.Answer,0) AS recOrderVKNew";
+                             ", (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - ifNull(V.Answer,0) AS recOrderVKNew";
 
         var recOrderStr =   "JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id " +
                             "LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet " +
@@ -111,7 +111,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
                              ", NULL AS UnitId " +
                              ", 0 AS RecOrder " +
                              ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE 1 END AS OrderRecOrder" +
-                             ", RCRDR.recOrderVK - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - 0 AS recOrderVKNew "
+                             ", (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - 0 AS recOrderVKNew "
 
         var recOrderStr =  "LEFT JOIN (SELECT SS.Ref, SS.SKU, SS.Qty, SS.Unit, SS.BaseUnitQty FROM Catalog_AssortmentMatrix_SKUs SS " +
                                      " JOIN _Catalog_AssortmentMatrix_Outlets OO INDEXED BY IND_AMREFOUTLET ON SS.Ref=OO.Ref " +
