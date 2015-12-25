@@ -565,26 +565,10 @@ function GetRegionQueryText() {
 //AVMurach+
 function CreateRecOrderVKTable(outlet) {
 
-	var tableCommand = Global.CreateUserTableIfNotExists("USR_RecOrderVK");
+	var tableCommand = Global.CreateUserTableIfNotExists("USR_RecOrderVK"); //получение заказов за последние 4 недели и расчет рекомендуемого заказа
 
 	var query = new Query(tableCommand +
-					/*"SELECT SSW.SKU AS SSWRef, ifNull((Max(SSW.Cnt)/7),0)*3 AS recOrderVK, " +
 					
-					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1, " +
-					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
-					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3, " +
-					"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-21 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last4, " +
-					
-		    		"		strftime('%W', date(datetime('now'))) AS week1, " +
-		    		"		strftime('%W', date(datetime('now'), '-7 day')) AS week2, " +
-		    		"		strftime('%W', date(datetime('now'), '-14 day')) AS week3, " +
-		    		"		strftime('%W', date(datetime('now'), '-21 day')) AS week4 " +
-    				"	FROM Catalog_Outlet_SalesByWeek SSW " +
-    				"			
-    				"			LEFT JOIN (SELECT cast((julianday('now') - julianday('now') +1)as int) AS daysToVisit " +
-    				"						FROM Document_VisitPlan_Outlets VP WHERE VP.Outlet = @outlet) VP ON 1=1 " +
-    				"	WHERE SSW.Ref = @outlet AND SSW.Week = strftime('%W', date(datetime('now'))) AND SSW.Date  > date(datetime('now'), '-1 month') GROUP BY SSW.SKU");*/
-			
 			"SELECT SSW.SKU AS SSWRef, MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'))) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1,	" +
 			"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-7 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
 			"		MAX(CASE WHEN SSW.Week = strftime('%W', date(datetime('now'), '-14 day')) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3,	" +
@@ -601,18 +585,11 @@ function CreateRecOrderVKTable(outlet) {
 	query.AddParameter("outlet", outlet);
 	query.Execute();	
 	
-	//var indexQuery = new Query("CREATE INDEX IF NOT EXISTS IND_ROVK ON USR_RecOrderVK(SKU)");
-	//indexQuery.Execute();
 	
-	var tableCommand = Global.CreateUserTableIfNotExists("USR_SKUinLastOrder");
+	var tableCommand = Global.CreateUserTableIfNotExists("USR_SKUinLastOrder"); // заказ на сегодня и на завтра
 	
 	var query = new Query(tableCommand +
-					/*"SELECT EDI.Ref AS EDIRef, Sum(EDI.Cnt) AS Cnt " +
-					"		FROM Catalog_SKU_Edi EDI " +
-					"		JOIN Catalog_Outlet O ON O.Description = EDI.Outlet " +
-					"		AND O.Id = @outlet " +
-					"		WHERE date(DeliveryDate) >= date(datetime('now')) AND date(DeliveryDate) <= date(datetime('now'),'1 day') " +
-					"		GROUP BY EDI.Ref");*/
+					
 			"SELECT DISTINCT EDI.SKU AS EDIRef, EDI_nowDay.Cnt AS EDI_nowDayCnt, EDI_addDay.Cnt AS EDI_addDayCnt " +
 			"FROM Catalog_Outlet_Edi EDI " +
 			"LEFT JOIN (SELECT EDI.SKU, EDI.Cnt	" +
@@ -622,6 +599,21 @@ function CreateRecOrderVKTable(outlet) {
 			"FROM Catalog_Outlet_Edi EDI " +
 			"WHERE EDI.Ref = @outlet AND date(DeliveryDate) == date(datetime('now'),'1 day')) AS EDI_addDay ON EDI.SKU = EDI_addDay.SKU	" +
 			"WHERE EDI.Ref = @outlet AND date(DeliveryDate) >= date(datetime('now')) AND date(DeliveryDate) <= date(datetime('now'),'1 day')");
+	
+	query.AddParameter("outlet", outlet);
+	query.Execute();
+	
+	
+	var tableCommand = Global.CreateUserTableIfNotExists("USR_StockOutlet"); // остатки в ТТ
+	
+	var query = new Query(tableCommand +
+					
+			"SELECT SO.SKU AS SKU, SO.Cnt AS SOCnt FROM	Catalog_Outlet_StockOutlet SO " +
+			"JOIN (SELECT SKU, MAX(DateNonTime) AS GDateNonTime " +
+			"FROM Catalog_Outlet_StockOutlet " +
+			"WHERE Ref = @outlet AND date(DateNonTime) > date(datetime('now'),'-7 day') " +
+			"GROUP BY SKU) SOG ON SOG.SKU = SO.SKU AND SOG.GDateNonTime = SO.DateNonTime " +
+			"WHERE SO.Ref = @outlet ");
 	
 	query.AddParameter("outlet", outlet);
 	query.Execute();

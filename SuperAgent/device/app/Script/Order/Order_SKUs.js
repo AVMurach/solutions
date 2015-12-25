@@ -55,6 +55,9 @@ function GetSKUAndGroups(searchText, thisDoc) {
     //данными продаж  за последние 4 недели в виде «Номер недели»: «средние дневные продажи (кол-во за неделю / 7 дней)
     var averageSKUinWeek = " LEFT JOIN USR_RecOrderVK RCRDR ON RCRDR.SSWRef = S.Id ";
     
+  //остатки в ТТ
+    var stockOutlet = " LEFT JOIN USR_StockOutlet STCKOTLT ON STCKOTLT.SKU = S.Id ";
+    
     //AVMurach -
     
     var groupFields = "";
@@ -134,7 +137,8 @@ function GetSKUAndGroups(searchText, thisDoc) {
     	
 	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
 	    		//AVMurach+
-	    		"ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt,  " +
+	    		"CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END AS stockAnswer " +
+	    		", ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt,  " +
 	    		/*"ifNull(RCRDR.week1, strftime('%W', date(datetime('now'), '7 day'))) AS week1, " +
 	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now')))) AS week2, " +
 	    		"ifNull(RCRDR.week3, strftime('%W', date(datetime('now'), '-7 day'))) AS week3, " +
@@ -160,6 +164,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	            stocksAnswer +
 	            averageSKUinWeek +
 	            SKUinLastOrder +
+	            stockOutlet +
 	            
 	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
@@ -189,7 +194,8 @@ function GetSKUAndGroups(searchText, thisDoc) {
     			" FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
               "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
               //AVMurach+
-              "ifnull(VSKU.Answer,0) AS stockAnswer, ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt, " +
+              "CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END AS stockAnswer " +
+              ", ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt, " +
               "ifNull(RCRDR.week1, strftime('%W', date(datetime('now')))) AS week1, " +
 	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now'), '-7 day'))) AS week2, " +
 	    		"ifNull(RCRDR.week3, strftime('%W', date(datetime('now'), '-14 day'))) AS week3, " +
@@ -211,6 +217,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	            stocksAnswer +
 	            averageSKUinWeek +
 	            SKUinLastOrder +
+	            stockOutlet +
 	            
 	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
@@ -232,6 +239,8 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
     query.AddParameter("Ref", priceList);
 
+    //Clipboard.SetString(query.Text);
+    
     return query.Execute();
 
 }
