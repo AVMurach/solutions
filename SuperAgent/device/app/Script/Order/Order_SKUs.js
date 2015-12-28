@@ -96,9 +96,9 @@ function GetSKUAndGroups(searchText, thisDoc) {
                              ", CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder " +
                              ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder " +
                              ", CASE " +
-                             " WHEN (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - ifNull(VSKU.Answer,0) < 0 " +
+                             " WHEN (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - (CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END) < 0 " +
                              " THEN 0 " +
-                             " ELSE (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - ifNull(VSKU.Answer,0) " +
+                             " ELSE (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - (CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END) " +
                              " END AS recOrderVKNew" +
                              ", CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END AS stockAnswer ";
 
@@ -123,9 +123,9 @@ function GetSKUAndGroups(searchText, thisDoc) {
                              ", 0 AS RecOrder " +
                              ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE 1 END AS OrderRecOrder" +
                              ", CASE " +
-                             " WHEN (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) < 0 " +
+                             " WHEN (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - (ifnull(STCKOTLT.SOCnt,0)) < 0 " +
                              " THEN 0 " +
-                             " ELSE (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) " +
+                             " ELSE (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - (ifnull(STCKOTLT.SOCnt,0)) " +
                              " END AS recOrderVKNew" +
                              ", ifnull(STCKOTLT.SOCnt,0) AS stockAnswer "
 

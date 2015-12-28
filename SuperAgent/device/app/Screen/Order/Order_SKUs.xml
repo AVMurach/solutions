@@ -97,9 +97,24 @@
 									</s:Else> -->
 									<!-- <s:If Test="$item.recOrderVKNew != null"> -->
 										<s:If Test="$item.OrderRecOrder == 1">
-											<c:VerticalLayout>
-												<c:TextView Text="#recommended#" CssClass="single_rec" />
-											</c:VerticalLayout>											
+											<s:If Test="$item.recOrderVKNew != 0">
+												<s:If Test="$item.recOrderVKNew != null">
+													<c:VerticalLayout>
+														<c:TextView Text="{$item.recOrderVKNew}" CssClass="rec_order" />
+														<c:TextView Text="#recommended#" CssClass="rec_comment" />
+													</c:VerticalLayout>												
+												</s:If>
+												<s:Else>
+													<c:VerticalLayout>
+														<c:TextView Text="#recommended#" CssClass="single_rec" />
+													</c:VerticalLayout>	
+												</s:Else>
+											</s:If>
+											<s:Else>
+												<c:VerticalLayout>
+													<c:TextView Text="#recommended#" CssClass="single_rec" />
+												</c:VerticalLayout>
+											</s:Else>											
 										</s:If>
 										<s:Else>
 											<s:If Test="$item.OrderRecOrder == 2">

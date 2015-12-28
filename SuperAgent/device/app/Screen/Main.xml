@@ -40,7 +40,7 @@
 			</c:DockLayout>
 			<c:HorizontalLine />
 
-			<s:If Test="$sessionConst.orderEnabled">
+			<!-- <s:If Test="$sessionConst.orderEnabled">
 				<c:DockLayout OnClickAction="$DoAction(Order)">
 					<c:TextView CssClass="menu_text" Text="{$orderQty} | {$FormatValue($orderSum)}"></c:TextView>
 					<c:HorizontalLayout>
@@ -49,7 +49,7 @@
 					</c:HorizontalLayout>
 				</c:DockLayout>
 				<c:HorizontalLine />
-			</s:If>
+			</s:If> -->
 
 			<s:If Test="$sessionConst.returnEnabled">
 				<c:DockLayout OnClickAction="$DoAction(Return)">
