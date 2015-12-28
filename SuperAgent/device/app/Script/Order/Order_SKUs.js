@@ -42,12 +42,15 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
   //AVMurach +    
     //получение информации по остаткам на основании сегодняшнего анкетирования
-    var stocksAnswer = " LEFT JOIN Document_Visit_SKUs VSKU ON VSKU.SKU = S.Id AND VSKU.Ref In " +
+   /* var stocksAnswer = " LEFT JOIN Document_Visit_SKUs VSKU ON VSKU.SKU = S.Id AND VSKU.Ref In " +
     		" (SELECT V.Id FROM Document_Visit V" +
     		" WHERE strftime('%d', V.Date) = strftime('%d','now')" +
     		" AND V.Outlet = @outlet" +
     		" ORDER BY V.Date DESC LIMIT 1)" +
-    		" AND VSKU.Question In (SELECT Id FROM Catalog_Question WHERE Description = 'Остаток') ";
+    		" AND VSKU.Question In (SELECT Id FROM Catalog_Question WHERE Description = 'Остаток') ";*/
+    
+    var stocksAnswer = " LEFT JOIN USR_SKUQuestions VSKU ON VSKU.SKU = S.Id " + 
+	" AND VSKU.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@assignment) ";
     
     //кол-во в последнем не отгруженном заказе на данную ТТ по данной номенклатуре
     var SKUinLastOrder = 	" LEFT JOIN USR_SKUinLastOrder EDI ON EDI.EDIRef = S.Id ";
@@ -92,7 +95,12 @@ function GetSKUAndGroups(searchText, thisDoc) {
                              ", CASE WHEN V.Answer IS NULL THEN U.Id ELSE UB.Id END AS UnitId " +
                              ", CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder " +
                              ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder " +
-                             ", (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - ifNull(V.Answer,0) AS recOrderVKNew";
+                             ", CASE " +
+                             " WHEN (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - ifNull(VSKU.Answer,0) < 0 " +
+                             " THEN 0 " +
+                             " ELSE (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - ifNull(VSKU.Answer,0) " +
+                             " END AS recOrderVKNew" +
+                             ", CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END AS stockAnswer ";
 
         var recOrderStr =   "JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id " +
                             "LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet " +
@@ -107,14 +115,19 @@ function GetSKUAndGroups(searchText, thisDoc) {
         query.AddParameter("assignment", DB.Current.Constant.SKUQuestions.Stock);
 
         var recOrderSort = " OrderRecOrder DESC, ";
-
+        
     } else {
-
+    	
         var recOrderFields = ", NULL AS RecUnit " +
                              ", NULL AS UnitId " +
                              ", 0 AS RecOrder " +
                              ", CASE WHEN MS.Qty IS NULL THEN 0 ELSE 1 END AS OrderRecOrder" +
-                             ", (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) - 0 AS recOrderVKNew "
+                             ", CASE " +
+                             " WHEN (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) < 0 " +
+                             " THEN 0 " +
+                             " ELSE (round((round(RCRDR.last1,2)/7*3),0)) - ifNull(EDI.EDI_nowDayCnt,0) - ifNull(EDI.EDI_addDayCnt,0) " +
+                             " END AS recOrderVKNew" +
+                             ", ifnull(STCKOTLT.SOCnt,0) AS stockAnswer "
 
         var recOrderStr =  "LEFT JOIN (SELECT SS.Ref, SS.SKU, SS.Qty, SS.Unit, SS.BaseUnitQty FROM Catalog_AssortmentMatrix_SKUs SS " +
                                      " JOIN _Catalog_AssortmentMatrix_Outlets OO INDEXED BY IND_AMREFOUTLET ON SS.Ref=OO.Ref " +
@@ -135,9 +148,9 @@ function GetSKUAndGroups(searchText, thisDoc) {
             var stockCondition = " AND S.CommonStock > 0 ";
     	}
     	
-	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock, " +
+	    query.Text = "SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, S.CommonStock AS CommonStock " +
 	    		//AVMurach+
-	    		"CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END AS stockAnswer " +
+	    		
 	    		", ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt,  " +
 	    		/*"ifNull(RCRDR.week1, strftime('%W', date(datetime('now'), '7 day'))) AS week1, " +
 	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now')))) AS week2, " +
@@ -192,9 +205,9 @@ function GetSKUAndGroups(searchText, thisDoc) {
     			//", SS.EDICnt AS EDICnt, SS.recOrderVK " +
     			//" SS.week1, SS.week2, SS.week3, SS.week4, SS.last1, SS.last2, SS.last3, SS.last4 " +
     			" FROM _Catalog_SKU_Stocks SS INDEXED BY IND_SKUSSTOCK " +
-              "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price, " +
+              "JOIN (SELECT DISTINCT S.Id, S.Description, PL.Price AS Price " +
               //AVMurach+
-              "CASE WHEN ifnull(VSKU.Answer,0) != 0 THEN ifnull(VSKU.Answer,0) ELSE ifnull(STCKOTLT.SOCnt,0) END AS stockAnswer " +
+              
               ", ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt, " +
               "ifNull(RCRDR.week1, strftime('%W', date(datetime('now')))) AS week1, " +
 	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now'), '-7 day'))) AS week2, " +
