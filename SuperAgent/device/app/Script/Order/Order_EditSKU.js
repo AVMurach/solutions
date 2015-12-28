@@ -1,4 +1,4 @@
-var swipedRow;
+﻿var swipedRow;
 var alreadyAdded;
 var forwardText;
 var c_orderItem;
@@ -14,16 +14,10 @@ function OnLoading(){
         c_itemsHistory = Translate["#returnHistory#"];
 }
 
-function ShowDialog(val){
-    Dialog.Debug(val);
+function GetCurrentItem(){
+    return OrderItem.GetItem();
 }
 
-function DiscountOutput(discount){
-    if (String.IsNullOrEmpty(discount))
-        return '0';
-    else
-        return discount.ToString();
-}
 
 function GetCurrentDoc(){
     var d;
@@ -32,20 +26,6 @@ function GetCurrentDoc(){
     else
         d =  $.workflow.Return;
     return d;
-}
-
-function GetMultiplier(sku, orderitem) {
-
-    if (orderitem != null) {
-        // var item = DB.Current.Catalog.SKU_Packing.SelectBy("Pack",
-        // orderitem.Units).Where("Ref==@p1", [sku]).First();
-        var q = new Query(
-                "SELECT Multiplier FROM Catalog_SKU_Packing WHERE Pack=@pack and Ref=@ref");
-        q.AddParameter("pack", orderitem.Units);
-        q.AddParameter("ref", sku);
-        return q.ExecuteScalar();
-    }
-    return parseInt(1);
 }
 
 function WriteSwipedRow(control){
@@ -66,130 +46,152 @@ function HideSwiped()
         swipedRow.Index = 1;
 }
 
-function GetFeatures(sku) {
+function GetFeatures(sku, stock) {
     var query = new Query(
-            "SELECT DISTINCT Feature FROM Catalog_SKU_Stocks WHERE Ref=@Ref ORDER BY LineNumber");
+            "SELECT DISTINCT Feature FROM Catalog_SKU_Stocks WHERE Ref=@Ref AND CASE WHEN @Stock = @EmptyStock THEN 1 ELSE Stock = @Stock END AND CASE WHEN @NoStkEnbl = 1 THEN 1 ELSE StockValue > 0 END ORDER BY LineNumber");
     query.AddParameter("Ref", sku);
+    query.AddParameter("NoStkEnbl", $.sessionConst.NoStkEnbl);
+    query.AddParameter("EmptyStock", DB.EmptyRef("Catalog_Stock"));
+    query.AddParameter("Stock", stock);
     return query.Execute();
 }
 
-function CreateOrderItemIfNotExist(order, sku, orderitem, price, features, recOrder, unit) {
 
-    if ($.Exists("orderitemAlt")){  //Dirty hack, see Events.js line 109
-        orderitem = c_orderItem;
-        $.Remove("orderitemAlt");
-    }   
-
-    if (orderitem == null) {
-
-        var feature;
-        if ($.sessionConst.SKUFeaturesRegistration){
-            var query = new Query(
-                    "SELECT Feature FROM Catalog_SKU_Stocks WHERE Ref = @Ref ORDER BY LineNumber LIMIT 1");
-            query.AddParameter("Ref", sku);
-            feature = query.ExecuteScalar();
-        }
-        else
-            feature = null;
-
-//        var query = new Query(
-//                "SELECT Id FROM Document_Order_SKUs WHERE Ref = @Ref AND SKU=@sku AND Feature = @Feature");
-//        query.AddParameter("Ref", order);
-//        query.AddParameter("sku", sku);
-//        query.AddParameter("Feature", feature);
-//        var r = query.ExecuteScalar();
-//        if (r != null)
-//            return r;
-//        else {
-            if (recOrder!=null){
-                if (recOrder<0)
-                    recOrder = 0;
-            }
-            else
-                recOrder = 0;
-
-
-            // getting a unit
-            if (unit==null){
-                var q = new Query("SELECT Pack, Multiplier FROM Catalog_SKU_Packing WHERE Ref=@ref AND LineNumber=1");
-                q.AddParameter("ref", sku);
-                var defaultUnit = q.Execute();
-            }
-            else{
-                var q = new Query("SELECT Pack, Multiplier FROM Catalog_SKU_Packing WHERE Ref=@ref AND Pack=@pack");
-                q.AddParameter("ref", sku);
-                q.AddParameter("pack", unit);
-                var defaultUnit = q.Execute();
-            }
-
-            var p = DB.Create("Document." + $.workflow.currentDoc + "_SKUs");
-            p.Ref = order;
-            p.SKU = sku;
-            p.Feature = feature;
-            p.Price = price * defaultUnit.Multiplier;
-            p.Total = price * defaultUnit.Multiplier;
-            p.Units = defaultUnit.Pack;
-            p.Discount = 0;
-            p.Qty = recOrder;
-            p.Save();
-            c_orderItem = p.Id;
-            return p.Id;
-//        }
-    } else {
-        if (parseInt(orderitem.Discount) != parseInt(0))
-            Variables["param4"] = orderitem.Discount;
-        c_orderItem = orderitem;
-        return orderitem;
-    }
-
-}
 
 function SnapshotExists(sku, filename, filesTableName) {
 	return Images.SnapshotExists(sku, ToString(filename), filesTableName);
 }
 
-function GetDiscountDescription(orderitem) {
-    if (parseInt(orderitem.Discount) == parseInt(0)
-            || parseInt(orderitem.Discount) < parseInt(0))
+//discount
+
+function GetDiscountDescription(value) {
+    if (parseFloat(value) == parseFloat(0)
+            || parseFloat(value) < parseFloat(0))
         return Translate["#discount#"];
     else
         return Translate["#markUp#"];
 }
 
-function ApplyDiscount(sender, orderitem) {
-    if (TrimAll(sender.Text) == '.' || TrimAll(sender.Text) == ','){
-        sender.Text = '0,';
-    }
-    else{
-        if (IsNullOrEmpty(sender.Text))
-            sender.Text = parseFloat(0);
-        else {
-            if ($.discountDescr.Text == Translate["#discount#"]
-                && parseFloat(sender.Text) > parseFloat(0))
-            $.discountEdit.Text = -1 * $.discountEdit.Text;     
-            }   
-        orderitem = orderitem.GetObject();
-        orderitem.Discount = parseFloat($.discountEdit.Text);
-        orderitem.Save();
+function DiscountOutput(discount){
+    if (String.IsNullOrEmpty(discount))
+        return '0';
+    else
+        return discount.ToString();
+}
 
-        CountPrice(orderitem.Id);
+function ApplyDiscount(sender, orderitem) {
+
+    CheckUserInput(sender);
+
+    if (Math.abs(parseFloat(sender.Text)) > 100)
+        sender.Text =  sender.Text > 0 ? 100 : -100;
+}
+
+function RefreshDiscount(sender, param1, orderitem){
+    
+    sender.Text = String.IsNullOrEmpty(sender.Text) ? '0' : sender.Text;
+
+    if (parseFloat(sender.Text) != parseFloat(orderitem.Discount))
+    {
+        SendDiscountMap(sender.Text);
+        DoRefresh(param1);
+    }
+}
+
+function SendDiscountMap(discount){
+    var d = new Dictionary();
+    d.Add("Discount", String.IsNullOrEmpty(discount) 
+                            ? parseFloat(0) 
+                            : parseFloat(discount));
+    OrderItem.SetItemValue(d);
+}
+
+function RefreshScreen(control, param1){
+    DoRefresh(param1);
+}
+
+function ConvertDiscount(control) {
+    SendDiscountMap(-1 * control.Text);
+    DoRefresh($.showimage);
+}
+
+//total discount
+
+function GetTotalDiscount(){
+    return FormatValue(OrderItem.GetTotalDiscount());
+}
+
+function ApplyTotalDiscount(sender, orderitem){
+
+    CheckUserInput(sender);
+
+    if (!String.IsNullOrEmpty(sender.Text)){
+        if (sender.Text < -orderitem.Price)
+            sender.Text = -orderitem.Price;
     }    
 }
 
-function ChandeDiscount(orderitem) {
-    if ($.discountDescr.Text == Translate["#discount#"]) {
-        $.discountDescr.Text = Translate["#markUp#"];
-    } else
-        $.discountDescr.Text = Translate["#discount#"];
+function RefreshTotalDiscount(sender, param1){
 
-    orderitem = orderitem.GetObject();
-    orderitem.Discount = -1 * orderitem.Discount;
-    orderitem.Save();
+    sender.Text = String.IsNullOrEmpty(sender.Text) ? FormatValue(0) : sender.Text;
 
-    $.discountEdit.Text = orderitem.Discount;
-    CountPrice(orderitem.Id);
+    if (parseFloat(sender.Text) != parseFloat(OrderItem.GetTotalDiscount()))
+    {
+        SendTotalDiscountMap(sender.Text);        
+        DoRefresh(param1);
+    }
+    
+}
 
-    FocusOnEditText('discountEdit', '1');
+function SendTotalDiscountMap(discount){
+    var d = new Dictionary();
+    d.Add("TotalDiscount", String.IsNullOrEmpty(discount) 
+                            ? parseFloat(0) 
+                            : parseFloat(discount));
+    OrderItem.SetItemValue(d);
+}
+
+function GetTotalDiscountDescription(){
+    
+    var value = OrderItem.GetTotalDiscount();
+
+    if (parseFloat(value) == parseFloat(0)
+            || parseFloat(value) < parseFloat(0))
+        return Translate["#sumDiscount#"];
+    else
+        return Translate["#sumMarkUp#"];
+}
+
+function ConvertTotalDiscount(control, orderitem){    
+    SendTotalDiscountMap(-1 * control.Text);
+    DoRefresh($.showimage);
+}
+
+//total
+
+function TotalOutput(total){
+    return FormatValue(total);
+}
+
+function ApplyTotal(sender, orderitem){
+
+    CheckUserInput(sender);
+    if (String.IsNullOrEmpty(sender.Text))
+        sender.Text = '0';
+    if (sender.Text < 0)
+    {
+        sender.Text = -1 * sender.Text;
+    }
+
+    var d = new Dictionary();
+    d.Add("Total", parseFloat(sender.Text));
+    OrderItem.SetItemValue(d);
+
+    orderitem = OrderItem.GetItem();
+    $.orderitem = orderitem;
+
+    // DoRefresh($.showimage);
+
 }
 
 function GetFeatureDescr(feature) {
@@ -197,13 +199,6 @@ function GetFeatureDescr(feature) {
         return "";
     else
         return (", " + feature.Description);
-}
-
-function RefreshEditSKU(orderItem, sku, price, discountEdit, showimage) {
-    HideSwiped();
-    var d = $.discountEdit.Text;
-    var arr = [ sku, price, orderItem, d, showimage ];// , discountText];
-    Workflow.Refresh(arr);
 }
 
 function GetImagePath(objectID, pictID, pictExt) {
@@ -223,57 +218,24 @@ function GalleryCallBack(state, args) {
 		sku.DefaultPicture = fileName;
 		sku.Save();
 
-		Workflow.Refresh([sku.Id, $.price, $.orderitem, $.param4, $.showimage, $.param6, $param7]);
+		Workflow.Refresh([$.showimage]);
 	}
 }
 
-function CountPrice(orderitem) {
-
-    orderitem = orderitem.GetObject();
-
-    var discount = $.discountEdit.Text;
-    if (String.IsNullOrEmpty(discount))
-        discount = parseInt(0);
-    p = CalculatePrice(orderitem.Price, discount, 1);
-    // orderitem.Discount = Converter.ToDecimal(discount);
-    orderitem.Total = p;
-    orderitem.Save();
-
-    $.orderItemTotalId.Text = p;
-
-    return orderitem;
-}
-
-function CalculatePrice(price, discount, multiplier) {
-    
-    var total = (price * (discount / 100 + 1)) * multiplier;
-    return FormatValue(total);
-
-}
-
-function ChangeFeatureAndRefresh(orderItem, feature, sku, price, discountEdit,
-        showimage) {
+function ChangeFeatureAndRefresh(orderItem, feature, showimage) {
 
     if (orderItem.Feature != feature.Feature) {
-        var itemObj = orderItem.GetObject();
-        itemObj.Feature = feature;
-        itemObj.Save()
-        RefreshEditSKU(orderItem, sku, price, discountEdit, showimage);
+        var d = new Dictionary();
+        d.Add("Feature", feature);
+        OrderItem.SetItemValue(d);
+
+        DoRefresh(showimage);
     }
 }
 
-function ChangeUnit(sku, orderitem, price) {
+function ChangeUnit(sku, orderitem) {
 
     HideSwiped();
-
-    orderitem = orderitem.GetObject();
-
-    if (price==null){
-        var q = new Query("SELECT Price FROM Document_PriceList_Prices WHERE Ref=@priceList AND SKU=@sku");
-        q.AddParameter("priceList", $.workflow.order.PriceList);
-        q.AddParameter("sku", orderitem.SKU);
-        price = q.ExecuteScalar();
-    }
 
     var q1 = new Query(
             "SELECT LineNumber FROM Catalog_SKU_Packing WHERE Pack=@pack AND Ref=@ref");
@@ -294,19 +256,24 @@ function ChangeUnit(sku, orderitem, price) {
         var selectedUnit = q2.Execute();
     }
 
-    orderitem.Price = price * selectedUnit.Multiplier;
-    Variables["multiplier"] = selectedUnit.Multiplier;
-    orderitem.Units = selectedUnit.Pack;
-    Variables["itemUnits"].Text = selectedUnit.Pack.Description;
-    orderitem.Save();
+    var args = new Dictionary();
+    args.Add("Units", selectedUnit.Pack);
+    args.Add("Multiplier", selectedUnit.Multiplier);
 
-    orderitem = CountPrice(orderitem.Id, price)
+    OrderItem.SetItemValue(args);
+    orderitem = OrderItem.GetItem();
+
+    // $.itemUnits.Text = orderitem.Units.Description;    
+    // $.orderItemTotalId.Text = FormatValue(orderitem.Total);
+    // $.totalEdit.Text = FormatValue(orderitem.Total);
+
+    DoRefresh($.showimage);
 
 }
 
 function GetItemHistory(sku, order) {
     var q = new Query("SELECT D.Date AS Date, S.Qty*P.Multiplier AS Qty, " +
-        "S.Total/P.Multiplier AS Total, S.Discount, S.Price " +
+        "S.Total/P.Multiplier AS Total, S.Discount, S.Price/P.Multiplier AS Price " +
         "FROM Document_" + $.workflow.currentDoc + "_SKUs S " +
         "JOIN Document_" + $.workflow.currentDoc + " D ON S.Ref=D.Id " +
         "JOIN Catalog_SKU_Packing P ON S.SKU=P.Ref AND P.Pack=S.Units " +
@@ -317,7 +284,6 @@ function GetItemHistory(sku, order) {
     q.AddParameter("ref", order);
 
     $.Add("historyCount", q.ExecuteCount());
-    // Dialog.Debug($.historyCount);
 
     return q.Execute();
 }
@@ -328,12 +294,16 @@ function CalculateSKUAndForward(outlet, orderitem) {
         DB.Delete(orderitem);
     } else {
         Global.FindTwinAndUnite(orderitem.GetObject());
+        GlobalWorkflow.SetMassDiscount(null);
+        GlobalWorkflow.GetMassDiscount(orderitem.Ref);
     }
 
     if ($.Exists("itemFields"))
     	$.Remove("itemFields");
     if ($.Exists("AlreadyAdded"))
     	$.Remove("AlreadyAdded");
+
+    OrderItem.ClearItem();
 
     if (alreadyAdded)
         DoAction('Show' + $.workflow.currentDoc);
@@ -357,21 +327,34 @@ function DeleteAndBack(orderitem) {
     }
     if ($.Exists("itemFields"))
     	$.Remove("itemFields");
+
+    OrderItem.ClearItem();
+    GlobalWorkflow.GetMassDiscount(orderitem.Ref);
+
     Workflow.Back();
 }
 
-function RepeatOrder(orderitem, qty, total, price, discount, baseUnit, baseUnitDescr){
-    orderitem = orderitem.GetObject();
-    orderitem.Qty = qty;
-    $.orderItemQty.Text = qty;
-    orderitem.Total = total;
-    $.orderItemTotalId.Text = total;
-    orderitem.Price = price;
-    orderitem.Discount = discount;
-    $.discountEdit.Text = discount;
-    orderitem.Units = baseUnit;
-    $.itemUnits.Text = baseUnitDescr;
-    orderitem.Save();
+function RepeatOrder(orderitem, qty, discount, baseUnit, baseUnitDescr, price, total){
+
+    var totalDiscount = total - price;
+
+    var d = new Dictionary();
+    
+    d.Add("Qty", qty);
+
+    if (parseFloat(discount)!=parseFloat(0))
+        d.Add("Discount", discount);
+    else if (totalDiscount != 0)
+        d.Add("TotalDiscount", totalDiscount);
+    
+    d.Add("Units", baseUnit);
+
+    d.Add("Multiplier", 1);
+
+    OrderItem.SetItemValue(d);
+
+    DoRefresh($.showimage);
+
 }
 
 function FormatDate(datetime) {

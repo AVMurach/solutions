@@ -13,7 +13,7 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$SaveAndForward($workflow.encashment)">
+			<c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$SaveAndForward($workflow.encashment)" SubmitScope="encAmount">
 				<c:TextView Id="btnForward" Text="#forward#" />
 			</c:DockLayout>
 			<c:HorizontalLayout>
@@ -48,16 +48,9 @@
 				<c:VerticalLayout OnClickAction="$FocusOnEditText(encAmount, 1)">
 					<c:DockLayout>
 						<c:TextView Text="#encashmentAmount#:"></c:TextView>
-						<c:Button Text="#spread#" OnClickAction="$SpreadEncasmentAndRefresh($workflow.encashment, $visit.Outlet, $receivables)"></c:Button>
+						<c:Button Text="#spread#" OnClickAction="$SpreadEncasmentAndRefresh($workflow.encashment, $visit.Outlet, $receivables)" SubmitScope="encAmount"></c:Button>
 					</c:DockLayout>
-					<c:EditText Id="encAmount" Text="$FormatSum(null, $workflow.encashment.EncashmentAmount)" CssClass="main_row" Keyboard="numeric" Placeholder="—" OnLostFocus="$SaveSum()"></c:EditText>
-				</c:VerticalLayout>
-			</c:HorizontalLayout>
-			<c:HorizontalLine />
-
-			<c:HorizontalLayout OnClickAction="$Workflow.DoRefresh($True,$encashmentAttribute.Text)">
-				<c:VerticalLayout>
-					<c:TextView Text="#spread#" CssClass="caption_row"></c:TextView>
+					<c:EditText Id="encAmount" Text="$FormatSum(null, $workflow.encashment.EncashmentAmount)" CssClass="main_row" Keyboard="numeric" OnChange="$CheckUserInput()" Placeholder="—" OnLostFocus="$SaveSum()" Mask="#enc_amount_regexp#"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -126,6 +119,7 @@
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
+			<c:HorizontalLayout CssClass="end_of_block" />
 
 		</c:ScrollView>
 

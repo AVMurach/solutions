@@ -1,20 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="CreateOutlet.css">
 
+	<s:Push Id="contractor" Value="$param1"></s:Push>
+	<s:Push Id="single" Value="$param2"></s:Push>
+
 	<c:DockLayout>
 
 		<c:DockLayout CssClass="top_navigator">
+			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$SaveContractorAndBack($contractor)" SubmitScope="description;INN;KPP;phone_number;email">
+				<c:Image />
+				<s:If Test="$single">
+					<c:TextView Text="@back" />
+				</s:If>
+				<s:Else>
+					<c:TextView Text="#list#" />
+				</s:Else>
+			</c:DockLayout>
+			<c:DockLayout Id="btnForward" CssClass="btn_forward" />
 			<c:HorizontalLayout>
-				<c:TextView Text="#details#" />
+				<c:TextView Text="#contractor#" />
 			</c:HorizontalLayout>
 		</c:DockLayout>
 
 		<c:HorizontalLine />
-
-		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$SaveAndBack($outlet)">
-			<c:TextView Text="#client#"></c:TextView>
-		</c:HorizontalLayout>
-		<c:HorizontalLine CssClass="b_line" />
 
 		<c:ScrollView Id="grScrollView">
 
@@ -23,8 +31,16 @@
 
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(legal_name, 1)">
 				<c:VerticalLayout>
+					<c:TextView Text="#description#" CssClass="description_row"></c:TextView>
+					<c:EditText Value="$contractor.Description" Placeholder="—" CssClass="main_row" Id="description" Required="true"/>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(legal_name, 1)">
+				<c:VerticalLayout>
 					<c:TextView Text="#legal_name#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$outlet.LegalName" Placeholder="—" CssClass="main_row" Id="legal_name" />
+					<c:EditText Value="$contractor.LegalName" Placeholder="—" CssClass="main_row" Id="legal_name" />
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -32,16 +48,16 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(legal_address, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#legal_address#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$outlet.LegalAddress" Placeholder="—" CssClass="main_row" Id="legal_address"/>
+					<c:EditText Value="$contractor.LegalAddress" Placeholder="—" CssClass="main_row" Id="legal_address"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
 			<c:HorizontalLayout CssClass="grid">
-				<c:VerticalLayout OnClickAction="$SelectOwnership($OwnershipType)">
+				<c:VerticalLayout Id="ownership_vl" OnClickAction="$SelectOwnership($OwnershipType, $contractor)">
 					<c:TextView Text="#ownership#" CssClass="description_row"></c:TextView>
-					<s:If Test="$NotEmptyRef($outlet.OwnershipType)">
-						<c:TextView Id="OwnershipType" Text="#{$outlet.OwnershipType.Description}#" CssClass="main_row"/>
+					<s:If Test="$NotEmptyRef($contractor.OwnershipType)">
+						<c:TextView Id="OwnershipType" Text="#{$contractor.OwnershipType.Description}#" CssClass="main_row"/>
 					</s:If>
 					<s:Else>
 						<c:TextView Id="OwnershipType" Text="—" CssClass="main_row"/>
@@ -53,7 +69,7 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(INN, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#inn#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$outlet.INN" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="INN" />
+					<c:EditText Value="$contractor.INN" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="INN" Mask="#inn_regexp#"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -61,7 +77,7 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(KPP, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#kpp#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$outlet.KPP" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="KPP" />
+					<c:EditText Value="$contractor.KPP" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="KPP" Length="9" Mask="#kpp_regexp#"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -69,7 +85,7 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(phone_number, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#phone#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$outlet.PhoneNumber" Placeholder="—" Keyboard="numeric" CssClass="main_row" Id="phone_number" />
+					<c:EditText Value="$contractor.PhoneNumber" Placeholder="—" Keyboard="phone" CssClass="main_row" Id="phone_number" Mask="#phone_regexp#"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -77,7 +93,7 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(email, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#email#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$outlet.Email" Placeholder="—" CssClass="main_row" Id="email" />
+					<c:EditText Value="$contractor.Email" Placeholder="—" CssClass="main_row" Keyboard="email" Id="email" Mask="#email_regexp#"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
@@ -85,10 +101,12 @@
 			<c:HorizontalLayout CssClass="grid" OnClickAction="$FocusOnEditText(website, 1)">
 				<c:VerticalLayout>
 					<c:TextView Text="#web_site#" CssClass="description_row"></c:TextView>
-					<c:EditText Value="$outlet.WebSite" Placeholder="—" CssClass="main_row" Id="website"/>
+					<c:EditText Value="$contractor.WebSite" Placeholder="—" CssClass="main_row" Id="website"/>
 				</c:VerticalLayout>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="end_of_block" />
 
 		</c:ScrollView>
 

@@ -29,3 +29,12 @@
 	color: #fff;
 	font: 100% Arial;
 }
+
+.main_row_price_list {
+	color: #8e8e93;
+	width: 100%;
+	height: 35%;
+	white-space: nowrap;
+	placeholder-color: #2d89cf;
+	font: 42% Arial;
+}

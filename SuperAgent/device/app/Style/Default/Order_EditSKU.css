@@ -28,18 +28,6 @@
 	horizontal-align: central;
 }
 
-.clickable {
-	width: 60%;
-	dock-align: left;
-	margin-left: 0%;
-}
-
-.clickable TextView {
-	height: 100%;
-	width: 100%;
-	margin-left: 2.7mm;
-}
-
 .swipe_history{
 	height: 6.7mm;
 }

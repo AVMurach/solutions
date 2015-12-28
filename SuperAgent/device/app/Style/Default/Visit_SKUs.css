@@ -24,6 +24,10 @@
 	padding-left: 2.4mm;
 }
 
+.select_zone TextView{
+	font: 2.1mm Arial;
+}
+
 .description_row {
 	width: 60%;
 	height: 40%;
@@ -302,13 +306,4 @@
 	background-image: url(no_image_small.png);
 	margin-top: 22%;
 	horizontal-align: center;
-}
-
-.no_contacts {
-	height: 10mm;
-	width: 100%;
-	margin-top: 2mm;
-	text-align: center;
-	font: 2.2mm Arial;
-	color: #000;
 }

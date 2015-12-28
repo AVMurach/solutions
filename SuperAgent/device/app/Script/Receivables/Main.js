@@ -1,4 +1,4 @@
-var amount;
+﻿var amount;
 var overdueAmount;
 var editingItem;
 //var receivablesRecdset;
@@ -106,7 +106,7 @@ function CreateEncashmentItem(encashment, receivableDoc) {
 
 function SpreadEncasmentAndRefresh(encashment, outlet, receivables) {
 
-	SaveSum();
+	SaveSum($.encAmount);
 	receivables = GetReceivables(outlet);
 
 	var sumToSpread = encashment.EncashmentAmount;
@@ -183,14 +183,17 @@ function FormatAmount(control) {
 		control.Text = String.Format("{0:F2}", control.Text);
 }
 
-function SaveSum(control) {
+function SaveSum(sender) {
 	var enc = $.workflow.encashment.GetObject();
-	if ($.encAmount.Text == '.') {
-		$.encAmount.Text = '';
+	if (sender.Text == '.') {
+		sender.Text = '';
+	}
+	else if (TrimAll(sender.Text) == TrimAll('-')){
+		sender.Text = "";
 	}
 	else {
-		enc.EncashmentAmount = ToDecimal($.encAmount.Text);
-		$.encAmount.Text = enc.EncashmentAmount;
+		enc.EncashmentAmount = ToDecimal(sender.Text);
+		sender.Text = enc.EncashmentAmount;
 		enc.Save();
 	}
 }

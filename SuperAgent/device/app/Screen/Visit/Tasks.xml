@@ -81,6 +81,8 @@
 
 			</s:Iterator>
 
+			<c:HorizontalLayout CssClass="end_of_block" />
+
 		</c:ScrollView>
 
 	</c:VerticalLayout>
