@@ -448,7 +448,7 @@ function CreateQuestionnareTable(outlet) {
 			"FROM Document_Questionnaire Q " +
 			"LEFT JOIN Document_Questionnaire_Selectors S ON S.Ref=Q.Id " +
 			"LEFT JOIN USR_OutletAttributes O ON S.Selector=O.Selector AND S.AdditionalParameter=O.AdditionalParameter " +
-			"WHERE S.Selector IS NULL OR (S.Selector != 'Catalog_Territory' AND S.Selector != 'Catalog_Region') " +
+			"WHERE S.Selector IS NULL OR S.Value = REPLACE(@outlet, ('@ref[Catalog_Outlet]:'), '') " + //"WHERE S.Selector IS NULL OR (S.Selector != 'Catalog_Territory' AND S.Selector != 'Catalog_Region') " +
 
 			"UNION " +  //'Catalog_Territory' select
 			"SELECT DISTINCT S.Ref AS Id, 1 " +
