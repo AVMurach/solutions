@@ -28,23 +28,18 @@ function OnWorkflowStart(name) {
 		GPS.StartTracking();
 		Console.WriteLine("2");
 	}
-
-	if (name == "Visit") {
+//AVMurach+
+	if (name == "Visit" || name=="CreateOrder") {
 
 			CreateQuestionnareTable($.outlet);
 			CreateQuestionsTable($.outlet);
 			CreateSKUQuestionsTable($.outlet);
 			
-		//AVMurach+
 			CreateRecOrderVKTable($.outlet);
-		//AVMurach-
+		
 			SetSteps($.outlet);
 	}
 	
-//AVMurach+
-	if (name == "CreateOrder") {
-			CreateRecOrderVKTable($.outlet);			
-	}
 //AVMurach-
 
 	Variables["workflow"].Add("name", name);
