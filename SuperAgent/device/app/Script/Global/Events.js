@@ -569,10 +569,10 @@ function CreateRecOrderVKTable(outlet) {
 
 	var query = new Query(tableCommand +
 					
-			"SELECT SSW.SKU AS SSWRef, MAX(CASE WHEN SSW.Week = CAST(strftime('%W', date(datetime('now'))) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1,	" +
-			"		MAX(CASE WHEN SSW.Week = CAST(strftime('%W', date(datetime('now'), '-7 day')) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
-			"		MAX(CASE WHEN SSW.Week = CAST(strftime('%W', date(datetime('now'), '-14 day')) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3,	" +
-			"		MAX(CASE WHEN SSW.Week = CAST(strftime('%W', date(datetime('now'), '-21 day')) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last4, " +
+			"SELECT SSW.SKU AS SSWRef, MAX(CASE WHEN CAST(SSW.Week as integer) = CAST(strftime('%W', date(datetime('now'))) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last1,	" +
+			"		MAX(CASE WHEN CAST(SSW.Week as integer) = CAST(strftime('%W', date(datetime('now'), '-7 day')) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last2, " +
+			"		MAX(CASE WHEN CAST(SSW.Week as integer) = CAST(strftime('%W', date(datetime('now'), '-14 day')) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last3,	" +
+			"		MAX(CASE WHEN CAST(SSW.Week as integer) = CAST(strftime('%W', date(datetime('now'), '-21 day')) as integer) THEN ifNull(SSW.Cnt,0) ELSE 0 END) AS last4, " +
 			"		strftime('%W', date(datetime('now'))) AS week1, " +
 			"		strftime('%W', date(datetime('now'), '-7 day')) AS week2, " +
 			"		strftime('%W', date(datetime('now'), '-14 day')) AS week3, " +

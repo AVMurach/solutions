@@ -135,6 +135,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
 
         query.AddParameter("outlet", $.workflow.outlet);
         query.AddParameter("visit", $.workflow.visit);
+        query.AddParameter("assignment", DB.Current.Constant.SKUQuestions.Stock);
 
         var recOrderSort = " OrderRecOrder DESC, ";
 
