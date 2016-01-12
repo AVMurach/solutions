@@ -7,7 +7,7 @@
 	<c:DockLayout>
 
 		<c:HorizontalLayout Id="btnCancel" CssClass="bottom_btn">
-			<c:VerticalLayout Id="btnBack" OnEvent="Back" OnClickAction="$DoBack()">
+			<c:VerticalLayout Id="btnBack" OnEvent="Back" OnClickAction="$MyDoBack()">
 				<c:TextView Text="#back#" CssClass="left_tv"></c:TextView>
 			</c:VerticalLayout>
 			<!-- <c:VerticalLayout Id="btnAdd" OnEvent="Forward" OnClickAction="$DoAction(Select, null, $outlet)">

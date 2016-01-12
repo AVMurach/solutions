@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
 	<resource>
-		<version version="502.4.0.120"></version>
+		<version version="502.4.0.121"></version>
 	</resource>
 	<client>
 		<supportedCore version="2.3.4.92" />

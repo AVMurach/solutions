@@ -20,4 +20,13 @@ function SetObj(distr, outlet){
 	Workflow.Back();
 }
 
+function MyDoBack(distr, outlet){
+	
+	if (Variables.Exists("setDistr"))
+		$.Remove("setDistr");
+	$.AddGlobal("setDistr", distr);
+		
+	Workflow.Back();
+}
+
 
