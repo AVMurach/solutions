@@ -390,35 +390,65 @@ function CreateItemAndShow(control, sku, index) {
 
 
 
+function AssignSKUValue(control, question) {
+	doRefresh = true;
+	
+	//AVMurach+
+		var textText = control.Text;
+		var textCount = StrLen(textText);
+		if(textCount > 100){
+			control.Text = Mid(textText, 1, 100);
+			Dialog.Message("Текст не должен превышать 100 символов");
+			return 0;
+		}else{
+			CreateVisitQuestionValueIfNotExists(question, control.Text, false);
+		}		
+	//AVMurach-
+	
+	
+}
+
 function CreateVisitSKUValueIfNotExists(control, sku, question, isInput) {
 	
 //	if (isInput=='true' && (control.Text=="—" || TrimAll(control.Text)==""))
 //		return null;
 	
-	doRefresh = true;
+	//AVMurach+
+	var textText = control.Text;
+	var textCount = StrLen(textText);
+	if(textCount > 100){
+		control.Text = Mid(textText, 1, 100);
+		Dialog.Message("Текст не должен превышать 100 символов");
+		return 0;
+	}else{
 	
-	var query = new Query();
-	query.Text = "SELECT Id FROM Document_Visit_SKUs WHERE SKU=@sku AND Question=@question AND Ref=@ref";
-	query.AddParameter("ref", $.workflow.visit);
-	query.AddParameter("question", question);
-	query.AddParameter("sku", sku);
-	var skuValue = query.ExecuteScalar();
+		doRefresh = true;
+		
+		var query = new Query();
+		query.Text = "SELECT Id FROM Document_Visit_SKUs WHERE SKU=@sku AND Question=@question AND Ref=@ref";
+		query.AddParameter("ref", $.workflow.visit);
+		query.AddParameter("question", question);
+		query.AddParameter("sku", sku);
+		var skuValue = query.ExecuteScalar();
+		
+		if (skuValue == null){		
+			skuValue = DB.Create("Document.Visit_SKUs");
+			skuValue.Ref = $.workflow.visit;
+			skuValue.SKU = sku;
+			skuValue.Question = question;
+		}
+		else
+			skuValue = skuValue.GetObject();
+		skuValue.Answer = control.Text;
+		skuValue.AnswerDate = DateTime.Now;
+		skuValue.Save();
+		
+		setScroll = false;
+		
+		return skuValue.Id;
+	}		
+	//AVMurach-
 	
-	if (skuValue == null){		
-		skuValue = DB.Create("Document.Visit_SKUs");
-		skuValue.Ref = $.workflow.visit;
-		skuValue.SKU = sku;
-		skuValue.Question = question;
-	}
-	else
-		skuValue = skuValue.GetObject();
-	skuValue.Answer = control.Text;
-	skuValue.AnswerDate = DateTime.Now;
-	skuValue.Save();
-	
-	setScroll = false;
-	
-	return skuValue.Id;
 }
 
 function GetSnapshotText(text) {
