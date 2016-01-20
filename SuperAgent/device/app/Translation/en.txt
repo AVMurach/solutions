@@ -1,337 +1,347 @@
-﻿outlet_description	Outlet description
-forward		Next
-back		Back
-summary		Summary
-caps_summary	SUMMARY
-new			New
-client		Client
-clients		Clients
-newClient	New client
-main		MAIN
-mainInfo	MAIN INFORMATION
-mainData	MAIN DATA
-additionally	ADDITIONALLY
- todo		ToDo
-stock		Stock
-schedule	Schedule
-order		Order
-visit		Visit
-newVisit	New visit
-visits		Visits
-incompletedVisits	INCOMPLETED VISITS
-completedVisits		COMPLETED VISITS
-info		About
-planVisit	Planned
-unplanned	Unplanned
-outlets		Outlets
-targets		Targets
-target		Target
-settings	Settings
-sync		Sync
-syncPhoto	Sync photo
-search		Search
-outlet		Outlet
-outlet_class	Outlet class
-outlet_type	Outlet type
-distributor	Distributor
-answer		Answer
-typeanswer	Insert answers..
-username	User name
-password	Password
-cancel		Cancel
-Ok		Ok
-discard		Discard
-apply		Apply
-parameters	Parameters
-parameter	Parameter
-select_answer	SELECT VALUE..
-select_answer_low	Select value..
-save		Save
-no_questions	No questions
-empty_field	Field couldn't be cleaned
-questions	Questions
-questAnswers	Questionnairy
-commentary	Commentary
-insert_answer	INSERT VALUE..
-amount		Amount
-skuInOrder	ADDED SKUs
-sku			SKU
-distribution	Distribution
-quantity	Quantity
-price		Price
-edit		Edit
-insert_text	Insert text..
-totalamount	Total amount
-orderSum	Order amount
-price2		Price:
-orderHistory	ORDER HISTORY
-kpi			KPI
-tasks		Tasks
-task		Task
-todoDone	Tasks done
-execute		Execute
-retrieve	Retrieve
-newTasks	NEW TASKS
-executedtask	EXECUTED TASK
-description	Description
-result		Result
-plandate	Plan date
-date		Date
-distributor	Distributor
-outletType	Outlet type
-outletClass	Outlet class
-available	Available
-facing		Facing
-stock		Stock
-price		Price
-markUp		Mark Up
-outOfStock	Out Of Stock
-false		False
-true		True
-done		Done
-ready		Done
-pcs			pcs.
-orders		Orders
-newOrder	Create new order
-add			Add
-discount	Discount
-OrderDiscount	Order discount, %
-OrderMarkUp	Order markup , %
-ReturnDiscount	Return discount, %
-ReturnMarkUp	Return markup , %
-orderDiscountReset	Discounts are recalculated
-noNumber	No number
-showImage	Show image
-hideImage	Hide image
-markUp		MarkUp
-unit		Unit
-baseUnit	Base unit
-selectUnit	Select unit:
-logo		logoEn
-packUnit	Pack unit
-refreshScreen	Refresh screen
-no_tasks	No tasks
-documentSum	Document sum
-document	Document
-receivables	Receivables
-receivable	Receivable
-byDocs		DOCUMENTS
-encashment	Encashment
-sum			Sum
-encashmentSum	Encashment sum
-spreadOnDocuments	Spread on documents
-spread		Spread
-docNumber	Document number
-receivableAmount	RECEIVABLE AMOUNT
-encashmentAmount	Encashment amount
-nameSurname	Name, surname
-maximumAmount	Amount limit
-NoLimit		No limit
-deleteItem	Delete this item
-startTime	Start time
-newOutlet	Create new outlet
-messageNulls	There shouldn't be empty fields.
-countPrice	Count price
-address		Address
-description	Description
-coordinates	Coordinates
-set			Set
-coordinatesAreSet	Coordinates Are Set
-noCoordinates	Coordinates aren't set
-setVisitCoordinates		Retry to set coordinates?
-setCoords	Set coordinates
-setCoordinates	Set outlet coordinates by current location?
-location	Set outlet location
-locationSetFailed	Location set is failed.
-saveChanges	Save changes?
-map			Map
-showOnMap	Show on map
-no_visitPlans	No visits to display
-current		Current
-couldnt_be_cleaned	Field couldn't be cleaned
-priceList	Price list
-isntSelected	Isn't selected
-OrderSKUWillRevised	SKU list has been revised
-features	Features
-noPriceLists	No Price Lists
-emptyList	List is empty
-impossibleToDelete	Impossible to delete, order is already in base
-impossibleToEdit	Impossible to edit, order is already in base
-valueList	Value list
-deliveryDate	Delivery date
-enterDateTime	Enter date, time
-noImage	No image found
-of	of
-information	Information
-snapshot	Snapshot
-noSnapshot	No snapshot
-snapshotAttached	Snapshot attached
-clickToInsert	Click to insert
-YES		Yes
-NO		No
-filter	Filter
-clearFilter		Clear filter?
-groups	Groups
-brands	Brands
-brand	Brand
-impossibleToCreateVisit	Impossible to create plan visit until coordinates aren't set. Retry to get location?
-fillNoOrderReason	Reason for not taking the order should be filled.
-reasonForEmptyOrder	Reason for not taking the order
-fillInVisitReason	Reason of visit should be filled
-visitReason	Visit reason
-debt	Debt
-orderInfo	ORDER INFORMATION
-orderInfoSmall	Order information
-visitTotal	Visit total
-synchronizationData	SYNCHRONIZATION OF DATA
-synchronizationPhoto	SYNCHRONIZATION OF PHOTOS
-lastSync	Last synchronization
-synchronize	Synchronize
-vpVisits	visits
-vpPerformed	performed
-further	further
-scheduled	scheduled
-planned	planned
-vpUnplanned	unplanned
-amountOfOrdersForToday	amount of orders for today
-programmingCollectionForToday	encashment for today
-accountsReceivables	account receivables
-unknown	unknown
-list	List
-turnaroundTime	Turnaround time
-noteAsExecuted	Note as executed
-noteAsNew	Note as new
-noDescriGiven	(no description given)
-error	Error
-at	at
-currency	CAD
-Synchronization_has_not_been_performed	Synchronization has not been performed
-delete	Delete
-details		Details
-contacts	Contacts
-contact		Contact
-newContact	New contact
-legal_name	Legal name
-legal_address	Legal address
-ownership		Ownership type
-inn			INN
-kpp			KPP
-phone		Phone number
-email		E-mail
-web_site	Web-site
-stockPlace	Stock
-total_receivable	Total sum:
-overdue		Overdue:
-overdueSum	[overdue]
-allStocks	All stocks
-nextVisitDate	Next visit date
-incorrect		Incorrect
-contactName		Contact name
-position		Position
-visitdate		Visit date
-alreadyOrdered	already in order
-repeat		Repeat
-nonregular	Non-regular
-regular		Regular
-requiredLeft	Reqired answers left:
-recommended		recommend.
-developer	DEVELOPER
-bitMobile	BIT.MOBILE
-bitmobileDesc	BIT.MOBILE is a division of the First Bit. We are developing mobile solutions for business.
-about		ПОДРОБНЕЕ О ПРИЛОЖЕНИИ
-version		Версия
-superDescription	СуперАгент — мобильное решение для сбора заказов, анкетирования и мерчандайзинга, контроля работы сотрудников.
-support		Тех.поддержка
-idea		Предложить идею
-agreement		Используя приложение вы принимаете условия лицензионного соглашения.
-icons		При создании приложения использованы иконки Icons8. Сайт разработчика icons8.com
-firstBIT	Первый БИТ — эффективные решения для вашего бизнеса. Лидер на рынке автоматизации 1С с 17 летним опытом!
-webSite		Сайт разработчика
-others		Другие приложения
-clear_coord		Clear
-refresh		Refresh
-copy		Copy
-deleteImage		Delete this image?
-outletSnapshots	Outlet snapshots
-addFromGallery	Add from gallery
-makeSnapshot	Make snapshot
-notAvailable	Snapshot isnt't available
-clearValue		Clear value
-setDate			Set date
-choose_action	Choose action:
-skuAdd			Adding SKU
-skuDetail		Detail
-skuList			LIST OF SKUs
-OrderskuWillBeDeleted	Part of SKUs will be removed from order. Continue?
-logout			Logout
-logoutQuery		When you exit will delete all data
-noLogout		Require syncronization
-cancel			Cancel
-logoutConfirm	Logout
-visitReason		"Visit reason" field should be filled
-noOrder			"No order reason" field should be filled
-notAvailableShort	N/A
-orderParameters	ORDER PARAMETERS:
-status	Статус
-Active	Active
-Potential	Potential
-Closed	Closed
-show			Show image
-snapshot			Snapshot
-reshot			Make another snapshot
-editChange		Edit
-returns			Returns
-return			Return
-returnInfo		RETURN INFORMATION
-returnSum		Return sum
-skuInReturn		Returning SKUs
-returnInfoSmall	Информация о заказе
-alreadyReturned	already in return
-ReturnskuWillBeDeleted	Part of SKUs will be removed from return. Continue?
-ReturnSKUWillRevised	SKU list has been revised
-send			Send log
-success			Данные успешно отправлены
-imageNotAvailable	Image not available now
-noSuccess		Произошла ошибка во время отправки. Данные не отправлены
-errorMessage	Error message
-sending			Sending..
-editSKU			Edit
-returnParameters	RETURN PARAMETERS
-returnHistory	RETURN HISTORY
-ZAO				ZAO
-OOO				OOO
+﻿about		ПОДРОБНЕЕ О ПРИЛОЖЕНИИ		
+accountsReceivables	account receivables			
+Active	Active			
+add			Add	
+addFromGallery	Add from gallery			
+additionally	ADDITIONALLY			
+address		Address		
+agreement		Используя приложение вы принимаете условия лицензионного соглашения.		
+allStocks	All stocks			
+alreadyOrdered	already in order			
+alreadyReturned	already in return			
+amount		Amount		
+amountOfOrdersForToday	amount of orders for today			
+answer		Answer		
+apply		Apply		
+at	at			
+available	Available			
+autoFillOrder	Fill in the order automatically?
+back		Back		
+baseUnit	Base unit			
+bitMobile	BIT.MOBILE			
+bitmobileDesc	BIT.MOBILE is a division of the First Bit. We are developing mobile solutions for business.			
+brand	Brand			
+brands	Brands			
+byDocs		DOCUMENTS		
+cancel		Cancel		
+cancel			Cancel	
+caps_summary	SUMMARY			
+choose_action	Choose action:			
+clear_coord		Clear		
+clearFilter		Clear filter?		
+clearValue		Clear value		
+clickToInsert	Click to insert			
+client		Client		
+clients		Clients		
+Closed	Closed			
+commentary	Commentary			
+completedVisits		COMPLETED VISITS		
+contact		Contact		
+contactName		Contact name		
+contacts	Contacts			
+contractor		Contarctor		
+contractors		Contarctors		
+coordinates	Coordinates			
+coordinatesAreSet	Coordinates Are Set			
+copy		Copy		
+couldnt_be_cleaned	Field couldn't be cleaned			
+countPrice	Count price			
+currency	CAD			
+current		Current		
+date		Date		
+debt	Debt			
+delete	Delete			
+deleteImage		Delete this image?		
+deleteItem	Delete this item			
+deliveryDate	Delivery date			
+description	Description			
+description	Description			
+details		Details		
+developer	DEVELOPER			
+discard		Discard		
+discount	Discount			
+distribution	Distribution			
+distributor	Distributor			
+distributor	Distributor			
+docNumber	Document number			
+document	Document			
+documentSum	Document sum			
+done		Done		
+edit		Edit		
+editChange		Edit		
+editSKU			Edit	
+email		E-mail		
+email_regexp	^(([а-яА-ЯёЁa-zA-Z0-9_-]+\.)*[а-яА-ЯёЁa-zA-Z0-9_-]+@[а-яА-ЯёЁa-zA-Z0-9_-]+(\.[а-яА-ЯёЁa-zA-Z0-9_-]+)*\.[а-яА-ЯёЁa-zA-Z]{2,6})?$			
+empty_field	Field couldn't be cleaned			
+emptyContactOwner	Contact owner field is empty			
+emptyList	List is empty			
+enc_amount_regexp	^(\d{1,8}((\.|,)\d{1,2})?)?$			
+encashment	Encashment			
+encashmentAmount	Encashment amount			
+encashmentSum	Encashment sum			
+end	Continue			
+endPlanTime		End Plan date		
+enterDateTime	Enter date, time			
+error	Error			
+errorMessage	Error message			
+execute		Execute		
+executed		executed		
+executedtask	TODAY EXECUTED			
+executionDate	Fact execution			
+facing		Facing		
+false		False		
+features	Features			
+fillInVisitReason	Reason of visit should be filled			
+fillNoOrderReason	Reason for not taking the order should be filled.			
+filter	Filter			
+firstBIT	Первый БИТ — эффективные решения для вашего бизнеса. Лидер на рынке автоматизации 1С с 17 летним опытом!			
+forward		Next		
+further	further			
+go_back	Back			
+groups	Groups			
+hideImage	Hide image			
+icons		При создании приложения использованы иконки Icons8. Сайт разработчика icons8.com		
+idea		Предложить идею		
+imageNotAvailable	Image not available now			
+impossibleToCreateVisit	Impossible to create plan visit until coordinates aren't set. Retry to get location?			
+impossibleToDelete	Impossible to delete, order is already in base			
+impossibleToEdit	Impossible to edit, order is already in base			
+incompletedVisits	INCOMPLETED VISITS			
+incorrect		Incorrect		
+info		About		
+information	Information			
+inn			INN	
+inn_regexp		^((\d{10})|(\d{12})|)?$		
+insert_answer	INSERT VALUE..			
+insert_text	Insert text..			
 IP				IP
+isntSelected	Isn't selected			
+kpi			KPI	
+kpp			KPP	
+kpp_regexp		^(\d{9}|)?$		
+lastSync	Last synchronization			
+legal_address	Legal address			
+legal_name	Legal name			
+lessStart	Дата завершения не может быть меньше даты начала
+lessToday	Дата начала не может быть меньше текущей
+list	List			
+location	Set outlet location			
+locationSetFailed	Location set is failed.			
+logo		logoEn		
+logout			Logout	
+logoutConfirm	Logout			
+logoutQuery		When you exit will delete all data		
+main		MAIN		
+mainData	MAIN DATA			
+mainInfo	MAIN INFORMATION			
+makeSnapshot	Make snapshot			
+map			Map	
+markUp		Mark Up		
+markUp		MarkUp		
+maximumAmount	Amount limit			
+messageNulls	There shouldn't be empty fields.			
+nameSurname	Name, surname			
+new			New	
+newClient	New client			
+newContact	New contact			
+newOrder	Create new order			
+newOutlet	Create new outlet			
+newPrice	New price			
+newTask			New task	
+newTasks	NEW TASKS			
+newVisit	New visit			
+nextVisitDate	Next visit date			
 NKO				NKO
+NO		No		
+no_contacts	NO CONTACTS			
+no_questions	No questions			
+no_questions_list	NO QUESTIONS			
+no_orders		NO ORDERS
+no_returns		NO RETURNS
+no_tasks	No tasks			
+no_visitPlans	No visits to display			
+noContractors	No contractors			
+noContractorsMessage	This outlet has no contractors			
+noCoordinates	Coordinates aren't set			
+noDescriGiven	(no description given)			
+noImage	No image found			
+NoLimit		No limit		
+noLogout		Require syncronization		
+nonregular	Non-regular			
+noNumber	No number			
+noOrder			No order reason field should be filled	
+noPriceLists	No Price Lists			
+noSnapshot	No snapshot			
+noSuccess		Произошла ошибка во время отправки. Данные не отправлены		
+notAvailable	Snapshot isnt't available			
+notAvailableShort	N/A			
+noteAsExecuted	Note as executed			
+noteAsNew	Note as new		
+notLimited		unlimited	
 OAO				OAO
+of	of			
+Ok		Ok		
+OOO				OOO
 OP				OP
+order		Order		
+OrderDiscount	Order discount, %			
+orderDiscountReset	Discounts are recalculated			
+orderHistory	ORDER HISTORY			
+orderInfo	ORDER INFORMATION			
+orderInfoSmall	Order information			
+OrderMarkUp	Order markup , %			
+orderParameters	ORDER PARAMETERS:			
+orders		Orders		
+OrderskuWillBeDeleted	Part of SKUs will be removed from order. Continue?			
+OrderSKUWillRevised	SKU list has been revised			
+orderSum	Order amount			
+others		Другие приложения		
+outlet		Outlet		
+outlet_class	Outlet class			
+outlet_description	Outlet description			
+outlet_short	Outlet			
+outlet_territory Territory				
+outlet_type	Outlet type			
+outletClass	Outlet class			
+outletContacts	OUTLET CINTACTS			
+outlets		Outlets		
+outletSnapshots	Outlet snapshots			
+outletType	Outlet type			
+outOfStock	Out Of Stock			
+overdue		Overdue:		
+overdueSum	[overdue]			
+owner			Contact owner	
+ownership		Ownership type		
+packUnit	Pack unit			
+parameter	Parameter			
+parameters	Parameters			
+partner			Partner	
+partnerContacts	PARTNER CONTACTS			
+password	Password			
+pcs			pcs.	
+phone		Phone number		
+phone_regexp	^(((8|\+7)[\- ]?)?(\(?\d{3,4}\)?[\- ]?)?[\d\- ]{5,10})?$			
+plandate	Plan date			
+planned	planned			
+planVisit	Planned			
+position		Position		
+Potential	Potential			
+price		Price		
+price		Price		
+price2		Price:		
+priceList	Price list			
+programmingCollectionForToday	encashment for today			
+quantity	Quantity			
+questAnswers	Questionnairy			
+questions	Questions			
+ready		Done		
+reasonForEmptyOrder	Reason for not taking the order			
+receivable	Receivable			
+receivableAmount	RECEIVABLE AMOUNT			
+receivables	Receivables			
+recommended		recommend.		
+refresh		Refresh		
+refreshScreen	Refresh screen			
+regular		Regular		
+repeat		Repeat		
+requiredFieldsLeft	Required fields left			
+requiredLeft	Reqired answers left:			
+reshot			Make another snapshot	
+result		Result		
+retrieve	Retrieve			
+return			Return	
+ReturnDiscount	Return discount, %			
+returnHistory	RETURN HISTORY			
+returnInfo		RETURN INFORMATION		
+returnInfoSmall	Информация о заказе			
+ReturnMarkUp	Return markup , %			
+returnParameters	RETURN PARAMETERS			
+returns			Returns	
+ReturnskuWillBeDeleted	Part of SKUs will be removed from return. Continue?			
+ReturnSKUWillRevised	SKU list has been revised			
+returnSum		Return sum		
+save		Save		
+saveChanges	Save changes?			
+schedule	Schedule			
+scheduled	scheduled			
+search		Search		
+select_answer	SELECT VALUE..			
+select_answer_low	Select value..			
+selectOutlet	Select outlet			
+selectOwner		Owner isn't selected		
+selectUnit	Select unit:			
+send			Send log	
+sending			Sending..	
+set			Set	
+setCoordinates	Set outlet coordinates by current location?			
+setCoords	Set coordinates			
+setDate			Set date	
+settings	Settings			
+setVisitCoordinates		Retry to set coordinates?		
+show			Show image	
+showImage	Show image			
+showOnMap	Show on map			
+sku			SKU	
+skuAdd			Adding SKU	
+skuDetail		Detail		
+skuInOrder	ADDED SKUs			
+skuInReturn		Returning SKUs		
+skuList			LIST OF SKUs	
+snapshot	Snapshot			
+snapshot			Snapshot	
+snapshotAttached	Snapshot attached			
+spread		Spread		
+spreadOnDocuments	Spread on documents			
+startPlanTime	Start Plan date			
+startTime	Start time			
+status	Статус			
+stock		Stock		
+stock		Stock		
+stockPlace	Stock			
+success			Данные успешно отправлены	
+sum			Sum	
+sumDiscount	Sum discount			
+sumMarkUp	Sum markup			
+summary		Summary		
+superDescription	СуперАгент — мобильное решение для сбора заказов, анкетирования и мерчандайзинга, контроля работы сотрудников.			
+support		Тех.поддержка		
+sync		Sync		
+Synchronization_has_not_been_performed	Synchronization has not been performed			
+synchronizationData	SYNCHRONIZATION OF DATA			
+synchronizationPhoto	SYNCHRONIZATION OF PHOTOS			
+synchronize	Synchronize			
+syncPhoto	Sync photo			
+target		Target		
+targets		Targets		
+task		Task		
+tasks		Tasks		
+todo		ToDo		
+todoDone	Tasks done			
+total_receivable	Total sum:			
+totalamount	Total amount			
+true		True		
 TSJ				TSJ
-outlet_territory Territory
-no_contacts	NO CONTACTS
-contractors		Contarctors
-contractor		Contarctor
-outletContacts	OUTLET CINTACTS
-partnerContacts	PARTNER CONTACTS
-partner			Partner
-owner			Contact owner
-emptyContactOwner	Contact owner field is empty
-noContractors	No contractors
-noContractorsMessage	This outlet has no contractors
-phone_regexp	^(((8|\+7)[\- ]?)?(\(?\d{3,4}\)?[\- ]?)?[\d\- ]{5,10})?$
-email_regexp	^(([а-яА-ЯёЁa-zA-Z0-9_-]+\.)*[а-яА-ЯёЁa-zA-Z0-9_-]+@[а-яА-ЯёЁa-zA-Z0-9_-]+(\.[а-яА-ЯёЁa-zA-Z0-9_-]+)*\.[а-яА-ЯёЁa-zA-Z]{2,6})?$
-kpp_regexp		^(\d{9}|)?$
-inn_regexp		^((\d{10})|(\d{12})|)?$
-selectOwner		Owner isn't selected
-no_questions_list	NO QUESTIONS
-requiredFieldsLeft	Required fields left
-outlet_short	Outlet
-visit_end_question	After visit ends you will not be allowed to edit it
-end	Continue
-go_back	Back
-sumMarkUp	Sum markup
-sumDiscount	Sum discount
-newPrice	New price
-enc_amount_regexp	^(\d{1,8}((\.|,)\d{1,2})?)?$
-percentageCompletionMatrix	% compl matrix
-stockQue	Остаток
-whoHanded	who handed
-missingItems	Missing items
+turnaroundTime	Turnaround time			
+typeanswer	Insert answers..			
+unit		Unit		
+unknown	unknown			
+unplanned	Unplanned			
+untill			untill	
+username	User name			
+valueList	Value list			
+version		Версия		
+visit		Visit		
+visit_end_question	After visit ends you will not be allowed to edit it			
+visitdate		Visit date		
+visitReason	Visit reason			
+visitReason		Visit reason field should be filled		
+visits		Visits	
+visitsKPI	Plan visits	KPI
+visitTotal	Visit total			
+vpPerformed	performed			
+vpUnplanned	unplanned			
+vpVisits	visits			
+web_site	Web-site			
+webSite		Сайт разработчика		
+YES		Yes		
+ZAO				ZAO

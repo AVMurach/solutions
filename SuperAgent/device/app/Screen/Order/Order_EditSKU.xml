@@ -150,7 +150,7 @@
 
 				<s:Iterator Id="feature" Value="$GetFeatures($sku.Id, $thisDoc.Stock)">
 					<c:DockLayout CssClass="parameter_grid" OnClickAction="$ChangeFeatureAndRefresh($orderitem, $feature.Feature, $showimage)">
-						<s:If Test="$AreEqual($orderitem.Feature, $feature.Feature);">
+						<s:If Test="$AreEqual($orderitem.Feature, $feature.Feature)">
 							<c:Image CssClass="tick" />
 						</s:If>
 						<s:Else>

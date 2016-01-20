@@ -31,6 +31,15 @@
 		</c:DockLayout>
 		<c:HorizontalLine />
 
+		<c:DockLayout Id="Tasks" CssClass="{$styles.Tasks}" OnClickAction="$SwitchScreen(Tasks)">
+			<c:TextView CssClass="menu_text" Text="{$GetTasksDone()} | {$GetTasksSum()}" />
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_todo" />
+				<c:TextView Text="#tasks#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
+
 		<s:If Test="$sessionConst.orderEnabled">
 			<c:DockLayout Id="Orders" CssClass="{$styles.Orders}" OnClickAction="$SwitchScreen(Orders)">
 				<c:TextView CssClass="menu_text" Text="{$GetOrderQty()} | {$GetOrderSumm()}"></c:TextView>
@@ -52,6 +61,14 @@
 			</c:DockLayout>
 			<c:HorizontalLine />
 		</s:If>
+
+		<c:DockLayout Id="KPI" CssClass="{$styles.KPI}" OnClickAction="$SwitchScreen(KPI)">
+			<c:HorizontalLayout>
+				<c:Image CssClass="btn_kpi" />
+				<c:TextView Text="#kpi#"></c:TextView>
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		<c:HorizontalLine />
 
 		<c:DockLayout Id="Sync" CssClass="{$styles.Sync}" OnClickAction="$SwitchScreen(Sync)">
 			<c:TextView Id="syncTitle" CssClass="menu_text" Text="$GetLastSyncTime()"></c:TextView>

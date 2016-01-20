@@ -1,67 +1,78 @@
-﻿function GetExecutedTasks(visit) {
-	var query = new Query("SELECT VT.Id, DT.PlanDate, DT.TextTask, DT.Target FROM Document_Visit_Task VT JOIN Document_Task DT ON VT.TaskRef=DT.Id WHERE VT.Ref=@ref AND VT.Result=@result ORDER BY DT.PlanDate");
-	query.AddParameter("ref", visit);
-	query.AddParameter("result", true);
+function OnLoad(){
+	if ($.workflow.curentStep == "Total_Tasks")
+		$.btnForward.Text = "";
+}
+
+function GetOutlet(){
+	return GlobalWorkflow.GetOutlet();
+}
+
+function HasMenu(){
+	return $.workflow.name == "Main" ? true : false;
+}
+
+function GetExecutedTasks() {
+	var query = new Query;
+
+	var outlet = "";
+
+	if ($.workflow.name == "Visit"){
+		query.AddParameter("outlet", GlobalWorkflow.GetOutlet());
+		outlet = " AND DT.Outlet=@outlet ";
+	}
+
+	query.Text = "SELECT O.Description AS Outlet, DT.Id, DT.TextTask, DT.EndPlanDate, DT.ExecutionDate " +
+		" FROM Document_Task DT " +
+		" JOIN Catalog_Outlet O ON DT.Outlet=O.Id " +
+		" WHERE DT.Status=1 " +
+		" AND DATE(ExecutionDate)=DATE('now', 'localtime') " + outlet +
+		" ORDER BY DT.ExecutionDate desc, O.Description";
 
 	return query.Execute();
 }
 
-function GetNotExecutedTasks(visit) {
-	var q = new Query("SELECT DT.Id, DT.PlanDate, DT.TextTask, DT.Target FROM Document_Task DT LEFT JOIN Document_Visit_Task VT ON DT.Id = VT.TaskRef AND VT.Ref = @ref AND VT.Result=@result WHERE DT.PlanDate >= @planDate AND DT.Outlet = @outlet AND VT.Id IS NULL ORDER BY DT.PlanDate");
-	q.AddParameter("planDate", DateTime.Now.Date);
-	q.AddParameter("outlet", visit.Outlet);
-	q.AddParameter("ref", visit);
-	q.AddParameter("result", true);
+function GetNotExecutedTasks() {
+	var q = new Query;
+
+	var outlet = "";
+
+	if ($.workflow.name == "Visit"){
+		q.AddParameter("outlet", GlobalWorkflow.GetOutlet());
+		outlet = " AND DT.Outlet=@outlet ";
+	}
+
+	q.Text = "SELECT O.Description AS Outlet, DT.Id, DT.TextTask " +
+		" , CASE WHEN DT.EndPlanDate='0001-01-01 00:00:00' OR DT.StartPlanDate IS NULL THEN 2 ELSE 1 END AS DateOrder " +
+		" , CASE WHEN DT.EndPlanDate='0001-01-01 00:00:00' OR DT.StartPlanDate IS NULL THEN @notLimited ELSE DT.EndPlanDate END AS EndPlanDate " +
+		" FROM Document_Task DT " +
+		" JOIN Catalog_Outlet O ON DT.Outlet=O.Id " +
+		" WHERE DT.Status=0 " +
+		" AND (DATE(DT.StartPlanDate)<=DATE('now', 'localtime') OR DT.StartPlanDate IS NULL) " + outlet +
+		" ORDER BY DateOrder, DT.EndPlanDate, O.Description";
+
+		q.AddParameter("notLimited", Translate["#notLimited#"]);
+
 	return q.Execute();
 }
 
-function CompleteTheTask(task, visit) {
-	var visit_task = CreateVisitTaskValueIfNotExists(visit, task);
-	var visit_task_obj = visit_task.GetObject();
-	visit_task_obj.Result = true;
-	visit_task_obj.Save();
-
-	if (Variables.Exists("task"))
-		Workflow.Refresh([ $.task, visit_task_obj.Id ]);
-	else
-		Workflow.Refresh([]);
-}
-
-function CreateVisitTaskValueIfNotExists(visit, task) {
-	var query = new Query("SELECT Id from Document_Visit_Task WHERE Ref == @Visit AND TextTask == @Text");
-	query.AddParameter("Visit", visit);
-	query.AddParameter("Text", task.TextTask);
-	var taskValue = query.ExecuteScalar();
-	if (taskValue == null) {
-		taskValue = DB.Create("Document.Visit_Task");
-		taskValue.Ref = visit;
-		taskValue.TextTask = task.TextTask;
-		taskValue.TaskRef = task;
-		taskValue.Save();
-		taskValue = taskValue.Id;
-	}
-
-	return taskValue;
-}
-
-function RetrieveTask(executedTask) {
-	var task_obj = executedTask.GetObject();
-	task_obj.Result = false;
-	task_obj.Save();
-
-	if (Variables.Exists("task"))
-		Workflow.Refresh([ $.task ]);
-	else
-		Workflow.Refresh([]);
-}
-
 function FormatDate(datetime) {
-	return Format("{0:g}", Date(datetime).Date);
+	if (datetime == Translate["#notLimited#"])
+		return datetime;
+	else
+		return Translate["#untill#"] + " " + Format("{0:d}", Date(datetime).Date);
 }
 
-function GetTargetText(text) {
-	if (String.IsNullOrEmpty(text))
-		return Translate["#noDescriGiven#"];
-	else
-		return text;
+function AddGlobalAndAction(paramValue){
+	GlobalWorkflow.SetCurrentTask(paramValue);
+	Workflow.Action('Select', []);
 }
+
+function BackAction(){
+	if ($.workflow.curentStep == "Visit_Tasks")
+		DoBackTo("Outlet");
+	else if ($.workflow.curentStep == "Total_Tasks")
+		DoBackTo("Total");
+	else
+		DoBack();
+
+}//DoBackTo(Outlet)

@@ -194,7 +194,6 @@ function AddFilter(filterString, filterName, condition, connector) {
 
 function AddToParents(fieldName){
 	parents.push(fieldName);
-	Console.WriteLine(parents.length);
 	return parents;
 }
 

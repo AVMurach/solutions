@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:d="DefaultScope" StyleSheet="KPI.css">
+
+	<c:SwipeHorizontalLayout Id="swipe_layout" Index="1">
+
+		<s:Include File="\Components\SideMenu.xml"/>
+
+		<c:DockLayout>
+
+			<c:DockLayout CssClass="top_navigator">
+				<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnEvent="Back" OnClickAction="$OpenMenu($swipe_layout)">
+					<c:Image CssClass="menuIcon" />
+				</c:DockLayout>
+				<c:DockLayout CssClass="btn_space" />
+				<c:HorizontalLayout>
+					<c:TextView Text="#kpi#" />
+				</c:HorizontalLayout>
+			</c:DockLayout>
+			<c:HorizontalLine/>
+
+			<c:ScrollView>
+
+				<c:VerticalLayout CssClass="blue">
+
+					<c:DockLayout CssClass="short_panel">
+						<c:DockLayout CssClass="grid">
+							<c:VerticalLayout>
+								<c:TextView Text="{$PlanVisitsKPI()} %" CssClass="main_row"></c:TextView>
+								<c:TextView Text="#visitsKPI#" CssClass="description_row" />
+							</c:VerticalLayout>
+						</c:DockLayout>
+					</c:DockLayout>				
+
+				</c:VerticalLayout>
+
+			</c:ScrollView>
+
+		</c:DockLayout>
+
+	</c:SwipeHorizontalLayout>
+
+
+</c:Screen>

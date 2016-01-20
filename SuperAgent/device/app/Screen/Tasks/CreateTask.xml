@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:d="DefaultScope" StyleSheet="CreateOutlet.css">
+
+	<s:Push Id="task" Value="$GetTask()"></s:Push>
+	<s:Push Id="sideStyle" Value="$SetSideStyles()"></s:Push>
+
+		<c:DockLayout>
+
+			<c:DockLayout CssClass="top_navigator">
+				<c:HorizontalLayout>
+					<c:TextView Text="#newTask#" />
+				</c:HorizontalLayout>
+			</c:DockLayout>
+
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout Id="btnCancel" CssClass="bottom_btn">
+				<c:VerticalLayout OnEvent="Back" OnClickAction="$RollbackTask($task)">
+					<c:TextView CssClass="left_tv" Text="#cancel#" />
+				</c:VerticalLayout>
+
+				<s:If Test="$NoRequired()">
+					<c:VerticalLayout Id="btnSave" OnClickAction="$CompleteTask()">
+						<c:TextView CssClass="right_tv" Text="#save#" />
+					</c:VerticalLayout>
+				</s:If>
+				<s:Else>
+					<c:DockLayout Id="btnSave">
+						<c:VerticalLayout CssClass="gr_right_tv_mrg"></c:VerticalLayout>
+						<c:TextView Text="{@requiredLeft})" CssClass="gr_right_tv"/>
+						<c:Image CssClass="gr_right_tv_img"/>
+						<c:TextView Text="#forward# (" CssClass="gr_right_tv"/>
+					</c:DockLayout>
+				</s:Else>
+			</c:HorizontalLayout>
+			<c:HorizontalLine CssClass="b_line" />
+
+			<c:ScrollView>
+
+				<c:HorizontalLayout CssClass="margin_top" />
+				<c:HorizontalLine />
+
+				<c:DockLayout CssClass="parameter_grid" OnClick="$SelectDateTime(StartPlanDate, #startPlanTime#)">
+					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+					<c:TextView Text="#startPlanTime#"/>
+					<c:TextView Text="$FormatDate($task.StartPlanDate)" CssClass="value"/>
+				</c:DockLayout>
+				<c:HorizontalLine />
+
+				<c:DockLayout CssClass="parameter_grid" OnClick="$SelectDateTime(EndPlanDate, #endPlanTime#)">
+					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+					<c:TextView Text="#endPlanTime#"/>
+					<c:TextView Text="$FormatDate($task.EndPlanDate)" CssClass="value"/>
+				</c:DockLayout>
+				<c:HorizontalLine />
+
+				<c:HorizontalLayout CssClass="grid" OnClickAction="$DoAction(SelectOutlet)">
+					<c:HorizontalLayout CssClass="$sideStyle.outlet"></c:HorizontalLayout>
+					<c:VerticalLayout>
+						<c:TextView Text="#outlet_description#" CssClass="description_row"></c:TextView>
+						<c:TextView Id="outletTV" Text="$FormatRef($task.Outlet)" CssClass="main_row"/>
+					</c:VerticalLayout>
+				</c:HorizontalLayout>
+				<c:HorizontalLine />
+
+				<c:HorizontalLayout CssClass="memo_block" OnClickAction="$FocusOnEditText(textTaskET, 1)">
+					<c:HorizontalLayout CssClass="$sideStyle.textTask"></c:HorizontalLayout>
+					<c:VerticalLayout>
+						<c:TextView Text="#target#" CssClass="description_row"></c:TextView>
+						<c:MemoEdit Id="textTaskET" Text="$task.TextTask" CssClass="main_row" Placeholder="—" OnLostFocus="$SaveAndRefresh()"></c:MemoEdit>
+					</c:VerticalLayout>
+				</c:HorizontalLayout>
+				<c:HorizontalLine />
+
+			</c:ScrollView>
+
+		</c:DockLayout>
+
+</c:Screen>

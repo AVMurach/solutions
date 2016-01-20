@@ -106,17 +106,44 @@ function GetOrderControlValue() {
 }
 
 function CountDoneTasks(visit) {
-    var query = new Query("SELECT Id FROM Document_Visit_Task WHERE Ref=@ref AND Result=@result");
-    query.AddParameter("ref", visit);
-    query.AddParameter("result", true);
-    return query.ExecuteCount();
+	var query = new Query;
+
+	var outlet = "";
+
+	if ($.workflow.name == "Visit"){
+		query.AddParameter("outlet", GlobalWorkflow.GetOutlet());
+		outlet = " AND DT.Outlet=@outlet ";
+	}
+
+	query.Text = "SELECT O.Description AS Outlet, DT.Id, DT.TextTask, DT.EndPlanDate, DT.ExecutionDate " +
+		" FROM Document_Task DT " +
+		" JOIN Catalog_Outlet O ON DT.Outlet=O.Id " +
+		" WHERE DT.Status=1 " +
+		" AND DATE(ExecutionDate)=DATE('now', 'localtime') " + outlet +
+		" ORDER BY DT.ExecutionDate desc, O.Description";
+
+	return query.ExecuteCount();
 }
 
 function CountTasks(outlet) {
-    var query = new Query("SELECT Id FROM Document_Task WHERE PlanDate >= @planDate AND Outlet = @outlet");
-    query.AddParameter("outlet", outlet);
-    query.AddParameter("planDate", DateTime.Now.Date);
-    return query.ExecuteCount();
+	var q = new Query;
+
+	var outlet = "";
+
+	if ($.workflow.name == "Visit"){
+		q.AddParameter("outlet", GlobalWorkflow.GetOutlet());
+		outlet = " AND DT.Outlet=@outlet ";
+	}
+
+	q.Text = "SELECT O.Description AS Outlet, DT.Id, DT.TextTask, DT.EndPlanDate " +
+		" FROM Document_Task DT " +
+		" JOIN Catalog_Outlet O ON DT.Outlet=O.Id " +
+		" WHERE ((Status=0 AND DATE(StartPlanDate)<=DATE('now', 'localtime')) " +
+		" OR " +
+		" (Status=1 AND DATE(ExecutionDate)=DATE('now', 'localtime'))) " + outlet +
+		" ORDER BY DT.EndPlanDate, O.Description";
+
+	return q.ExecuteCount();
 }
 
 function GetOrderSUM(order) {
@@ -153,79 +180,6 @@ function CheckAndCommit(state, args) {
 	}
 }
 
-
-function GetPercentageMatrix(outlet, visit) {
-	var query = new Query("SELECT AMS.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
-			"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet"); 
-	query.AddParameter("outlet", outlet);
-    var SKUMatrix = query.ExecuteCount();
-    
-    var query = new Query("SELECT AMS.SKU, ANSW.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
-    		"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet " +
-    		"	JOIN (SELECT DISTINCT U1.SKU FROM USR_SKUQuestions U1" +
-    		"	WHERE Description = @stok AND (Answer != '' AND Answer IS NOT NULL)) AS ANSW ON ANSW.SKU = AMS.SKU"); 
-	query.AddParameter("outlet", outlet);
-	query.AddParameter("stok", Translate["#stockQue#"]);
-		
-	var SKUAnswer = query.ExecuteCount();
-    
-    if(SKUMatrix == null){
-    	SKUMatrix = 0;
-    }
-	
-    if(SKUMatrix != 0 ){
-    	percent = FormatValue(SKUAnswer*100/SKUMatrix);
-    }else{
-    	percent = FormatValue(0);
-    }
-    
-    var doc = visit.GetObject();
-    doc.PercentageCompletionMatrix = percent;
-    doc.Save();
-    		
-	return percent
-}
-
-function DoSelectOrderGiven(visit, attribute, control, visitOrderGiven, title, outlet) {
-	var query = new Query("SELECT CP.Id,CP.Description FROM Catalog_Outlet_Contacts OCP " +
-			"	LEFT JOIN Catalog_ContactPersons CP ON CP.Id = OCP.ContactPerson WHERE Ref = @outlet"); 
-	query.AddParameter("outlet", outlet);
-			
-	//var listChoice = query.Execute();
-	
-	//Dialogs.DoChoose("#sdfsdfg#", listChoice, visitOrderGiven, MySelectCallBack, [visit, attribute, control]);
-	Dialogs.DoChoose(query.Execute(), visit, attribute, control, MySelectCallBack, title);
-}
-
-function MySelectCallBack(state, args) {
-	MyAssignDialogValue(state, args);
-	Workflow.Refresh([]);
-}
-
-function MyAssignDialogValue(state, args) {
-	/*Dialog.Debug("args " + args.Result);
-	Dialog.Debug("state" + state);*/
-	
-	var entity = state[0];
-	var attribute = state[1];
-	entity[attribute] = args.Result.Description;
-	entity.GetObject().Save();
-	return;
-}
-
-function GetContactDesc(idCont){
-	if(idCont != null){
-		var query = new Query("SELECT CP.Description FROM Catalog_ContactPersons CP " +
-		"	WHERE Id = @idCont"); 
-		query.AddParameter("idCont", idCont);
-		
-		return query.ExecuteScalar();
-		
-	}else{
-		return "";
-	}
-	
-}
 
 //--------------------------internal functions--------------
 

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Tasks.css">
+
+	<s:Push Id="outlet" Value="$GetOutlet()"></s:Push>
+
+	<c:SwipeHorizontalLayout Id="swipe_layout" Index="1">
+
+		<s:If Test="$HasMenu()">
+			<s:Include File="\Components\SideMenu.xml"/>
+		</s:If>
+
+
+		<c:DockLayout>
+			
+			<s:If Test="$sessionConst.editTasksWithoutVisit || $workflow.name=='Visit'">
+				<c:HorizontalLayout CssClass="bottom_btn" OnClickAction="$DoAction(CreateTask)">
+					<c:TextView Text="#add#" />
+				</c:HorizontalLayout>
+				<c:HorizontalLine CssClass="b_line" />
+			</s:If>
+
+			<s:If Test="$HasMenu()">
+				<c:DockLayout CssClass="top_navigator">
+					<c:DockLayout Id="btnMenu" CssClass="btn_menu" OnEvent="Back" OnClickAction="$OpenMenu($swipe_layout)">
+						<c:Image CssClass="menuIcon" />
+					</c:DockLayout>
+					<c:DockLayout CssClass="btn_space" />
+					<c:HorizontalLayout>
+						<c:TextView Text="#tasks#" />
+					</c:HorizontalLayout>
+				</c:DockLayout>
+			</s:If>
+			<s:Else>
+				<c:DockLayout CssClass="top_navigator">
+					<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$BackAction()">
+						<c:Image />
+						<c:TextView Text="#back#" />
+					</c:DockLayout>
+					<c:DockLayout OnEvent="Forward" CssClass="btn_forward" OnClickAction="$Workflow.DoForward()">
+						<c:TextView Id="btnForward" Text="#forward#" />
+					</c:DockLayout>			
+					<c:HorizontalLayout>
+						<c:TextView Text="#tasks#" />
+					</c:HorizontalLayout>
+				</c:DockLayout>
+			</s:Else>			
+
+			<s:If Test="$workflow.name=='Visit'">
+				<c:Image CssClass="2_scroll"></c:Image>				
+			</s:If>
+			<c:HorizontalLine />
+
+			<c:ScrollView Id="grScrollView">
+
+				<c:HorizontalLayout CssClass="caption_grid">
+					<c:TextView Text="#newTasks#:"></c:TextView>
+				</c:HorizontalLayout>
+				<c:HorizontalLine />
+
+				<s:Iterator Id="task" Value="$GetNotExecutedTasks()">
+
+					<c:DockLayout CssClass="grid" OnClickAction="$AddGlobalAndAction($task.Id)">
+						<c:Image />
+						<c:VerticalLayout>
+							<c:TextView Text="{$FormatDate($task.EndPlanDate)} {$task.Outlet}" CssClass="description_row"></c:TextView>
+							<c:TextView Text="$task.TextTask" CssClass="main_row"></c:TextView>
+						</c:VerticalLayout>						
+					</c:DockLayout>
+					<c:HorizontalLine />
+
+				</s:Iterator>
+
+				<c:HorizontalLayout CssClass="end_of_block" />
+
+				<c:HorizontalLayout CssClass="caption_grid">
+					<c:TextView Text="#executedtask#:"></c:TextView>
+				</c:HorizontalLayout>
+				<c:HorizontalLine />
+
+				<s:Iterator Id="eTask" Value="$GetExecutedTasks()">
+
+					<c:DockLayout CssClass="grid" OnClickAction="$AddGlobalAndAction($eTask.Id)">
+						<c:Image />
+						<c:VerticalLayout>
+							<c:TextView Text="#executed# {$FormatDate($eTask.ExecutionDate)} {$eTask.Outlet}" CssClass="description_row"></c:TextView>
+							<c:TextView Text="$eTask.TextTask" CssClass="main_row"></c:TextView>
+						</c:VerticalLayout>						
+					</c:DockLayout>						
+					<c:HorizontalLine />
+
+				</s:Iterator>
+
+				<c:HorizontalLayout CssClass="end_of_block" />
+
+			</c:ScrollView>
+
+		</c:DockLayout>
+
+	</c:SwipeHorizontalLayout>
+
+</c:Screen>

@@ -35,7 +35,7 @@
 		</s:Else>
 		<c:HorizontalLine CssClass="b_line" />
 
-		<s:If Test="$workflow.name=='Outlet'">
+		<s:If Test="$workflow.name!='Visit'">
 			<c:DockLayout CssClass="top_navigator">
 				<c:HorizontalLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$SaveAndBack($workflow.outlet)">
 					<c:Image />
@@ -171,11 +171,11 @@
 			<c:HorizontalLine />
 
 			<c:DockLayout CssClass="grid" OnClickAction="$FocusIfHasEditText(outletAddress, $sessionConst.editOutletParameters, 000000002)">
-				<c:Button Id="clearButton" CssClass="clear" Visible="false" OnClick="$ClearField($workflow.outletAddress, $workflow.outlet, Address)"/>
+				<c:Button Id="clearButton" CssClass="clear" Visible="false" OnClick="$ClearField($outletAddress, $workflow.outlet, Address)"/>
 				<c:VerticalLayout>
 					<c:TextView Text="#address#" CssClass="description_row"></c:TextView>
 					<s:If Test="$sessionConst.editOutletParameters == true &amp;&amp; $primaryParametersSettings.000000002 == true">
-						<c:MemoEdit Id="outletAddress" Value="$workflow.outlet.Address" OnGetFocus="$ShowClearButton($clearButton)" OnLostFocus="$HideClearButton($clearButton)" OnChange="$SaveValue($workflow.outlet)"></c:MemoEdit>
+						<c:MemoEdit Id="outletAddress" Text="$workflow.outlet.Address" OnGetFocus="$ShowClearButton($clearButton)" OnLostFocus="$HideClearButton($clearButton)" OnChange="$SaveValue($workflow.outlet)"></c:MemoEdit>
 					</s:If>
 					<s:Else>
 						<c:TextView Id="outletAddress" Text="$workflow.outlet.Address" CssClass="main_row"></c:TextView>
@@ -186,7 +186,8 @@
 
 
 			<c:DockLayout CssClass="grid">
-				<s:If Test="$workflow.outlet != null &amp;&amp; $workflow.outlet.Lattitude != 0 &amp;&amp; $workflow.outlet.Longitude != 0">
+				<!-- <s:If Test="$workflow.outlet != null &amp;&amp; $workflow.outlet.Lattitude != 0 &amp;&amp; $workflow.outlet.Longitude != 0"> -->
+				<s:If Test="$EmptyCoordinates($workflow.outlet)">
 					<c:Button OnClickAction="$DoAction(ShowMap, $workflow.outlet)" />
 				</s:If>
 				<s:Else>
@@ -194,7 +195,7 @@
 				</s:Else>
 				<c:VerticalLayout>
 					<c:TextView Text="#coordinates#" CssClass="description_row"></c:TextView>
-					<s:If Test="$workflow.outlet != null &amp;&amp; $workflow.outlet.Lattitude != 0 &amp;&amp; $workflow.outlet.Longitude != 0">
+					<s:If Test="$EmptyCoordinates($workflow.outlet)">
 						<c:HorizontalLayout OnClick="$ShowCoordOptions($workflow.outlet, $sessionConst.editOutletParameters)">
 							<c:TextView Id="outletCoord" Text="{$workflow.outlet.Lattitude}; {$workflow.outlet.Longitude}" CssClass="main_row"></c:TextView>
 						</c:HorizontalLayout>

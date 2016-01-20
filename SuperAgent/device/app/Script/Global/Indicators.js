@@ -9,6 +9,8 @@ var encashmentSumm;
 var receivablesSumm;
 var returnSum;
 var returnQty;
+var tasksSum;
+var tasksDone;
 
 function SetIndicators() {
 	SetCommitedScheduledVisits();
@@ -21,6 +23,8 @@ function SetIndicators() {
 	SetUnscheduledVisits();
 	SetReturnSum();
 	SetReturnQty();
+	SetTasksSum();
+	SetTasksDone();
 }
 
 function SetOutletsCount() {
@@ -156,8 +160,6 @@ function GetEncashmentSumm(){
 	return encashmentSumm;
 }
 
-
-
 function SetReceivablesSumm() {
 	var q = new Query("SELECT SUM(RD.DocumentSum) FROM Document_AccountReceivable_ReceivableDocuments RD JOIN Document_AccountReceivable AR ON AR.Id = RD.Ref");
 	var cnt = q.ExecuteScalar();
@@ -169,4 +171,29 @@ function SetReceivablesSumm() {
 
 function GetReceivablesSumm() {
 	return receivablesSumm;
+}
+
+function SetTasksSum(){
+	var q = new Query("SELECT COUNT(Id) FROM Document_Task " +
+		"WHERE (Status=0 AND DATE(StartPlanDate)<=DATE('now', 'localtime')) " +
+		" OR " +
+		" (Status=1 AND DATE(ExecutionDate)=DATE('now', 'localtime')) ");
+	var cnt = q.ExecuteScalar();
+	tasksSum = cnt == null ? 0 : cnt;
+}
+
+function GetTasksSum(){
+	return tasksSum;
+}
+
+function SetTasksDone(){
+	var q = new Query("SELECT COUNT(Id) FROM Document_Task " +
+		" WHERE Status=1 " +
+		" AND DATE(ExecutionDate)=DATE('now', 'localtime') ");
+	var cnt = q.ExecuteScalar();	
+	tasksDone = cnt == null ? 0 : cnt;
+}
+
+function GetTasksDone(){
+	return tasksDone;
 }

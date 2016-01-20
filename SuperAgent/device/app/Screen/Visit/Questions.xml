@@ -154,7 +154,7 @@
 
 				<s:Else>
 					<c:HorizontalLayout CssClass="margin_top" />
-					<c:TextView Text="#no_questions_list#" CssClass="no_contacts" />
+					<c:TextView Text="#no_questions_list#" CssClass="no_items" />
 				</s:Else>
 
 			</c:ScrollView>

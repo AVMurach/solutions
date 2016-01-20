@@ -19,6 +19,15 @@ function GetOutlet(){
 	return outlet;
 }
 
+var currentTask;
+
+function SetCurrentTask(value){
+	currentTask = value;
+}
+
+function GetCurrentTask(){
+	return currentTask;
+}
 
 var outletIsCreated;
 
@@ -56,4 +65,11 @@ function GetMassDiscount(order){
 		}
 	}
 	return massDiscount;
+}
+
+function ClearVariables(){
+	outlet = null;
+	currentTask = null;
+	outletIsCreated = null;
+	massDiscount = null;
 }

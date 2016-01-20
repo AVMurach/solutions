@@ -6,7 +6,6 @@
 
 	<s:Push Id="thisDoc" Value="$CreateDocumentIfNotExists($executedOrder, $workflow.visit)"></s:Push>
 
-	<s:Push Id="items" Value="$GetOrderedSKUs($thisDoc)"></s:Push>
 	<s:Push Id="sum" Value="$GetOrderSUM($thisDoc)"></s:Push>
 
 	<c:DockLayout>
@@ -59,11 +58,11 @@
 			<c:HorizontalLayout CssClass="end_of_block" />
 
 			<c:HorizontalLayout CssClass="caption_grid">
-				<c:TextView Text="{@skuTitle}:"></c:TextView>
+				<c:TextView Id="skuTitleTV" Text="{@skuTitle}:"></c:TextView>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
 
-			<s:Iterator Id="orderitem" Value="$items" Status="statusCount">
+			<s:Iterator Id="orderitem" Value="$GetOrderedSKUs($thisDoc)" Status="statusCount">
 				<s:Push Id="index" Value="$statusCount.Index"></s:Push>
 
 				<s:If Test="$orderitem != null">

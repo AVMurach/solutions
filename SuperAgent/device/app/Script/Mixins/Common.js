@@ -215,6 +215,10 @@ function CheckUserInput(sender){
     }                       
 }
 
+function TranslateString(val){
+    return Translate["#" + val + "#"];
+}
+
 //--------------------Clear Button part----------------------
 
 function ShowClearButton(source, button) {
@@ -226,7 +230,7 @@ function HideClearButton(source, button) {
 }
 
 function ClearField(source, field, objectRef, attribute) {
-	field.Text = "";
+    field.Text = "";
 	var object = objectRef.GetObject();
 	object[attribute] = "";
 	object.Save();

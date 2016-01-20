@@ -1,0 +1,32 @@
+<c:Component xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:bp="BitMobile.BusinessProcess">
+
+	<bp:Step Name="OpenOutlet" Screen="Outlets\Outlet.xml">
+		<bp:Action Name="List" NextStep="Outlets" />
+		<bp:Action Name="ShowContractors" NextStep="Contractors" />
+		<bp:Action Name="Contractor" NextStep="Contractor" />
+		<bp:Action Name="ShowContacts" NextStep="Contacts" />
+		<bp:Action Name="ShowMap" NextStep="ShowMap"></bp:Action>
+		<bp:Action Name="Plans" NextStep="Plans" />
+		<bp:Action Name="ShowImage" NextStep="Image" />
+	</bp:Step>
+
+	<bp:Step Name="Contractors" Screen="Outlets\Outlets.xml" Controller="Outlets\DetailsAndContacts.js">
+		<bp:Action Name="Select" NextStep="Contractor"></bp:Action>
+	</bp:Step>
+
+	<bp:Step Name="Contractor" Screen="Outlets\Contractor.xml" Controller="Outlets\DetailsAndContacts.js"></bp:Step>
+
+	<bp:Step Name="Contacts" Screen="ContactsList.xml" Controller="Outlets\DetailsAndContacts.js">
+		<bp:Action Name="Select" NextStep="Contact" />
+	</bp:Step>
+
+	<bp:Step Name="ShowMap" Screen="Outlet_Map.xml" Controller="Visits\Outlet_Map.js">
+	</bp:Step>
+
+	<bp:Step Name="Plans" Screen="PlanList.xml" Controller="Outlets\DetailsAndContacts.js"></bp:Step>
+
+	<bp:Step Name="Contact" Screen="Contact.xml" Controller="Outlets\DetailsAndContacts.js"></bp:Step>
+
+	<bp:Step Name="Image" Screen="Image.xml" Controller="Outlets\Image.js"></bp:Step>
+
+</c:Component>

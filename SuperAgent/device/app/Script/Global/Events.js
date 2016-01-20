@@ -14,7 +14,7 @@ function OnApplicationRestore(name){
 
 	Indicators.SetIndicators();
 
-	if ((name=="Visit" && $.Exists('outletScreen')) || name=="Outlet" || ((name=="Order" || name=="Return") && !$.Exists('executedOrder')))
+	if ((name=="Visit" && $.Exists('outletScreen')) || name=="Outlet" || name=="CreateOutlet" || ((name=="Order" || name=="Return") && !$.Exists('executedOrder')))
 		GPS.StartTracking();
 
 }
@@ -33,7 +33,7 @@ function OnWorkflowStart(name) {
 	Variables.AddGlobal("workflow", new Dictionary());
 	Variables["workflow"].Add("name", name);
 
-	if (name == "Visit" || name == "Outlet" || ((name=="Order" || name=="Return") && !$.Exists('executedOrder')))
+	if (name == "Visit" || name == "Outlet" || name=="CreateOutlet" || ((name=="Order" || name=="Return") && !$.Exists('executedOrder')))
 	{
 		StartTracking();		
 		$.workflow.Add("outlet", GlobalWorkflow.GetOutlet());		
@@ -59,13 +59,14 @@ function OnWorkflowStart(name) {
 }
 
 function OnWorkflowForward(name, lastStep, nextStep, parameters) {
+
 	if (name = "Visit" && lastStep == "Outlet")
 		GPS.StopTracking();
 }
 
 function OnWorkflowForwarding(workflowName, lastStep, nextStep, parameters) {
 
-	if (workflowName == "Visit" && nextStep != "Outlet" && nextStep != "Total")
+	if (workflowName == "Visit" && nextStep != "Outlet" && nextStep != "Total" && nextStep != "Total_Tasks")
 	{
 		var standart = AlternativeStep(nextStep);
 		if (!standart)
@@ -85,6 +86,10 @@ function OnWorkflowForwarding(workflowName, lastStep, nextStep, parameters) {
 
 	WriteScreenName(nextStep);
 
+	if ($.workflow.HasValue("curentStep"))
+		$.workflow.Remove("curentStep");
+	$.workflow.Add("curentStep", nextStep);
+
 	return true;
 }
 
@@ -102,6 +107,11 @@ function OnWorkflowFinish(name, reason) {
 		Global.ClearFilter();
 		GlobalWorkflow.SetMassDiscount(null);
 	}
+
+	if (name=="Visit")
+	{
+		ClearUSRTables();
+	}
 }
 
 function OnWorkflowFinished(name, reason){
@@ -109,6 +119,10 @@ function OnWorkflowFinished(name, reason){
 }
 
 function OnWorkflowBack(workflow, lastStep, nextStep){
+
+	if ($.workflow.HasValue("curentStep"))
+		$.workflow.Remove("curentStep");
+	$.workflow.Add("curentStep", nextStep);
 
 	if (name = "Visit" && nextStep == "Outlet")
 		GPS.StartTracking();
@@ -135,6 +149,8 @@ function StartTracking(){
 }
 
 function RemoveVariables(name){
+
+	GlobalWorkflow.ClearVariables();
 
 	Variables.Remove("workflow");
 
@@ -257,18 +273,18 @@ function SetSteps(outlet) {
 	var statusValues = q.Execute();
 	while (statusValues.Next()) {
 		if (EvaluateBoolean(statusValues.CreateOrderInMA) && $.sessionConst.orderEnabled && hasContractors)
-			InsertIntoSteps("5", "SkipOrder", false, "Order", "ResultsAnswers");
+			InsertIntoSteps("4", "SkipOrder", false, "Order", "SKUs");
 		else
-			InsertIntoSteps("5", "SkipOrder", true, "Order", "ResultsAnswers");
+			InsertIntoSteps("4", "SkipOrder", true, "Order", "SKUs");
 		if (EvaluateBoolean(statusValues.CreateReturnInMA) && $.sessionConst.returnEnabled && hasContractors) {
-			InsertIntoSteps("6", "SkipReturn", false, "Return", "Order");
+			InsertIntoSteps("5", "SkipReturn", false, "Return", "Order");
 		}
 		else
-			InsertIntoSteps("6", "SkipReturn", true, "Return", "Order");
+			InsertIntoSteps("5", "SkipReturn", true, "Return", "Order");
 		if (EvaluateBoolean(statusValues.DoEncashmentInMA) && $.sessionConst.encashEnabled)
-			InsertIntoSteps("7", "SkipEncashment", false, "Receivables", "Return");
+			InsertIntoSteps("6", "SkipEncashment", false, "Receivables", "Return");
 		else
-			InsertIntoSteps("7", "SkipEncashment", true, "Receivables", "Return");
+			InsertIntoSteps("6", "SkipEncashment", true, "Receivables", "Return");
 		if (EvaluateBoolean(statusValues.FillQuestionnaireInMA))
 			skipQuest = false;
 		else
@@ -289,13 +305,7 @@ function SetSteps(outlet) {
 		InsertIntoSteps("3", "SkipSKUs", true, "SKUs", "Questions");
 	else
 		InsertIntoSteps("3", "SkipSKUs", false, "SKUs", "Questions");
-	
-	//AVMurach+
-	if (parseInt(GetSKUQuestionsCount()) == parseInt(0) || skipQuest)
-		InsertIntoSteps("4", "SkipResultsAnswers", true, "ResultsAnswers", "Questions");
-	else
-		InsertIntoSteps("4", "SkipResultsAnswers", false, "ResultsAnswers", "Questions");	
-	//AVMurach-
+
 }
 
 function InsertIntoSteps(stepOrder, skip, value, action, previousStep) {
@@ -373,9 +383,15 @@ function PrepareScheduledVisits_Map() {
 }
 
 function GetTasksCount(outlet) {
-	var taskQuery = new Query("SELECT COUNT(Id) FROM Document_Task WHERE PlanDate >= date('now','start of day', 'localtime') AND Outlet=@outlet");
-	taskQuery.AddParameter("outlet", outlet);
-	return taskQuery.ExecuteScalar();
+	// var taskQuery = new Query("SELECT COUNT(Id) FROM Document_Task " +
+	// 	"WHERE (Status=0 AND DATE(StartPlanDate)<=DATE('now', 'localtime')) " +
+	// 	" OR " +
+	// 	" (Status=1 AND DATE(ExecutionDate)=DATE('now', 'localtime')) " +
+	// 	" AND Outlet=@outlet");
+	// taskQuery.AddParameter("outlet", outlet);
+	// return taskQuery.ExecuteScalar();
+	return parseInt(1);
+
 }
 
 
@@ -698,4 +714,15 @@ function DeleteFromList(item, collection) {
             list.Add(i);
     }
     return list;
+}
+
+function ClearUSRTables(){
+	var q = new Query("DELETE FROM USR_Questionnaires");
+	q.Execute();
+
+	var q = new Query("DELETE FROM USR_Questions");
+	q.Execute();
+	
+	var q = new Query("DELETE FROM USR_SKUQuestions");
+	q.Execute();
 }

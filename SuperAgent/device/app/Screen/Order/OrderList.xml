@@ -2,7 +2,6 @@
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" xmlns:d="DefaultScope" StyleSheet="Visits.css">
 
 	<s:Push Id="search" Value="$param1" />
-	<s:Push Id="orders" Value="$GetItems()"></s:Push>
 
 	<c:SwipeHorizontalLayout Id="swipe_layout" Index="1">
 
@@ -18,7 +17,7 @@
 					<c:TextView Id="btnForward" Text="" />
 				</c:DockLayout>
 				<c:HorizontalLayout>
-					<c:TextView Text="@listTitle" />
+					<c:TextView Id="listTitleTV" Text="@listTitle" />
 				</c:HorizontalLayout>
 			</c:DockLayout>
 			<c:HorizontalLine />
@@ -32,9 +31,14 @@
 
 			<c:ScrollView Id="grScrollView">
 				<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
-				<c:HorizontalLine />
+				<s:If Test="$NoOrders()">
+					<c:TextView Text="@no_docs" CssClass="no_items" />
+				</s:If>
+				<s:Else>
+					<c:HorizontalLine />
+				</s:Else>
 
-				<s:Iterator Id="order" Value="$orders">
+				<s:Iterator Id="order" Value="$GetItems()">
 
 					<s:Push Id="checkedNumber" Value="$AssignNumberIfNotExist($order.Number)"></s:Push>
 

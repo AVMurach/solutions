@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Visit_Total.css">
+
+	<s:Push Id="task" Value="$GetCurrentTask()" />
+
+	<c:DockLayout>
+
+		<c:DockLayout CssClass="top_navigator">
+			<c:HorizontalLayout>
+				<c:TextView Text="#task#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+
+		<c:HorizontalLine />
+
+		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$CompleteTask()">
+			<c:TextView Text="#ready#" />
+		</c:HorizontalLayout>
+		<c:HorizontalLine CssClass="b_line" />
+
+		<c:ScrollView Id="grScrollView">
+
+			<c:HorizontalLayout CssClass="margin_top" />
+			<c:HorizontalLine />
+
+			<c:DockLayout CssClass="parameter_grid">
+				<c:TextView Text="#turnaroundTime#"/>
+				<c:TextView Text="$FormatDate($task.EndPlanDate)" CssClass="value"/>
+			</c:DockLayout>
+			<c:HorizontalLine />
+
+			<s:If Test="$workflow.name!='Visit'">
+				<c:HorizontalLayout CssClass="grid">
+					<c:VerticalLayout>
+						<c:TextView Text="#outlet#" CssClass="description_row"></c:TextView>
+						<c:TextView Text="$task.Outlet.Description" CssClass="main_row" />
+					</c:VerticalLayout>
+				</c:HorizontalLayout>
+				<c:HorizontalLine />
+			</s:If>
+
+			<c:HorizontalLayout CssClass="grid">
+				<c:VerticalLayout>
+					<c:TextView Text="#target#" CssClass="description_row"></c:TextView>
+					<c:TextView Text="$task.TextTask" CssClass="main_row" />
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<s:If Test="$IsEditable($task)">
+
+				<c:HorizontalLayout CssClass="end_of_block" />
+				<c:HorizontalLine />
+
+				<c:VerticalLayout CssClass="half_grid">
+					<s:If Test="$task.Status">
+						<c:Button Text="#noteAsNew#" CssClass="negative_decision" OnClickAction="$RetrieveTask($task)" />
+					</s:If>
+					<s:Else>
+						<c:Button Text="#noteAsExecuted#" CssClass="positive_decision" OnClickAction="$CompleteTheTask($task)" />
+					</s:Else>
+				</c:VerticalLayout>
+				<c:HorizontalLine />
+
+				<c:HorizontalLayout CssClass="empty_caption_grid" />
+
+				<c:HorizontalLine />
+
+			</s:If>
+			<s:Else>
+				<s:If Test="$task.Status==1">
+					<c:DockLayout CssClass="parameter_grid">
+						<c:TextView Text="#executionDate#"/>
+						<c:TextView Text="$FormatDate($task.ExecutionDate)" CssClass="value"/>
+					</c:DockLayout>
+					<c:HorizontalLine />
+				</s:If>
+			</s:Else>
+
+			<c:HorizontalLayout CssClass="memo_block">
+				<c:VerticalLayout>
+					<c:TextView Text="#commentary#" CssClass="description_row"></c:TextView>
+					<c:MemoEdit Id="result"  Text="$task.Result" CssClass="main_row" Placeholder="—" Enabled="$IsEditable($task)" OnLostFocus="$SaveComment($task)"></c:MemoEdit>
+				</c:VerticalLayout>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+
+			<c:HorizontalLayout CssClass="end_of_block" />
+
+		</c:ScrollView>
+
+
+
+	</c:DockLayout>
+
+</c:Screen>

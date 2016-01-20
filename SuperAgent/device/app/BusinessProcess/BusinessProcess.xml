@@ -34,6 +34,16 @@
 			<s:Include File="\Components\SideMenuActions.xml"/>
 		</bp:Step>
 
+		<bp:Step Name="Tasks" Screen="Tasks\Tasks.xml" Controller="Tasks\Main.js">
+			<bp:Action Name="Select" NextWorkflow="Task" />
+			<bp:Action Name="CreateTask" NextWorkflow="CreateTask"></bp:Action>
+			<s:Include File="\Components\SideMenuActions.xml"/>
+		</bp:Step>
+
+		<bp:Step Name="KPI" Screen="KPI\KPI.xml" Controller="KPI\Main.js">
+			<s:Include File="\Components\SideMenuActions.xml"/>
+		</bp:Step>
+
 		<bp:Step Name="Sync" Screen="Sync\Sync.xml" Controller="Sync\Main.js">
 			<s:Include File="\Components\SideMenuActions.xml"/>
 		</bp:Step>
@@ -65,18 +75,15 @@
 			<bp:Action Name="ShowImage" NextStep="Image" />
 		</bp:Step>
 
-		<bp:Step Name="Visit_Tasks" Screen="Visit\Tasks.xml" Controller="Tasks\Main.js">
+		<bp:Step Name="Visit_Tasks" Screen="Tasks\Tasks.xml" Controller="Tasks\Main.js">
 			<bp:Action Name="Forward" NextStep="Questions"></bp:Action>
+			<bp:Action Name="CreateTask" NextStep="CreateTask"></bp:Action>
 			<bp:Action Name="Outlet" NextStep="Outlet"></bp:Action>
 			<bp:Action Name="Select" NextStep="Visit_Task" />
 			<bp:Action Name="SkipQuestions" NextStep="SKUs"></bp:Action>
 			<bp:Action Name="SkipSKUs" NextStep="Order"></bp:Action>
 			<bp:Action Name="SkipOrder" NextStep="Receivables"></bp:Action>
 			<bp:Action Name="SkipEncashment" NextStep="Total"></bp:Action>
-		</bp:Step>
-
-		<bp:Step Name="Visit_Task" Screen="Visit\Task.xml" Controller="Tasks\Main.js">
-			<bp:Action Name="Forward" NextStep="Visit_Tasks" />
 		</bp:Step>
 
 		<bp:Step Name="Questions" Screen="Visit\Questions.xml" Controller="Visits\Questions.js">
@@ -89,22 +96,16 @@
 			<bp:Action Name="Sk" NextStep="Image" />
 		</bp:Step>
 
-		<!-- AVMurach+ -->
 		<bp:Step Name="SKUs" Screen="Visit\SKUs.xml" Controller="Visits\SKU_Questions.js">
 			<bp:Action Name="ShowFilters1" NextStep="Filters1"/>
-			<bp:Action Name="Forward" NextStep="ResultsAnswers"></bp:Action>			
-			<bp:Action Name="ShowImage" NextStep="Image" />
-		</bp:Step>
-				
-		<bp:Step Name="ResultsAnswers" Screen="Visit\ResultsAnswers.xml" Controller="Visits\ResultsAnswers.js">
 			<bp:Action Name="Forward" NextStep="Order"></bp:Action>
 			<bp:Action Name="SkipOrder" NextStep="Return"></bp:Action>
 			<bp:Action Name="SkipReturn" NextStep="Receivables"></bp:Action>
-			<bp:Action Name="SkipEncashment" NextStep="Total"></bp:Action>			
+			<bp:Action Name="SkipEncashment" NextStep="Total"></bp:Action>
+			<bp:Action Name="ShowImage" NextStep="Image" />
 		</bp:Step>
-		<!-- AVMurach- -->
 
-		<bp:Step Name="Order" Screen="Order\Order.xml" Controller="Order\Main.js">
+		<bp:Step Name="Order" Screen="Order\Order.xml" Controller="Order\Order.js">
 			<bp:Action Name="Add" NextStep="AddSKU"></bp:Action>
 			<bp:Action Name="Edit" NextStep="EditSKU"></bp:Action>
 			<bp:Action Name="ShowInfo" NextStep="OrderInfo"></bp:Action>
@@ -113,7 +114,7 @@
 			<bp:Action Name="SkipEncashment" NextStep="Total"/>
 		</bp:Step>
 
-		<bp:Step Name="Return" Screen="Order\Order.xml" Controller="Order\Main.js">
+		<bp:Step Name="Return" Screen="Order\Order.xml" Controller="Order\Order.js">
 			<bp:Action Name="Add" NextStep="AddSKU"></bp:Action>
 			<bp:Action Name="Edit" NextStep="EditSKU"></bp:Action>
 			<bp:Action Name="ShowInfo" NextStep="OrderInfo"></bp:Action>
@@ -126,13 +127,27 @@
 		</bp:Step>
 
 		<bp:Step Name="Total" Screen="Visit\Total.xml" Controller="Visits\Total.js">
+			<bp:Action Name="Total_Tasks" NextStep="Total_Tasks"></bp:Action>
+		</bp:Step>
+
+		<bp:Step Name="Total_Tasks" Screen="Tasks\Tasks.xml" Controller="Tasks\Main.js">
+			<bp:Action Name="Select" NextStep="Visit_Task" />
+			<bp:Action Name="CreateTask" NextStep="CreateTask"></bp:Action>
+		</bp:Step>		
+
+
+		<bp:Step Name="Visit_Task" Screen="Tasks\Task.xml" Controller="Tasks\EditTask.js">
+			<bp:Action Name="Forward" NextStep="Visit_Tasks" />
+		</bp:Step>
+
+		<bp:Step Name="CreateTask" Screen="Tasks\CreateTask.xml" Controller="Tasks\CreateTask.js">
 		</bp:Step>
 
 		<bp:Step Name="Filters1" Screen="Filters.xml" Controller="Order\Order_SKUs.js">
 			<bp:Action Name="Forward" NextStep="SKUs"></bp:Action>
 		</bp:Step>
 
-		<bp:Step Name="OrderInfo" Screen="Order_Info.xml" Controller="Order\Main.js">
+		<bp:Step Name="OrderInfo" Screen="Order_Info.xml" Controller="Order\Order_Info.js">
 		</bp:Step>
 
 		<bp:Step Name="AddSKU" Screen="Order\Order_SKUs.xml" Controller="Order\Order_SKUs.js">
@@ -176,15 +191,26 @@
 
 	</bp:Workflow>
 
-	<bp:Workflow Name="Return" Controller="Order\Main.js">
+	<bp:Workflow Name="Task">
+		<bp:Step Name="Task" Screen="Tasks\Task.xml" Controller="Tasks\EditTask.js"></bp:Step>
+	</bp:Workflow>
 
-		<bp:Step Name="Return" Screen="Order\Order.xml">
+	<bp:Workflow Name="CreateTask">
+		<bp:Step Name="CreateTask" Screen="Tasks\CreateTask.xml" Controller="Tasks\CreateTask.js">
+			<bp:Action Name="SelectOutlet" NextStep="SelectOutlet"></bp:Action>
+		</bp:Step>
+		<bp:Step Name="SelectOutlet" Screen="Outlets.xml" Controller="Tasks\SelectOutlet.js"></bp:Step>
+	</bp:Workflow>
+
+	<bp:Workflow Name="Return" Controller="Order\Order.js">
+
+		<bp:Step Name="Return" Screen="Order\Order.xml" Controller="Order\Order.js">
 			<bp:Action Name="ShowInfo" NextStep="OrderInfo"></bp:Action>
 			<bp:Action Name="Add" NextStep="AddSKU"></bp:Action>
 			<bp:Action Name="Edit" NextStep="EditSKU"></bp:Action>
 		</bp:Step>
 
-		<bp:Step Name="OrderInfo" Screen="Order_Info.xml" Controller="Order\Main.js">
+		<bp:Step Name="OrderInfo" Screen="Order_Info.xml" Controller="Order\Order_Info.js">
 		</bp:Step>
 
 		<bp:Step Name="AddSKU" Screen="Order_SKUs.xml" Controller="Order\Order_SKUs.js">
@@ -208,7 +234,7 @@
 
 	<bp:Workflow Name="Order">
 
-		<bp:Step Name="Order" Screen="Order.xml" Controller="Order\Main.js">
+		<bp:Step Name="Order" Screen="Order.xml" Controller="Order\Order.js">
 			<bp:Action Name="Add" NextStep="AddSKU"></bp:Action>
 			<bp:Action Name="Edit" NextStep="EditSKU"></bp:Action>
 			<bp:Action Name="ShowInfo" NextStep="OrderInfo"></bp:Action>
@@ -229,49 +255,25 @@
 			<bp:Action Name="ShowImage" NextStep="Image" />
 		</bp:Step>
 
-		<bp:Step Name="OrderInfo" Screen="Order_Info.xml" Controller="Order\Main.js">
+		<bp:Step Name="OrderInfo" Screen="Order_Info.xml" Controller="Order\Order_Info.js">
 		</bp:Step>
 
 		<bp:Step Name="Image" Screen="Image.xml" Controller="Outlets\Image.js"></bp:Step>
 
 	</bp:Workflow>
 
-	<bp:Workflow Name="CreateOutlet">
+	<bp:Workflow Name="CreateOutlet" Controller="Outlets\Main.js">
 		<bp:Step Name="Create" Screen="Outlets\CreateOutlet.xml" Controller="Outlets\CreateOutlet.js">
-			<bp:Action Name="Open" NextWorkflow="OpenOutlet" />
+			<bp:Action Name="OpenOutlet" NextStep="OpenOutlet"></bp:Action>
 		</bp:Step>
+
+		<s:Include File="\Components\OutletActions.xml"/>
+
 	</bp:Workflow>
 
 	<bp:Workflow Name="Outlet" Controller="Outlets\Main.js">
 
-		<bp:Step Name="OpenOutlet" Screen="Outlets\Outlet.xml">
-			<bp:Action Name="List" NextStep="Outlets" />
-			<bp:Action Name="ShowContractors" NextStep="Contractors" />
-			<bp:Action Name="Contractor" NextStep="Contractor" />
-			<bp:Action Name="ShowContacts" NextStep="Contacts" />
-			<bp:Action Name="ShowMap" NextStep="ShowMap"></bp:Action>
-			<bp:Action Name="Plans" NextStep="Plans" />
-			<bp:Action Name="ShowImage" NextStep="Image" />
-		</bp:Step>
-
-		<bp:Step Name="Contractors" Screen="Outlets\Outlets.xml" Controller="Outlets\DetailsAndContacts.js">
-			<bp:Action Name="Select" NextStep="Contractor"></bp:Action>
-		</bp:Step>
-
-		<bp:Step Name="Contractor" Screen="Outlets\Contractor.xml" Controller="Outlets\DetailsAndContacts.js"></bp:Step>
-
-		<bp:Step Name="Contacts" Screen="ContactsList.xml" Controller="Outlets\DetailsAndContacts.js">
-			<bp:Action Name="Select" NextStep="Contact" />
-		</bp:Step>
-
-		<bp:Step Name="ShowMap" Screen="Outlet_Map.xml" Controller="Visits\Outlet_Map.js">
-		</bp:Step>
-
-		<bp:Step Name="Plans" Screen="PlanList.xml" Controller="Outlets\DetailsAndContacts.js"></bp:Step>
-
-		<bp:Step Name="Contact" Screen="Contact.xml" Controller="Outlets\DetailsAndContacts.js"></bp:Step>
-
-		<bp:Step Name="Image" Screen="Image.xml" Controller="Outlets\Image.js"></bp:Step>
+		<s:Include File="\Components\OutletActions.xml"/>
 
 	</bp:Workflow>
 

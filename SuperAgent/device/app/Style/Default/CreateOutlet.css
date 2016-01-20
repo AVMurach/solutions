@@ -6,14 +6,6 @@ body dl {
 	color: #2d89cf;
 }
 
-.comment_row {
-	width: 100%;
-	height: 40%;
-	white-space: normal;
-	font: 42% Arial;
-	color: #8e8e93;
-}
-
 .grid vl {
 	width: 100%;
 	padding-right: 11%;
@@ -46,7 +38,7 @@ body dl {
 	vertical-align: central;
 }
 
-.description_row {
+/*.description_row {
 	height: 40%;
 	font: 42% Arial;
 	color: #8e8e93;
@@ -57,7 +49,7 @@ body dl {
 	margin-top: 5%;
 	white-space: normal;
 	color: #2D89CF;
-}
+}*/
 
 .left_tv{
 	color: #fd472b;
@@ -117,6 +109,10 @@ body dl {
 	height: 100%;
 	width: 1.2mm;
 	dock-align: left;
+}
+
+.parameter_grid hl{
+	margin-left: 0mm;
 }
 
 /*---------required grid--------*/

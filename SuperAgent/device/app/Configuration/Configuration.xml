@@ -28,7 +28,7 @@
 			<c:Module Name="Indicators" File="Global\Indicators.js"/>
 			<c:Module Name="Images" File="Global\Images.js" />
 			<c:Module Name="Dialogs" File="Global\Dialogs.js" />
-			<c:Module Name="GlobalWorkflow" File="Global\WorkflowHandler.js" />
+			<c:Module Name="GlobalWorkflow" File="Global\GlobalWorkflow.js" />
 			<c:Module Name="OrderItem" File="Global\OrderItem.js" />
 		</c:GlobalModules>
 

@@ -79,7 +79,7 @@
 
 			<s:Else>
 				<c:HorizontalLayout CssClass="margin_top" />
-				<c:TextView Text="#no_contacts#" CssClass="no_contacts" />
+				<c:TextView Text="#no_contacts#" CssClass="no_items" />
 			</s:Else>
 
 			<c:HorizontalLayout CssClass="end_of_block" />

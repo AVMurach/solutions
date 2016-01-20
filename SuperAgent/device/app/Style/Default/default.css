@@ -361,7 +361,6 @@ MemoEdit {
 
 .margin_top {
 	height: 3.3mm;
-	selected-color: #bacdce;
 	background-color: #efeff4;
 	dock-align: top;
 }
@@ -598,8 +597,9 @@ MemoEdit {
 .parameter_grid TextView {
 	width: 50% auto;
 	height: 100%;
-	margin-left: 2.7mm;
 	padding-top: 30%;
+	vertical-align: central;
+	margin-left: 2.7mm;
 	color: #2d89cf;
 	dock-align: left;
 	font: 36% arial;
@@ -608,8 +608,9 @@ MemoEdit {
 .parameter_grid img {
 	height: 1.9mm;
 	width: 1.3mm;
-	margin-right: 2.4mm;
 	margin-top: 35%;
+	/*margin-left: 1mm;*/
+	margin-right: 2.4mm;
 	background-image: url(arrow.png);
 	dock-align: right;
 }
@@ -619,6 +620,7 @@ MemoEdit {
 	height: 100%;
 	color: #2d89cf;
 	padding-top: 30%;
+	margin-left: 2.7mm;
 	dock-align: left;
 	font: 37% arial;
 	placeholder-color: #2d89cf;
@@ -925,16 +927,8 @@ MemoEdit {
 	background-image: url(Menu_04.png);
 }
 
-.btn_stocks {
-	background-image: url(Menu_05.png);
-}
-
 .btn_kpi {
 	background-image: url(Menu_06.png);
-}
-
-.btn_set {
-	background-image: url(Menu_07.png);
 }
 
 .btn_sync {
@@ -949,7 +943,11 @@ MemoEdit {
 	background-image: url(Menu_10.png);
 }
 
-.no_contacts {
+.btn_todo {
+	background-image: url(Menu_12.png);
+}
+
+.no_items {
 	height: 5.5mm;
 	width: 100%;
 	margin-top: 2mm;

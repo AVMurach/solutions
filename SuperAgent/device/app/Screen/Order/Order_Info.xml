@@ -77,7 +77,7 @@
 					<c:HorizontalLayout CssClass="clickable" OnClickAction="$ConvertDiscount($massDiscountEdit, $thisDoc)">
 						<c:TextView Id="massDiscountDescription" Text="$OrderDiscountDescription($massDiscountEdit.Text)" />
 					</c:HorizontalLayout>
-					<c:EditText Id="massDiscountEdit" CssClass="value" Text="$MassDiscount($thisDoc)" OnChange="$CheckUserInput()" OnLostFocus="$SetMassDiscount($thisDoc)" Keyboard="numeric" Enabled="$IsEditable($executedOrder, $thisDoc)"/>
+					<c:EditText Id="massDiscountEdit" CssClass="value" Text="$MassDiscount($thisDoc)" OnChange="$ApplyDiscount()" OnLostFocus="$SetMassDiscount($thisDoc)" Keyboard="numeric" Enabled="$IsEditable($executedOrder, $thisDoc)"/>
 				</c:DockLayout>
 				<c:HorizontalLine />
 			</s:If>

@@ -353,7 +353,7 @@ function CreateOutletEnabled(){
 }
 
 function AddGlobalAndAction(contractor){
-	DoAction("Select", contractor);
+	DoAction("Select", contractor, false);
 }
 
 // --------------------internal-----------------

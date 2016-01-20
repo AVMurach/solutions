@@ -57,7 +57,7 @@
 				<c:VerticalLayout Id="ownership_vl" OnClickAction="$SelectOwnership($OwnershipType, $contractor)">
 					<c:TextView Text="#ownership#" CssClass="description_row"></c:TextView>
 					<s:If Test="$NotEmptyRef($contractor.OwnershipType)">
-						<c:TextView Id="OwnershipType" Text="#{$contractor.OwnershipType.Description}#" CssClass="main_row"/>
+						<c:TextView Id="OwnershipType" Text="$TranslateString($contractor.OwnershipType.Description)" CssClass="main_row"/>
 					</s:If>
 					<s:Else>
 						<c:TextView Id="OwnershipType" Text="—" CssClass="main_row"/>

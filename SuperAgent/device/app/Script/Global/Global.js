@@ -21,6 +21,7 @@ function SetSessionConstants() {
 	var SnapshotSize = new Query("SELECT NumericValue FROM Catalog_MobileApplicationSettings WHERE Description='SnapshotSize'");
 	var SKUFeaturesRegistration = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='SKUFeaturesRegistration'");
 	var coordActuality = new Query("SELECT NumericValue FROM Catalog_MobileApplicationSettings WHERE Description='UserCoordinatesActualityTime'");
+	var autoFillOrder = new Query("SELECT LogicValue FROM Catalog_MobileApplicationSettings WHERE Description='UseAutoFillForRecOrder'");
 
 	$.AddGlobal("sessionConst", new Dictionary());
 	$.sessionConst.Add("solVersion", solVersion.ExecuteScalar());
@@ -33,6 +34,7 @@ function SetSessionConstants() {
 	$.sessionConst.Add("SnapshotSize", SnapshotSize.ExecuteScalar());
 	$.sessionConst.Add("SKUFeaturesRegistration", SKUFeaturesRegistration.ExecuteScalar());	
 	$.sessionConst.Add("UserCoordinatesActualityTime", coordActuality.ExecuteScalar());
+	$.sessionConst.Add("UseAutoFillForRecOrder", autoFillOrder.ExecuteScalar());
 
 	var q = new Query("SELECT U.AccessRight, A.Id, A.Code FROM Catalog_MobileAppAccessRights A " +
 		" LEFT JOIN Catalog_User_UserRights U ON U.AccessRight=A.Id ");
@@ -110,6 +112,13 @@ function SetSessionConstants() {
 				$.sessionConst.Add("newPriceEnabled", false);
 			} else {
 				$.sessionConst.Add("newPriceEnabled", true);
+			}
+		}
+		if (rights.Code=='000000013') {
+			if (rights.AccessRight==null) {
+				$.sessionConst.Add("editTasksWithoutVisit", false);
+			} else {
+				$.sessionConst.Add("editTasksWithoutVisit", true);
 			}
 		}
 	}
