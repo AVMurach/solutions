@@ -180,6 +180,87 @@ function CheckAndCommit(state, args) {
 	}
 }
 
+//AVMurach+
+function GetPercentageMatrix(outlet, visit) {
+	var query = new Query("SELECT AMS.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
+			"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet"); 
+	query.AddParameter("outlet", outlet);
+    var SKUMatrix = query.ExecuteCount();
+    
+    var query = new Query("SELECT AMS.SKU, ANSW.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
+    		"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet " +
+    		"	JOIN (SELECT DISTINCT U1.SKU FROM USR_SKUQuestions U1" +
+    		"	WHERE Description = @stok AND (Answer != '' AND Answer IS NOT NULL)) AS ANSW ON ANSW.SKU = AMS.SKU"); 
+	query.AddParameter("outlet", outlet);
+	query.AddParameter("stok", Translate["#stockQue#"]);
+		
+	var SKUAnswer = query.ExecuteCount();
+    
+    if(SKUMatrix == null){
+    	SKUMatrix = 0;    	
+    }
+	
+    if(SKUMatrix > 0){
+    	percent = FormatValue(SKUAnswer*100/SKUMatrix);    	
+    }else{
+    	percent = FormatValue(0);
+    }
+    
+    var doc = visit.GetObject();
+    doc.PercentageCompletionMatrix = percent;
+    doc.Save();
+    		
+	return percent
+}
+
+function DoSelectOrderGiven(visit, attribute, control, visitOrderGiven, title, outlet) {
+	var query = new Query("SELECT CP.Id,CP.Description FROM Catalog_Outlet_Contacts OCP " +
+			"	LEFT JOIN Catalog_ContactPersons CP ON CP.Id = OCP.ContactPerson WHERE Ref = @outlet " +
+			"UNION SELECT @nullRef AS Id, @palka AS Description "); 
+	query.AddParameter("outlet", outlet);
+	query.AddParameter("nullRef", DB.EmptyRef("Catalog_ContactPersons"));
+	query.AddParameter("palka", "—");
+			
+	//var listChoice = query.Execute();
+	
+	//Dialogs.DoChoose("#sdfsdfg#", listChoice, visitOrderGiven, MySelectCallBack, [visit, attribute, control]);
+	Dialogs.DoChoose(query.Execute(), visit, attribute, control, MySelectCallBack, title);
+}
+
+function MySelectCallBack(state, args) {
+	MyAssignDialogValue(state, args);
+	Workflow.Refresh([]);
+}
+
+function MyAssignDialogValue(state, args) {
+	/*Dialog.Debug("args " + args.Result);
+	Dialog.Debug("state" + state);*/
+	
+	var entity = state[0];
+	var attribute = state[1];
+	if(NotEmptyRef(args.Result)){
+		entity[attribute] = args.Result.Description;		
+	}else{
+		entity[attribute] = null;
+	}	
+	entity.GetObject().Save();
+	return;
+}
+
+function GetContactDesc(idCont){
+	if(idCont != null){
+		var query = new Query("SELECT CP.Description FROM Catalog_ContactPersons CP " +
+		"	WHERE Id = @idCont"); 
+		query.AddParameter("idCont", idCont);
+		
+		return query.ExecuteScalar();
+		
+	}else{
+		return "";
+	}
+	
+}
+//AVMurach-
 
 //--------------------------internal functions--------------
 

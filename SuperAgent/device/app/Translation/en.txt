@@ -345,3 +345,8 @@ web_site	Web-site
 webSite		Сайт разработчика		
 YES		Yes		
 ZAO				ZAO
+percentageCompletionMatrix	% compl matrix
+stockQue	Остаток
+whoHanded	who handed
+missingItems	Missing items
+orderHanded	Order handed

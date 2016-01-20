@@ -41,6 +41,20 @@
 			<c:HorizontalLine />
 
 			<s:If Test="$OrderExists($workflow.visit)">
+				<c:DockLayout CssClass="grid" OnClickAction= "$DoSelectOrderGiven($workflow.visit.Id,OrderGiven,$orderGivenId, $workflow.visit.OrderGiven, #whoHanded#, $workflow.outlet)" >
+					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+					<c:VerticalLayout>
+						<c:TextView Text="#orderHanded#" CssClass="description_row"></c:TextView>
+						<s:If Test="$workflow.visit.OrderGiven != null">
+							<c:TextView Id="orderGivenId" Text="$workflow.visit.OrderGiven" CssClass="main_row"></c:TextView>
+						</s:If>
+						<s:Else>
+							<c:TextView Id="orderGivenId" Text="—" CssClass="main_row"></c:TextView>
+						</s:Else>
+					</c:VerticalLayout>
+				</c:DockLayout>
+				<c:HorizontalLine />
+				
 				<c:HorizontalLayout CssClass="grid" OnClickAction="$SetDeliveryDate($workflow.order, $deliveryDate)">
 					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
 					<c:VerticalLayout>
@@ -107,6 +121,23 @@
 				<c:TextView Text="#caps_summary#:"></c:TextView>
 			</c:HorizontalLayout>
 			<c:HorizontalLine />
+			
+			<s:If Test="$ShowQuestionnaires()">
+				<c:DockLayout CssClass="parameter_grid">
+					<s:Push Id="answered" Value="$GetSum($workflow.questions_answ, $workflow.questions_answ_sku)"></s:Push>
+					<s:Push Id="questions" Value="$GetSum($workflow.questions_qty, $workflow.questions_qty_sku)"></s:Push>
+					<c:TextView Text="#questAnswers#" CssClass="blackText"></c:TextView>
+					<c:TextView Text="{$answered} #of# {$questions}" CssClass="value"></c:TextView>
+				</c:DockLayout>
+				<c:HorizontalLine />
+			</s:If>
+			
+			<c:DockLayout CssClass="parameter_grid">
+				<s:Push Id="percentageMatrix" Value="$GetPercentageMatrix($workflow.outlet, $workflow.visit)"></s:Push>
+				<c:TextView Text="#percentageCompletionMatrix#" CssClass="blackText"></c:TextView>
+				<c:TextView Text="$percentageMatrix" CssClass="value"></c:TextView>
+			</c:DockLayout>
+			<c:HorizontalLine />
 
 			<!-- <s:If Test="$NoTasks()"> -->
 				<c:DockLayout CssClass="parameter_grid" OnClickAction="$DoAction(Total_Tasks)">
@@ -119,7 +150,7 @@
 				<c:HorizontalLine />
 			<!-- </s:If> -->
 
-			<s:If Test="$ShowQuestionnaires()">
+			<!--<s:If Test="$ShowQuestionnaires()">
 				<c:DockLayout CssClass="parameter_grid">
 					<s:Push Id="answered" Value="$GetSum($workflow.questions_answ, $workflow.questions_answ_sku)"></s:Push>
 					<s:Push Id="questions" Value="$GetSum($workflow.questions_qty, $workflow.questions_qty_sku)"></s:Push>
@@ -127,7 +158,7 @@
 					<c:TextView Text="{$answered} #of# {$questions}" CssClass="value"></c:TextView>
 				</c:DockLayout>
 				<c:HorizontalLine />
-			</s:If>
+			</s:If>-->
 
 			<s:If Test="@orderEnabled">
 				<c:DockLayout CssClass="parameter_grid">

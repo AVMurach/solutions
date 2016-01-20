@@ -345,3 +345,8 @@ web_site	Веб-сайт
 webSite		Сайт разработчика		
 YES		Да		
 ZAO				ЗАО
+percentageCompletionMatrix	% вып матрицы
+stockQue	Остаток
+whoHanded	Кому передан
+missingItems	ОТСУТСТВУЮЩИЕ ПОЗИЦИИ
+orderHanded	Заказ передан
