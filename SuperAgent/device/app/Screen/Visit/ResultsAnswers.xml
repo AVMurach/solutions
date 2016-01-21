@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="ResultsAnswers.css">
+
+	<c:VerticalLayout>
+
+		<c:DockLayout CssClass="top_navigator">
+			<c:DockLayout Id="btnBack" CssClass="btn_back" OnEvent="Back" OnClickAction="$DoBack()">
+				<c:Image />
+				<c:TextView Text="#back#" />
+			</c:DockLayout>
+			<!-- <c:DockLayout CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CheckAndCommit($workflow.order, $workflow.visit, $workflow.name)" >
+				<c:TextView Id="btnForward" Text="#ready#" />
+			</c:DockLayout> -->
+			<c:DockLayout Id="btn_forward" CssClass="btn_forward" OnEvent="Forward" OnClickAction="$DoForward()">
+				<c:TextView Id="btnForward" Text="#forward#" />
+			</c:DockLayout>
+			
+			<c:HorizontalLayout>
+				<c:TextView Text="" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+
+		<c:Image CssClass="7_scroll"></c:Image>
+		<c:HorizontalLine />
+
+		<c:ScrollView Id="grScrollView">
+
+			<!-- AVMurach+ -->			
+			<c:HorizontalLayout CssClass="caption_grid">
+				<c:TextView Text="#missingItems#:"></c:TextView>
+			</c:HorizontalLayout>
+			<c:HorizontalLine />
+						
+			<s:Iterator Id="orderTable" Value="$GetOrderTable($workflow.order, $workflow.outlet, $workflow.visit)">
+				<c:HorizontalLine />
+			
+					<c:DockLayout CssClass="grid">
+						<c:VerticalLayout>
+							<c:TextView Text="{$orderTable.AMSSKU.Description}" CssClass="main_row"></c:TextView>
+							<c:TextView Text="#stockQue#: {0} " CssClass="description_row"></c:TextView> 
+						</c:VerticalLayout>
+					</c:DockLayout>
+			</s:Iterator>
+			
+			<c:HorizontalLine />
+			<!-- AVMurach- -->			
+						
+		</c:ScrollView>
+
+	</c:VerticalLayout>
+
+</c:Screen>

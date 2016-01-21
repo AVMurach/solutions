@@ -106,44 +106,17 @@ function GetOrderControlValue() {
 }
 
 function CountDoneTasks(visit) {
-	var query = new Query;
-
-	var outlet = "";
-
-	if ($.workflow.name == "Visit"){
-		query.AddParameter("outlet", GlobalWorkflow.GetOutlet());
-		outlet = " AND DT.Outlet=@outlet ";
-	}
-
-	query.Text = "SELECT O.Description AS Outlet, DT.Id, DT.TextTask, DT.EndPlanDate, DT.ExecutionDate " +
-		" FROM Document_Task DT " +
-		" JOIN Catalog_Outlet O ON DT.Outlet=O.Id " +
-		" WHERE DT.Status=1 " +
-		" AND DATE(ExecutionDate)=DATE('now', 'localtime') " + outlet +
-		" ORDER BY DT.ExecutionDate desc, O.Description";
-
-	return query.ExecuteCount();
+    var query = new Query("SELECT Id FROM Document_Visit_Task WHERE Ref=@ref AND Result=@result");
+    query.AddParameter("ref", visit);
+    query.AddParameter("result", true);
+    return query.ExecuteCount();
 }
 
 function CountTasks(outlet) {
-	var q = new Query;
-
-	var outlet = "";
-
-	if ($.workflow.name == "Visit"){
-		q.AddParameter("outlet", GlobalWorkflow.GetOutlet());
-		outlet = " AND DT.Outlet=@outlet ";
-	}
-
-	q.Text = "SELECT O.Description AS Outlet, DT.Id, DT.TextTask, DT.EndPlanDate " +
-		" FROM Document_Task DT " +
-		" JOIN Catalog_Outlet O ON DT.Outlet=O.Id " +
-		" WHERE ((Status=0 AND DATE(StartPlanDate)<=DATE('now', 'localtime')) " +
-		" OR " +
-		" (Status=1 AND DATE(ExecutionDate)=DATE('now', 'localtime'))) " + outlet +
-		" ORDER BY DT.EndPlanDate, O.Description";
-
-	return q.ExecuteCount();
+    var query = new Query("SELECT Id FROM Document_Task WHERE PlanDate >= @planDate AND Outlet = @outlet");
+    query.AddParameter("outlet", outlet);
+    query.AddParameter("planDate", DateTime.Now.Date);
+    return query.ExecuteCount();
 }
 
 function GetOrderSUM(order) {
@@ -160,108 +133,107 @@ function GetReturnSum(returnDoc) {
 	return FormatValue(sum);
 }
 
-function AskEndVisit(order, visit, wfName) {
-	Dialog.Alert(Translate["#visit_end_question#"], CheckAndCommit, [order, visit, wfName], Translate["#end#"], Translate["#go_back#"]);
-}
+function CheckAndCommit(order, visit, wfName) {
 
-function CheckAndCommit(state, args) {
-	if (args.Result == 0) {
-		order = state[0];
-		visit = state[1];
-		wfName = state[2];
-	  visit = visit.GetObject();
-		visit.EndTime = DateTime.Now;
+    visit = visit.GetObject();
+	visit.EndTime = DateTime.Now;
+
     if (OrderExists(visit.Id)) {
         order.GetObject().Save();
     }
+
     CreateQuestionnaireAnswers();
+
     visit.Save();
     Workflow.Commit();
-	}
+
 }
 
-//AVMurach+
-function GetPercentageMatrix(outlet, visit) {
-	var query = new Query("SELECT AMS.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
-			"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet"); 
-	query.AddParameter("outlet", outlet);
-    var SKUMatrix = query.ExecuteCount();
+function GetOrderTable(order, outlet, visit) {
+    /*var query = new Query("SELECT O.SKU AS OSKU, ifnull(O.Qty, 0) AS Qty, AMS.Id AS AMSSKU " +
+						", CASE WHEN ifnull(AMS.RecOrder, 0) < 0 THEN 0 ELSE ifnull(AMS.RecOrder, 0) END AS RecOrder " +
+						" FROM Document_Order_SKUs O " +
+						"LEFT JOIN " +						
+			
+						"	(SELECT DISTINCT S.Id" +
+						"		, S.Description" +
+						"		, S.CommonStock AS CommonStock" +
+						"		, CASE WHEN V.Answer IS NULL THEN U.Description ELSE UB.Description END AS RecUnit" +
+						"		, CASE WHEN V.Answer IS NULL THEN U.Id ELSE UB.Id END AS UnitId" +
+						"		, CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder" +
+						"		, CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder" +
+						
+						"	FROM _Catalog_SKU S " +
+						"		JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id" +
+						"		LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet" +
+						"		JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS  JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref     WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1)" +
+						"		LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id" +
+						"		LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@stock)" +
+						
+						"	WHERE S.IsTombstone = 0  ORDER BY  OrderRecOrder DESC,  S.Description LIMIT 100) AS AMS ON AMS.Id = O.SKU " +
+						
+						"WHERE Ref = @Ref " +
+						
+						"UNION " +
+						
+						"SELECT O.SKU AS OSKU, ifnull(O.Qty, 0) AS Qty, AMS.Id  AS AMSSKU" +
+						", CASE WHEN ifnull(AMS.RecOrder, 0) < 0 THEN 0 ELSE ifnull(AMS.RecOrder, 0) END AS RecOrder " +
+						" FROM (SELECT DISTINCT S.Id" +
+						"		, S.Description" +
+						"		, S.CommonStock AS CommonStock" +
+						"		, CASE WHEN V.Answer IS NULL THEN U.Description ELSE UB.Description END AS RecUnit" +
+						"		, CASE WHEN V.Answer IS NULL THEN U.Id ELSE UB.Id END AS UnitId" +
+						"		, CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder" +
+						"		, CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder" +
+						
+						"	FROM _Catalog_SKU S " +
+						"		JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id" +
+						"		LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet" +
+						"		JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS  JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref     WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1)" +
+						"		LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id" +
+						"		LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@stock)" +
+						
+						"	WHERE S.IsTombstone = 0  ORDER BY  OrderRecOrder DESC,  S.Description LIMIT 100) AS AMS " +
+						"LEFT JOIN " +
+						"Document_Order_SKUs O ON AMS.Id = O.SKU AND Ref = @Ref " +
+						"GROUP BY O.SKU, ifnull(O.Qty, 0), AMS.Id, ifnull(AMS.RecOrder, 0) ");*/
     
-    var query = new Query("SELECT AMS.SKU, ANSW.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
-    		"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet " +
-    		"	JOIN (SELECT DISTINCT U1.SKU FROM USR_SKUQuestions U1" +
-    		"	WHERE Description = @stok AND (Answer != '' AND Answer IS NOT NULL)) AS ANSW ON ANSW.SKU = AMS.SKU"); 
-	query.AddParameter("outlet", outlet);
-	query.AddParameter("stok", Translate["#stockQue#"]);
-		
-	var SKUAnswer = query.ExecuteCount();
+    var query = new Query("SELECT AMS.Id  AS AMSSKU " +
+			", CASE WHEN ifnull(AMS.RecOrder, 0) < 0 THEN 0 ELSE ifnull(AMS.RecOrder, 0) END AS RecOrder " +
+			" FROM (SELECT DISTINCT S.Id " +
+			"		, IfNull(V.Answer, 0) AS Answer " +
+			"		, S.Description" +
+			"		, S.CommonStock AS CommonStock" +
+			"		, CASE WHEN V.Answer IS NULL THEN U.Description ELSE UB.Description END AS RecUnit" +
+			"		, CASE WHEN V.Answer IS NULL THEN U.Id ELSE UB.Id END AS UnitId" +
+			"		, CASE WHEN V.Answer IS NULL THEN MS.Qty ELSE (MS.BaseUnitQty-V.Answer) END AS RecOrder" +
+			"		, CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder" +
+			
+			"	FROM _Catalog_SKU S " +
+			"		JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id" +
+			"		LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet" +
+			"		JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS  JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref     WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1)" +
+			"		LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id" +
+			"		LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@stock)" +
+			
+			"	WHERE S.IsTombstone = 0 AND (IfNull(V.Answer, 0) == 0 OR V.Answer = '0')  ORDER BY  OrderRecOrder DESC,  S.Description LIMIT 100) AS AMS " +
+			"GROUP BY AMS.Id, ifnull(AMS.RecOrder, 0) ");
+        
+    query.AddParameter("Ref", order);
+    query.AddParameter("outlet", outlet);
+    query.AddParameter("stock", DB.Current.Constant.SKUQuestions.Stock);
+    query.AddParameter("visit", visit);
     
-    if(SKUMatrix == null){
-    	SKUMatrix = 0;    	
-    }
-	
-    if(SKUMatrix > 0){
-    	percent = FormatValue(SKUAnswer*100/SKUMatrix);    	
-    }else{
-    	percent = FormatValue(0);
-    }
-    
-    var doc = visit.GetObject();
-    doc.PercentageCompletionMatrix = percent;
-    doc.Save();
-    		
-	return percent
+    var sum = query.Execute();
+    return sum;
 }
-
-function DoSelectOrderGiven(visit, attribute, control, visitOrderGiven, title, outlet) {
-	var query = new Query("SELECT CP.Id,CP.Description FROM Catalog_Outlet_Contacts OCP " +
-			"	LEFT JOIN Catalog_ContactPersons CP ON CP.Id = OCP.ContactPerson WHERE Ref = @outlet " +
-			"UNION SELECT @nullRef AS Id, @palka AS Description "); 
-	query.AddParameter("outlet", outlet);
-	query.AddParameter("nullRef", DB.EmptyRef("Catalog_ContactPersons"));
-	query.AddParameter("palka", "—");
-		
-	Dialogs.DoChoose(query.Execute(), visit, attribute, control, MySelectCallBack, title);
-}
-
-function MySelectCallBack(state, args) {
-	MyAssignDialogValue(state, args);
-	Workflow.Refresh([]);
-}
-
-function MyAssignDialogValue(state, args) {	
-	var entity = state[0];
-	var attribute = state[1];
-	if(NotEmptyRef(args.Result)){
-		entity[attribute] = args.Result.Description;		
-	}else{
-		entity[attribute] = null;
-	}	
-	entity.GetObject().Save();
-	return;
-}
-
-function GetContactDesc(idCont){
-	if(idCont != null){
-		var query = new Query("SELECT CP.Description FROM Catalog_ContactPersons CP " +
-		"	WHERE Id = @idCont"); 
-		query.AddParameter("idCont", idCont);
-		
-		return query.ExecuteScalar();
-		
-	}else{
-		return "";
-	}
-	
-}
-//AVMurach-
 
 //--------------------------internal functions--------------
 
 
 function NextDateHandler(state, args){
 
-	var newVistPlan = state[0];
+	var newVistPlan = state[0]; 
 
 	if (newVistPlan.Id==null){
 		newVistPlan = DB.Create("Document.MobileAppPlanVisit");
@@ -293,9 +265,6 @@ function VisitIsChecked(visit) {
     	obligateNumber = obligateNumber + 1;
     }
     if (checkVisitReason && visit.ReasonForVisit.EmptyRef()){
-    	obligateNumber = obligateNumber + 1;
-    }
-    if (OrderExists($.workflow.visit) && visit.OrderGiven == null){
     	obligateNumber = obligateNumber + 1;
     }
     if (obligateNumber == 0)
