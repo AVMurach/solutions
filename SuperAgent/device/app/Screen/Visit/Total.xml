@@ -42,7 +42,13 @@
 
 			<s:If Test="$OrderExists($workflow.visit)">
 				<c:DockLayout CssClass="grid" OnClickAction= "$DoSelectOrderGiven($workflow.visit.Id,OrderGiven,$orderGivenId, $workflow.visit.OrderGiven, #whoHanded#, $workflow.outlet)" >
-					<c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout>
+					<!-- <c:HorizontalLayout CssClass="empty_side_wh"></c:HorizontalLayout> -->
+					<s:If Test="$IsEmptyValue($workflow.visit.OrderGiven)">
+						<c:HorizontalLayout CssClass="required_side_wh"></c:HorizontalLayout>
+					</s:If>
+					<s:Else>
+						<c:HorizontalLayout CssClass="answered_side_wh"></c:HorizontalLayout>
+					</s:Else>
 					<c:VerticalLayout>
 						<c:TextView Text="#orderHanded#" CssClass="description_row"></c:TextView>
 						<s:If Test="$workflow.visit.OrderGiven != null">
