@@ -37,6 +37,8 @@
 			</c:DockLayout>			
 		</c:DockLayout>
 		<c:HorizontalLine />
+		
+		<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
 
 		<!-- <c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order)">
 			<c:TextView Text="#filter#"></c:TextView>
