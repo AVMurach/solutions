@@ -302,6 +302,22 @@ function AskAndBack() {
 
 }
 
+//AVMurach+
+function ClearFiltersAndDoAction(SetFilter, Order) {
+
+	del = new Query("DELETE FROM USR_Filters");
+	del.Execute();
+	
+	if (Variables.Exists("filterType") != false){
+		Variables.Remove("filterType");
+		Variables.AddGlobal("filterType", "brand");
+	}
+	
+	Workflow.Action("SetFilter", [Order]);
+		
+}
+//AVMurach-
+
 function CheckFilterAndForward() {
     
 	 Workflow.Forward([null, true]);

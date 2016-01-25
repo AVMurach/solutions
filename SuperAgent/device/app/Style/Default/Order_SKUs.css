@@ -156,3 +156,70 @@
 	color: #ffffff;
 	font: 50% Arial;
 }
+
+/* AVMurach+ */
+.margin_top {
+	height: 1.3mm;
+	selected-color: #bacdce;
+	background-color: #efeff4;
+	dock-align: top;
+}
+
+.searchfilter {
+	height: 7.7mm;
+	/*background-color: #d6d9dd;*/
+	dock-align: top;
+}
+
+.search {
+	height: 8.7mm;
+	/*background-color: #d6d9dd;*/
+	dock-align: top;
+}
+
+.search Button {
+	margin-left: 0.7mm;
+	margin-top: 18%;
+	margin-right: 0.7mm;
+	width: 9mm;
+	height: 65%;
+	dock-align: right;
+	background-color: #43acfd;
+	color: #f8f8f8;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #43acfd;
+	border-radius: 1mm;
+	font: 43% arial;
+}
+
+.ButtonLeft {
+	margin-left: 0.7mm;
+	margin-top: 18%;
+	margin-right: 0.7mm;
+	width: 9mm;
+	height: 65%;
+	dock-align: right;
+	background-color: #fff;
+	color: #43acfd;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #43acfd;
+	border-radius: 1mm;
+	font: 43% arial;
+	selected-color: #b2b2b7;	
+}
+
+.parameter_grid {
+	width: 100%;
+	height: 5.7mm;
+	dock-align: top;
+}
+
+.caption_grid {
+	height: 4.7mm;
+	selected-color: #bacdce;
+	background-color: #efeff4;
+	dock-align: top;
+	padding-left: 2.4mm;
+}

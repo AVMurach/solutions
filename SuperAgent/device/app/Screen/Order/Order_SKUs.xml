@@ -9,15 +9,27 @@
 	<c:DockLayout>
 
 		<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
-
+				
 		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
 			<c:TextView Text="#ready#"></c:TextView>
 		</c:HorizontalLayout>
+				
 		<c:HorizontalLine CssClass="b_line" />
 
 		<c:HorizontalLine />
 		
+		<!-- AVMurach+ -->
+		<!-- <c:DockLayout CssClass="search">
+			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
+			<c:DockLayout>
+				<c:Image />
+				<c:EditText Id="edtSearch" Text="$search" Placeholder="#search#"></c:EditText>
+			</c:DockLayout>			
+		</c:DockLayout> -->
 		<c:DockLayout CssClass="search">
+			
+			<c:Button Id="btnfilter" CssClass="ButtonLeft" Text="#filter#" OnClickAction="$ClearFiltersAndDoAction(SetFilter, Order)"></c:Button>
+			
 			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 			<c:DockLayout>
 				<c:Image />
@@ -26,10 +38,11 @@
 		</c:DockLayout>
 		<c:HorizontalLine />
 
-		<c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order)">
+		<!-- <c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order)">
 			<c:TextView Text="#filter#"></c:TextView>
 			<c:Image></c:Image>
-		</c:DockLayout>
+		</c:DockLayout> -->
+		<!-- AVMurach- -->
 		<c:HorizontalLine />
 
 
