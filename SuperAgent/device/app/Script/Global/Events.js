@@ -51,16 +51,26 @@ function OnWorkflowStart(name) {
 	
 	Variables["workflow"].Add("name", name);
 
-	if (name=="Visit" || name=="CreateOrder"){
+	if (name=="Visit" || name=="CreateOrder" || name=="Order"){
 		
-		var drop = new Query("DROP TABLE IF EXISTS USR_Filters");
-		 
-		drop.Execute();
+		var checkDropF = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_Filters'");
 		
-		var createTable = new Query("CREATE TABLE IF NOT EXISTS USR_Filters(Id Text, FilterType Text)");
-		 
-		createTable.Execute();
-				
+		var checkDropFResult = checkDropF.ExecuteScalar();
+		
+		if (checkDropFResult == 1) {
+		
+			var dropF = new Query("DELETE FROM USR_Filters");
+			 
+			dropF.Execute();
+			
+		} else {
+			
+			var createTable = new Query("CREATE TABLE IF NOT EXISTS USR_Filters(Id Text, FilterType Text)");
+			 
+			createTable.Execute();
+			
+		}
+								
 	}
 	
 }
@@ -138,10 +148,18 @@ function OnWorkflowFinish(name, reason) {
 	
 	if (name=="Visit" || name=="CreateOrder"){
 		
-		var drop = new Query("DROP TABLE IF EXISTS USR_Filters");
-		 
-		drop.Execute();
-				
+		var checkDropF = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_Filters'");
+		
+		var checkDropFResult = checkDropF.ExecuteScalar();
+		
+		if (checkDropFResult == 1) {
+		
+			var dropF = new Query("DELETE FROM USR_Filters");
+			 
+			dropF.Execute();
+			
+		}
+										
 	}
 }
 
@@ -295,10 +313,26 @@ function GetQuestionnairesForOutlet(outlet) {
 }
 
 function CreateQuestionnareTable(outlet) {
-	var drop = new Query("DROP TABLE IF EXISTS USR_Questionnaires");
-	drop.Execute();
 	
-	var query = new Query("CREATE TABLE USR_Questionnaires AS " +
+	var checkQS = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_Questionnaires'");
+	
+	var checkQSResult = checkQS.ExecuteScalar();
+	
+	if (checkQSResult == parseInt(1)) {
+	
+		var dropQS = new Query("DELETE FROM USR_Questionnaires");
+		 
+		dropQS.Execute();
+		
+		var headerText = "INSERT INTO USR_Questionnaires ";
+				
+	} else {
+		
+		var headerText = "CREATE TABLE USR_Questionnaires AS ";
+		
+	}
+	
+	var query = new Query(headerText +
 			"SELECT DISTINCT Q.Id AS Id, Q.Number AS Number, Q.Date AS Date, Q.Single AS Single " +
 				", S.BeginAnswerPeriod AS BeginAnswerPeriod, S.EndAnswerPeriod AS EndAnswerPeriod " +
 			"FROM Document_Questionnaire_Schedule S " +
@@ -367,9 +401,26 @@ function CreateQuestionnareTable(outlet) {
 }
 
 function CreateQuestionsTable(outlet) {
-	var check = new Query("DROP TABLE IF EXISTS USR_Questions");
-	check.Execute();
-	var query = new Query("CREATE TABLE USR_Questions AS " +
+	
+	var checkQ = new Query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='USR_Questions'");
+	
+	var checkQResult = checkQ.ExecuteScalar();
+	
+	if (checkQResult == parseInt(1)) {
+	
+		var dropQ = new Query("DELETE FROM USR_Questions");
+		 
+		dropQ.Execute();
+		
+		var headerText = "INSERT INTO USR_Questions ";
+				
+	} else {
+		
+		var headerText = "CREATE TABLE USR_Questions AS ";
+		
+	}
+	
+	var query = new Query(headerText +
 			"SELECT MIN(D.Date) AS DocDate, Q.ChildQuestion AS Question, Q.ChildDescription AS Description" +
 			", Q.ParentQuestion AS ParentQuestion, Q.ChildType AS AnswerType" +
 			", A.Answer AS Answer, MAX(A.AnswerDate) AS AnswerDate, D.Single AS Single " +
@@ -395,6 +446,7 @@ function CreateQuestionsTable(outlet) {
 	query.AddParameter("outlet", outlet);
 	query.AddParameter("attached", Translate["#snapshotAttached#"]);
 	query.Execute();
+
 }
 
 function ListSelectorIsChanged(currentSelector, selector, additionalParam, currentParam) {

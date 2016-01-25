@@ -38,7 +38,7 @@
 		
 		<c:WarmupActions>
 			<c:WarmupAction Controller="Order\Order_SKUs.js" Function="WarMupFunction" />
-			<c:WarmupAction Controller="Visits\Questions.js" Function="WarMupFunction" />
+			<c:WarmupAction Controller="Receivables\Main.js" Function="WarMupFunction" />
 		</c:WarmupActions>
 
 	</c:Script>

@@ -31,7 +31,7 @@ function GetReceivables(outlet) {
 }
 
 function ValidateAmount(control) {
-	var valid = Global.ValidateField(control.Text, "[0-9\\.,]*", Translate["#encashmentAmount#"]);
+	var valid = ValidateField(control.Text, "[0-9\\.,]*", Translate["#encashmentAmount#"]);
 	if (valid){
 		var enc = $.workflow.encashment.GetObject();
 		enc.EncashmentAmount = ToDecimal(control.Text);
@@ -44,7 +44,7 @@ function ValidateAmount(control) {
 function ValidateEncashments() {
 	var i = 0;
 	while ($.Exists(("control" + i))) {
-		var valid = Global.ValidateField(Variables["control" + i].Text, "[0-9\\.,]*", Translate["#encashment#"]);
+		var valid = ValidateField(Variables["control" + i].Text, "[0-9\\.,]*", Translate["#encashment#"]);
 		if (valid == false)
 			return false;		
 		i = i + 1;
@@ -67,7 +67,7 @@ function RefreshAmount(control, encashment, encasmentItem, receivableDoc) {
 		encasmentItem = CreateEncashmentItem(encashment, receivableDoc);
 	editingItem = encasmentItem;
 
-	if (Global.ValidateField(control.Text, "[0-9\\.,]*", Translate["#encashment#"])) {
+	if (ValidateField(control.Text, "[0-9\\.,]*", Translate["#encashment#"])) {
 		encasmentItem = encasmentItem.GetObject();
 		if (String.IsNullOrEmpty(control.Text))
 			encasmentItem.EncashmentSum = 0;
@@ -197,4 +197,15 @@ function FormatAmount(control) {
 		control.Text = "";
 	else
 		control.Text = String.Format("{0:F2}", control.Text);
+}
+
+//------------------------------Temporary, from global----------------
+
+function ValidateField(string, regExp, fieldName){
+	if (string==null)
+		string = "";
+	var validField = validate(string, regExp);
+	if (validField==false)
+		Dialog.Message(String.Format("{0} {1}", Translate["#incorrect#"], fieldName));
+	return validField;
 }

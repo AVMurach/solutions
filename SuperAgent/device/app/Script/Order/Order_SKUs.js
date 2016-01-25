@@ -187,7 +187,7 @@ function CreateOrderItem(control, editFieldName, textFieldName, packField, sku, 
             p.Discount = 0;
             p.Save();
 
-            Global.FindTwinAndUnite(p);
+            FindTwinAndUnite(p);
 
             var query = new Query("SELECT Qty FROM Document_Order_SKUs WHERE Ref=@ref AND SKU=@sku AND Feature=@feature AND Units=@units");
             query.AddParameter("ref", p.Ref);
@@ -585,4 +585,25 @@ function CreateCondition(list, field) {
     }
     
     return str;
+}
+
+function FindTwinAndUnite(orderitem) { // DELETE AFTER WARMUP FIXED
+	var q = new Query(
+			"SELECT Id FROM Document_Order_SKUs WHERE Ref=@ref AND SKU=@sku AND Discount=@discount AND Units=@units AND Feature=@feature AND Id<>@id LIMIT 1"); // AND
+																																								// Id<>@id
+	q.AddParameter("ref", orderitem.Ref);
+	q.AddParameter("sku", orderitem.SKU);
+	q.AddParameter("discount", orderitem.Discount);
+	q.AddParameter("units", orderitem.Units);
+	q.AddParameter("feature", orderitem.Feature);
+	q.AddParameter("id", orderitem.Id);
+	var rst = q.ExecuteCount();
+	if (parseInt(rst) != parseInt(0)) {
+		var twin = q.ExecuteScalar();
+		twin = twin.GetObject();
+		twin.Qty += orderitem.Qty;
+		twin.Save();
+		DB.Delete(orderitem.Id);
+	} else
+		orderitem.Save();
 }
