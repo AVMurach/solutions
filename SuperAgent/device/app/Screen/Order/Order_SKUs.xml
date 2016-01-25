@@ -10,6 +10,12 @@
 
 		<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
 				
+		<c:DockLayout CssClass="top_navigator">
+			<c:HorizontalLayout>
+				<c:TextView Text="#skuAdd#" />
+			</c:HorizontalLayout>
+		</c:DockLayout>
+		
 		<c:HorizontalLayout Id="btnDone" CssClass="bottom_btn" OnEvent="Back" OnClickAction="$DoBackTo(Order)">
 			<c:TextView Text="#ready#"></c:TextView>
 		</c:HorizontalLayout>
@@ -28,7 +34,7 @@
 		</c:DockLayout> -->
 		<c:DockLayout CssClass="search">
 			
-			<c:Button Id="btnfilter" CssClass="ButtonLeft" Text="#filter#" OnClickAction="$ClearFiltersAndDoAction(SetFilter, Order)"></c:Button>
+			<c:Button Id="btnfilter" CssClass="ButtonLeft" Text="#filter#" OnClickAction="$Workflow.DoAction(SetFilter, Order, $edtSearch.Text)"></c:Button>
 			
 			<c:Button Id="btnSearch" Text="#search#" OnClickAction="$DoRefresh($edtSearch.Text)"></c:Button>
 			<c:DockLayout>
@@ -36,10 +42,8 @@
 				<c:EditText Id="edtSearch" Text="$search" Placeholder="#search#"></c:EditText>
 			</c:DockLayout>			
 		</c:DockLayout>
-		<c:HorizontalLine />
-		
 		<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
-
+		
 		<!-- <c:DockLayout CssClass="parameter_grid" OnClickAction="$Workflow.DoAction(SetFilter, Order)">
 			<c:TextView Text="#filter#"></c:TextView>
 			<c:Image></c:Image>
@@ -83,7 +87,7 @@
 							<c:TextView Id="textView{$index}" Text="0 {#alreadyOrdered#}" />
 						</c:VerticalLayout>
 					</c:HorizontalLayout>
-					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId)" CssClass="grid">
+					<c:DockLayout OnClickAction="$DoAction(SelectSKU, $item.Id, $item.Price, null, null, null, $item.RecOrder, $item.UnitId, $edtSearch.Text)" CssClass="grid">
 						<c:Image />
 						<c:VerticalLayout>
 							<c:DockLayout>

@@ -10,6 +10,8 @@
 	<s:Push Id="orderitem" Value="$CreateOrderItemIfNotExist($order.Id,$sku,$orderitem,$price,$features, $param6, $param7)"></s:Push>
 	<s:Push Id="featureDescr" Value="$GetFeatureDescr($orderitem.Feature)"></s:Push>
 
+	<s:Push Id="search" Value="$param8"></s:Push>
+	
 	<s:If Test="$showimage == null">
 		<s:Push Id="showimage" Value="NotShow"></s:Push>
 	</s:If>
@@ -22,7 +24,7 @@
 			<c:VerticalLayout OnEvent="Back" OnClickAction="$DeleteAndBack($orderitem)">
 				<c:TextView Text="#cancel#" CssClass="left_tv"></c:TextView>
 			</c:VerticalLayout>
-			<c:VerticalLayout Id="btnAdd" OnEvent="Forward" OnClickAction="$CalculateSKUAndForward($order.Outlet, $orderitem)">
+			<c:VerticalLayout Id="btnAdd" OnEvent="Forward" OnClickAction="$CalculateSKUAndForward($order.Outlet, $orderitem, $search)">
 				<c:TextView Text="#add#" CssClass="right_tv"></c:TextView>
 			</c:VerticalLayout>
 		</c:HorizontalLayout>

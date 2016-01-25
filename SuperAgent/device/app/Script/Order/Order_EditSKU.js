@@ -242,7 +242,7 @@ function GetItemHistory(sku, order) {
     return q.Execute();
 }
 
-function CalculateSKUAndForward(outlet, orderitem) {
+function CalculateSKUAndForward(outlet, orderitem, search) {
 
     if (Converter.ToDecimal(orderitem.Qty) == Converter.ToDecimal(0)) {
         DB.Delete(orderitem);
@@ -253,7 +253,7 @@ function CalculateSKUAndForward(outlet, orderitem) {
     if ($.Exists("itemFields"))
     	$.Remove("itemFields");
     
-    Workflow.Forward([]);
+    Workflow.Forward([search]);
 }
 
 function DeleteAndBack(orderitem) {

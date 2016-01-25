@@ -292,35 +292,19 @@ function SetFilter() {
         return Variables["filterType"];
 }
 
-function AskAndBack() {
+function AskAndBack(search) {
     
 	del = new Query("DELETE FROM USR_Filters");
 	
 	del.Execute();
 	
-	Workflow.Refresh([$.screenContext]);	
+	Workflow.Refresh([$.screenContext, search]);	
 
 }
 
-//AVMurach+
-function ClearFiltersAndDoAction(SetFilter, Order) {
-
-	del = new Query("DELETE FROM USR_Filters");
-	del.Execute();
-	
-	if (Variables.Exists("filterType") != false){
-		Variables.Remove("filterType");
-		Variables.AddGlobal("filterType", "brand");
-	}
-	
-	Workflow.Action("SetFilter", [Order]);
-		
-}
-//AVMurach-
-
-function CheckFilterAndForward() {
+function CheckFilterAndForward(search) {
     
-	 Workflow.Forward([null, true]);
+	 Workflow.Forward([search, true]);
 
 }
 
