@@ -33,7 +33,7 @@
 				<c:HorizontalLayout CssClass="grid">
 					<c:VerticalLayout>
 						<c:TextView Text="#outlet#" CssClass="description_row"></c:TextView>
-						<c:TextView Text="$task.Outlet.Description" CssClass="main_row" />
+						<c:TextView Text="{$task.Outlet.Description} {$task.Outlet.Address}" CssClass="main_row" />
 					</c:VerticalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLine />
