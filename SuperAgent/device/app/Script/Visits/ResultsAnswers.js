@@ -210,12 +210,18 @@ function GetOrderTable(order, outlet, visit) {
 			"		, CASE WHEN MS.Qty IS NULL THEN 0 ELSE CASE WHEN (MS.BaseUnitQty-V.Answer)>0 OR (V.Answer IS NULL AND MS.Qty>0) THEN 2 ELSE 1 END END AS OrderRecOrder" +
 			
 			"	FROM _Catalog_SKU S " +
-			"		JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id" +
-			"		LEFT JOIN Catalog_AssortmentMatrix_Outlets O ON O.Outlet=@outlet" +
-			"		JOIN Catalog_AssortmentMatrix_SKUs MS ON S.Id=MS.SKU AND MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs SS  JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref     WHERE Outlet=@outlet AND SS.SKU=MS.SKU LIMIT 1)" +
-			"		LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id" +
-			"		LEFT JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ WHERE CQ.Assignment=@stock)" +
-			
+			"		JOIN (SELECT MS.BaseUnitQty, MS.Qty, MS.SKU, MS.Unit FROM Catalog_AssortmentMatrix_SKUs MS " +
+			"					JOIN Catalog_AssortmentMatrix_Outlets O ON O.Ref = MS.Ref AND O.Outlet= @outlet " +
+			"				WHERE MS.BaseUnitQty IN  (SELECT MAX(SS.BaseUnitQty) " +
+			"											FROM Catalog_AssortmentMatrix_SKUs SS  " +
+			"												JOIN Catalog_AssortmentMatrix_Outlets OO ON SS.Ref=OO.Ref " +
+			"											WHERE Outlet= @outlet AND SS.SKU=MS.SKU LIMIT 1 " +
+			"											) " +
+			"				) AS MS ON S.Id=MS.SKU	" +
+			"		JOIN Catalog_UnitsOfMeasure UB ON S.BaseUnit=UB.Id	" +
+			"		LEFT JOIN Catalog_UnitsOfMeasure U ON MS.Unit=U.Id	" +
+			"		JOIN USR_SKUQuestions V ON MS.SKU=V.SKU AND V.Question IN (SELECT Id FROM Catalog_Question CQ " +
+			"																	WHERE CQ.Assignment= @stock) " +
 			"	WHERE S.IsTombstone = 0 AND (IfNull(V.Answer, 0) == 0 OR V.Answer = '0')  ORDER BY  OrderRecOrder DESC,  S.Description LIMIT 100) AS AMS " +
 			"GROUP BY AMS.Id, ifnull(AMS.RecOrder, 0) ");
         

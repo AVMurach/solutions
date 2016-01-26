@@ -182,9 +182,17 @@ function CheckAndCommit(state, args) {
 
 //AVMurach+
 function GetPercentageMatrix(outlet, visit) {
+	//First type
+	/*var query = new Query("SELECT AMS.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
+			"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet");*/
+	//Second type
 	var query = new Query("SELECT AMS.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
-			"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet"); 
+			"	JOIN (SELECT DISTINCT U1.SKU FROM USR_SKUQuestions U1" +
+    		"	WHERE Description = @stok) AS ANSW ON ANSW.SKU = AMS.SKU" +
+			"	JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet");
+	
 	query.AddParameter("outlet", outlet);
+	query.AddParameter("stok", Translate["#stockQue#"]);
     var SKUMatrix = query.ExecuteCount();
     
     var query = new Query("SELECT AMS.SKU, ANSW.SKU FROM Catalog_AssortmentMatrix_SKUs AMS " +
