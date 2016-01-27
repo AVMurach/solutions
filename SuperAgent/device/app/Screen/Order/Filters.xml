@@ -30,12 +30,12 @@
 				<s:Push Id="groupFilter" Value="$GetLeftFilterStyle(group)"></s:Push>
 				<s:Push Id="brandFilter" Value="$GetRightFilterStyle(brand)"></s:Push>
 				<c:HorizontalLayout CssClass="$groupFilter">
-					<c:HorizontalLayout CssClass="select_zone" OnClickAction="$ChangeFilterAndRefresh(group)">
+					<c:HorizontalLayout CssClass="select_zone" OnClickAction="$ChangeFilterAndRefresh(group,$search)">
 						<c:TextView Text="#groups#"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLayout CssClass="$brandFilter">
-					<c:HorizontalLayout CssClass="select_zone" OnClickAction="$ChangeFilterAndRefresh(brand)">
+					<c:HorizontalLayout CssClass="select_zone" OnClickAction="$ChangeFilterAndRefresh(brand,$search)">
 						<c:TextView Text="#brands#"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>

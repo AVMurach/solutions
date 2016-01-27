@@ -21,7 +21,7 @@
 		<c:HorizontalLayout CssClass="end_of_block"></c:HorizontalLayout>
 
 		<c:HorizontalLayout Id="btnCancel" CssClass="bottom_btn">
-			<c:VerticalLayout OnEvent="Back" OnClickAction="$DeleteAndBack($orderitem)">
+			<c:VerticalLayout OnEvent="Back" OnClickAction="$DeleteAndBack($orderitem, $search)">
 				<c:TextView Text="#cancel#" CssClass="left_tv"></c:TextView>
 			</c:VerticalLayout>
 			<c:VerticalLayout Id="btnAdd" OnEvent="Forward" OnClickAction="$CalculateSKUAndForward($order.Outlet, $orderitem, $search)">

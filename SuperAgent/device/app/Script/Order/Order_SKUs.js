@@ -283,6 +283,19 @@ function ShowRecommendedQty(order, recOrder) {
     return false;
 }
 
+//AVMurach+
+function TestSearchGlob(param1){
+	if ($.Exists("searchGlob")){
+		var searchG = $.searchGlob;
+    	$.Remove("searchGlob");    	
+	}else{
+		var searchG = param1;
+	}
+	return searchG
+}
+//AVMurach-
+
+
 // --------------------------Filters------------------
 
 function SetFilter() {
@@ -323,10 +336,10 @@ function GetRightFilterStyle(val) {
         return "mode_right_button_off";
 }
 
-function ChangeFilterAndRefresh(type) {
+function ChangeFilterAndRefresh(type,search) {
     Variables.Remove("filterType");
     Variables.AddGlobal("filterType", type);
-    Workflow.Refresh([$.screenContext]);
+    Workflow.Refresh([$.screenContext,search]);
 
 }
 

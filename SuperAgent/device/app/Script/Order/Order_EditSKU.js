@@ -256,7 +256,7 @@ function CalculateSKUAndForward(outlet, orderitem, search) {
     Workflow.Forward([search]);
 }
 
-function DeleteAndBack(orderitem) {
+function DeleteAndBack(orderitem, search) {
     if (Variables.Exists("AlreadyAdded") == false) {
         DB.Delete(orderitem);
     } else{        
@@ -272,6 +272,12 @@ function DeleteAndBack(orderitem) {
     }
     if ($.Exists("itemFields"))
     	$.Remove("itemFields");
+    
+    if ($.Exists("searchGlob"))
+    	$.Remove("searchGlob");
+    
+    $.AddGlobal("searchGlob", search);
+    
     Workflow.Back();
 }
 

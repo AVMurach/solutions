@@ -2,7 +2,7 @@
 <c:Screen xmlns:c="BitMobile.Controls" xmlns:s="BitMobile.ValueStack" StyleSheet="Order_SKUs.css">
 
 	<s:Push Id="order" Value="$workflow.order"></s:Push>
-	<s:Push Id="search" Value="$param1"></s:Push>
+	<s:Push Id="search" Value="$TestSearchGlob($param1)"></s:Push>
 
 	<s:Push Id="skusByGroup" Value="$GetSKUAndGroups($search, $order.PriceList, $order.Stock)"></s:Push>
 
