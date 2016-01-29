@@ -218,31 +218,25 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	    		"ifNull(RCRDR.last2,0) AS last2, " +
 	    		"ifNull(RCRDR.last3,0) AS last3, " +
 	    		"ifNull(RCRDR.last4,0) AS last4, " +
-              //AVMurach+
-              	groupFields +
+               	groupFields +
 	            "CB.Description AS Brand " +
-	            //AVMurach+
 	            recOrderFields +
-	            //AVMurach-
+	          
 	            "FROM _Document_PriceList_Prices PL INDEXED BY IND_PLREFSKU " +
 	            "JOIN _Catalog_SKU S " +
 	            groupJoin +
-	            //AVMurach+
 	            stocksAnswer +
 	            averageSKUinWeek +
 	            SKUinLastOrder +
 	            stockOutlet +
-	            
-	            //AVMurach-
 	            "JOIN Catalog_Brands CB ON CB.Id=S.Brand " +
 	            groupParentJoin +
-	          //AVMurach+
 	            recOrderStr +
-	          //AVMurach- 
 	            filterString +
+	           
 	            " WHERE PL.Ref = @Ref AND PL.IsTombstone = 0 AND S.IsTombstone = 0 " + groupWhere + searchString +
 	            ") INQ ON SS.Ref = INQ.Id WHERE SS.Stock=@stock AND SS.IsTombstone = 0 " + stockCondition + " ORDER BY " + groupSort + 
-	          //AVMurach+
+	          
 	            recOrderSort +
 	          //AVMurach-
 	            " INQ.Description LIMIT 50";
