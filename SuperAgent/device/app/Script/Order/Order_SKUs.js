@@ -88,7 +88,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
         searchText = StrReplace(searchText, "'", "''");
         searchString = " AND Contains(S.Description, '" + searchText + "') ";
     }
-
+    //SELECT substr('00' || 6, -2, 2)
     if (doRecommend && $.workflow.currentDoc=="Order"){
 
         var recOrderFields = ", CASE WHEN V.Answer IS NULL THEN U.Description ELSE UB.Description END AS RecUnit " +
@@ -210,7 +210,7 @@ function GetSKUAndGroups(searchText, thisDoc) {
               //AVMurach+
               
               ", ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt, " +
-              "ifNull(RCRDR.week1, strftime('%W', date(datetime('now')))) AS week1, " +
+              	"ifNull(RCRDR.week1, strftime('%W', date(datetime('now')))) AS week1, " +
 	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now'), '-7 day'))) AS week2, " +
 	    		"ifNull(RCRDR.week3, strftime('%W', date(datetime('now'), '-14 day'))) AS week3, " +
 	    		"ifNull(RCRDR.week4, strftime('%W', date(datetime('now'), '-21 day'))) AS week4, " +
