@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
 	<resource>
-		<version version="702.6.4.196"></version>
+		<!-- <version version="702.6.4.196"></version> -->
+		<version version="0.0.0.1"></version>
 	</resource>
 	<client>
 		<supportedCore version="2.4.4.126" />
