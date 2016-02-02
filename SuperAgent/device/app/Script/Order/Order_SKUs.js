@@ -157,10 +157,16 @@ function GetSKUAndGroups(searchText, thisDoc) {
 	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now')))) AS week2, " +
 	    		"ifNull(RCRDR.week3, strftime('%W', date(datetime('now'), '-7 day'))) AS week3, " +
 	    		"ifNull(RCRDR.week4, strftime('%W', date(datetime('now'), '-14 day'))) AS week4, " +*/
-	    		"ifNull(RCRDR.week1, strftime('%W', date(datetime('now')))) AS week1, " +
-	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now'), '-7 day'))) AS week2, " +
-	    		"ifNull(RCRDR.week3, strftime('%W', date(datetime('now'), '-14 day'))) AS week3, " +
-	    		"ifNull(RCRDR.week4, strftime('%W', date(datetime('now'), '-21 day'))) AS week4, " +
+	    		
+	    		/*"substr('00' || ifNull(RCRDR.week1, strftime('%W', date(datetime('now')))), -2, 2) AS week1, " +
+	    		"substr('00' || ifNull(RCRDR.week2, strftime('%W', date(datetime('now'), '-7 day'))), -2, 2) AS week2, " +
+	    		"substr('00' || ifNull(RCRDR.week3, strftime('%W', date(datetime('now'), '-14 day'))), -2, 2) AS week3, " +
+	    		"substr('00' || ifNull(RCRDR.week4, strftime('%W', date(datetime('now'), '-21 day'))), -2, 2) AS week4, " +*/
+	    		
+	    		"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer) > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer) ELSE CAST(1 as integer) END, -2, 2) AS week1, " +
+	    		"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-1 > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer)-1 ELSE CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-1 = 0 THEN CAST(strftime('%W', date(datetime('now'), '-28 day')) as integer)+3 ELSE CAST(strftime('%W', date(datetime('now'), '-7 day')) as integer)+1 END END, -2, 2) AS week2, " +
+	    		"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-2 > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer)-2 ELSE CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-2 = 0 THEN CAST(strftime('%W', date(datetime('now'), '-28 day')) as integer)+3 ELSE CAST(strftime('%W', date(datetime('now'), '-14 day')) as integer)+1 END END, -2, 2) AS week3, " +
+	    		"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-3 > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer)-3 ELSE CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-3 = 0 THEN CAST(strftime('%W', date(datetime('now'), '-28 day')) as integer)+3 ELSE CAST(strftime('%W', date(datetime('now'), '-21 day')) as integer)+1 END END, -2, 2) AS week4, " +
 	    		"ifNull(RCRDR.last1,0) AS last1, " +
 	    		"ifNull(RCRDR.last2,0) AS last2, " +
 	    		"ifNull(RCRDR.last3,0) AS last3, " +
@@ -210,10 +216,10 @@ function GetSKUAndGroups(searchText, thisDoc) {
               //AVMurach+
               
               ", ifNull(EDI.EDI_nowDayCnt,0) AS EDI_nowDayCnt, ifNull(EDI.EDI_addDayCnt,0) AS EDI_addDayCnt, " +
-              	"ifNull(RCRDR.week1, strftime('%W', date(datetime('now')))) AS week1, " +
-	    		"ifNull(RCRDR.week2, strftime('%W', date(datetime('now'), '-7 day'))) AS week2, " +
-	    		"ifNull(RCRDR.week3, strftime('%W', date(datetime('now'), '-14 day'))) AS week3, " +
-	    		"ifNull(RCRDR.week4, strftime('%W', date(datetime('now'), '-21 day'))) AS week4, " +
+              	"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer) > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer) ELSE CAST(1 as integer) END, -2, 2) AS week1, " +
+	    		"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-1 > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer)-1 ELSE CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-1 = 0 THEN CAST(strftime('%W', date(datetime('now'), '-28 day')) as integer)+3 ELSE CAST(strftime('%W', date(datetime('now'), '-7 day')) as integer)+1 END END, -2, 2) AS week2, " +
+	    		"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-2 > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer)-2 ELSE CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-2 = 0 THEN CAST(strftime('%W', date(datetime('now'), '-28 day')) as integer)+3 ELSE CAST(strftime('%W', date(datetime('now'), '-14 day')) as integer)+1 END END, -2, 2) AS week3, " +
+	    		"substr('00' || CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-3 > 0 THEN CAST(strftime('%W', date(datetime('now'))) as integer)-3 ELSE CASE WHEN CAST(strftime('%W', date(datetime('now'))) as integer)-3 = 0 THEN CAST(strftime('%W', date(datetime('now'), '-28 day')) as integer)+3 ELSE CAST(strftime('%W', date(datetime('now'), '-21 day')) as integer)+1 END END, -2, 2) AS week4, " +
 	    		"ifNull(RCRDR.last1,0) AS last1, " +
 	    		"ifNull(RCRDR.last2,0) AS last2, " +
 	    		"ifNull(RCRDR.last3,0) AS last3, " +
