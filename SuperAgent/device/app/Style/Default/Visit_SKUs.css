@@ -307,3 +307,145 @@
 	margin-top: 22%;
 	horizontal-align: center;
 }
+
+
+.grid_m {
+	height: 13.8mm auto;
+	width: 100%;
+	background-color: #ffffff;	
+}
+
+.grid_m vl {
+	height: 100%;
+	width: 30%;
+	dock-align: right;	
+}
+
+.grid_m vl dl {
+	width: 100%;
+	height: 30%;			
+}
+
+SKUDescription_dl_m {
+	width: 100%;
+	height: 45%;
+	margin-top: 0.5mm;			
+}
+
+.childs_vl_m {
+	height: 100% auto;
+	width: 68%;
+	dock-align: right;	
+}
+
+.childs_grid_answers_m {
+	height: 98%;
+	width: 100%;
+	background-color: #ffffff;	
+}
+
+.vl_answers_m {
+	height: 100%;
+	width: 20%;
+	dock-align: right;	
+}
+
+.dl_answers_m {
+	height: 100%;
+	width: 100%;
+	margin-left: 0.3mm;
+	margin-right: 0.3mm;
+	margin-top: 0.3mm;
+	margin-bottom: 0.3mm;
+	background-color: #efeff4;	
+}
+
+.required_side_wh_m{
+	height: 100%;
+	width: 1.2mm;
+	background-image: url(required_side_wh.png);	
+	dock-align: right;
+}
+
+.answered_side_wh_m{
+	height: 100%;
+	width: 1.2mm;
+	background-image: url(answered_side_wh.png);	
+	dock-align: right;
+}
+
+.required_side_gr_m{
+	height: 100%;
+	width: 1.2mm;
+	background-image: url(required_side_gr.png);
+	dock-align: right;	
+}
+
+.answered_side_gr_m{
+	height: 100%;
+	width: 1.2mm;
+	background-image: url(answered_side_gr.png);	
+	dock-align: right;
+}
+
+.description_row_m{
+	width: 100%;
+	height: 90%;
+	font: 62% Arial;
+	white-space: normal;
+	padding-left: 1.4mm;
+}
+
+.description_answered_m{
+	width: 100%;
+	height: 48%;
+	font: 35% Arial;
+	white-space: normal;
+	color: #8e8e93;
+	padding-left: 0.6mm;
+	padding-right: 0.6mm;
+	text-align: center;
+}
+
+.main_row_m {
+	width: 100%;
+	height: 90%;
+	white-space: normal;
+	placeholder-color: #2d89cf;
+	font: 42% Arial;
+	padding-left: 1.4mm;
+}
+
+.answer_textView_m {
+	width: 100%;
+	height: 55%;
+	padding-top: 21%;
+	margin-top: 0%;
+	margin-left: 0.3mm;
+	margin-right: 0.3mm;
+	margin-bottom: 0.3mm;
+	white-space: normal;
+	font: 35% Arial;
+	color: #2D89CF;
+	placeholder-color: #2D89CF;
+	text-align: center;	
+	
+	background-color: #ffffff;
+}
+
+.answer_editText_m {
+	width: 100%;
+	height: 55%;
+	padding-top: -15%;
+	margin-top: 0%;
+	margin-left: 0.3mm;
+	margin-right: 0.3mm;
+	margin-bottom: 0.3mm;
+	white-space: normal;
+	font: 35% Arial;
+	color: #2D89CF;
+	placeholder-color: #2D89CF;
+	text-align: center;	
+	
+	background-color: #ffffff;
+}

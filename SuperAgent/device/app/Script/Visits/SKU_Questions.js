@@ -8,11 +8,18 @@ var single_answ;
 var single_total;
 var scrollIndex;
 var setScroll;
+var bool_answer;
+var curr_item;
 var curr_sku;
 var skuValueGl;
 var questionValueGl;
 var forwardAllowed;
 var parents;
+
+var controlPeremChooseBool; //Murach 
+var controlPeremSnapshot;
+var controlPeremObligatered;
+var controlPeremRefresh = false;
 
 //
 //-------------------------------Header handlers-------------------------
@@ -20,6 +27,7 @@ var parents;
 
 function OnLoading(){
 	obligateredLeft = '0';
+	controlPeremObligatered = false;
 	parents = [];
 	SetIndicators();
 	SetListType();
@@ -153,6 +161,87 @@ function GetSKUsFromQuesionnaires(search) {
 	//
 }
 
+
+/////---------------------------------------AVMurach +
+function GetSKUsFromQuesionnaires_NTZ_m(search) {
+
+	var single = 1;
+	if (regularAnswers)
+		single = 0;
+
+	SetIndicators();
+
+	// getting left obligated
+	var q = new Query(
+			"SELECT DISTINCT S.Question, S.Description, S.SKU "
+					+ "FROM USR_SKUQuestions S "
+					+ "WHERE (RTRIM(Answer)='' OR S.Answer IS NULL) AND S.Obligatoriness=1 "
+					+ "AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT SS.Question FROM USR_SKUQuestions SS "
+					+ "WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
+	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
+	obligateredLeft = q.ExecuteCount();
+	
+	if(parseInt(obligateredLeft)!=parseInt(0)){
+		controlPeremObligatered = true;
+	}
+
+	// getting SKUs list
+	var searchString = "";
+	if (String.IsNullOrEmpty(search) == false) {
+		search = StrReplace(search, "'", "''");
+		searchString = " Contains(SKUDescription, '" + search + "') AND ";
+	}
+
+	var filterString = "";
+	var filterJoin = "";
+	filterString += AddFilter(filterString, "group_filter", "OwnerGroup",
+			" AND ");
+	filterString += AddFilter(filterString, "brand_filter", "Brand", " AND ");
+
+	var q = new Query();
+	q.Text = "SELECT DISTINCT S.SKU, S.SKUDescription "
+			+ ", COUNT(DISTINCT S.Question) AS Total "
+			+ ", COUNT(S.Answer) AS Answered "
+			+ ", MAX(CAST (Obligatoriness AS INT)) AS Obligatoriness "
+			+ ", (SELECT COUNT(DISTINCT U1.Question) FROM USR_SKUQuestions U1 "
+			+ " WHERE U1.Single=@single AND (Answer='' OR Answer IS NULL) "
+			+ " AND U1.SKU=S.SKU AND Obligatoriness = 1 "
+			+ " AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions "
+			+ " WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да')))) AS ObligateredLeft "
+			+ ", (SELECT MAX(AMS.BaseUnitQty) FROM Catalog_AssortmentMatrix_SKUs AMS "
+			+ " JOIN Catalog_AssortmentMatrix_Outlets AMO ON AMS.Ref = AMO.Ref AND AMO.Outlet = @outlet "
+			+ " WHERE S.SKU=AMS.SKU) AS BaseUnitQty "
+			+
+			// ", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 0 END AS ShowChild " +
+			", CASE WHEN S.SKU=@currentSKU THEN 1 ELSE 1 END AS ShowChild " + 
+			
+			
+
+			"FROM USR_SKUQuestions S "
+			+ filterJoin
+			
+			+ "WHERE Single=@single AND "
+			+ searchString
+			+ filterString
+			+ " (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions SS "
+			+ "WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))"
+			+ "GROUP BY S.SKU, S.SKUDescription "
+			+ " ORDER BY BaseUnitQty DESC, S.SKUDescription ";
+	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
+	q.AddParameter("single", single);
+	q.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
+	q.AddParameter("attached", Translate["#snapshotAttached#"]);
+	q.AddParameter("outlet", $.workflow.outlet);
+	q.AddParameter("currentSKU", parentGUID);
+
+	
+
+	return q.Execute();
+	//
+}
+
+// ///--------------------------------------- AVMurach -
+
 function SetIndicators() {
 	var q = new Query("SELECT " +
 		"SUM(CASE WHEN Single = 0 THEN 1 ELSE 0 END) AS RegularTotal, " +
@@ -283,6 +372,11 @@ function CreateItemAndShow(control, sku, index, showChild) {
 
 function GoToQuestionAction(control, answerType, question, sku, editControl, currAnswer, title) {
 
+
+	if ($.Exists("globPeremSnapshot") != false)
+		$.Remove("globPeremSnapshot");
+	controlPeremSnapshot = false;
+	controlPeremChooseBool = false;
 	editControlName = editControl;
 	editControl = Variables[editControl];
 	skuValueGl = sku;
@@ -291,22 +385,30 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 		var q = new Query();
 		q.Text = "SELECT Value, Value FROM Catalog_Question_ValueList WHERE Ref=@ref UNION SELECT '', '—' ORDER BY Value";
 		q.AddParameter("ref", question);
-		Dialogs.DoChoose(q.Execute(), question, null, editControl, DialogCallBack, title);
+		DoChoose(q.Execute(), question, null, editControl, DialogCallBack, title);
 	}
 
 	if (answerType == DB.Current.Constant.DataType.Snapshot) {		
+	skuValueGl = sku;
 		questionValueGl = question;
 
+		
+		controlPeremSnapshot = editControl;
+				
+		if ($.Exists("globPeremSnapshot") == false)
+			$.AddGlobal("globPeremSnapshot", editControl);
+						
+		//AddSnapshot($.workflow.visit, null, GalleryCallBack, listChoice, "document.visit", title);
 		var path = null;
 		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAnswer, true, title, GalleryCallBack);
 	}
 
 	if (answerType == DB.Current.Constant.DataType.DateTime) {
-		Dialogs.ChooseDateTime(question, null, editControl, DialogCallBack, title);
+		ChooseDateTime(question, null, editControl, DialogCallBack, title);
 	}
 
 	if (answerType == DB.Current.Constant.DataType.Boolean) {
-		Dialogs.ChooseBool(question, null, editControl, DialogCallBack, title);
+		ChooseBool(question, null, editControl, DialogCallBack, title);
 	}
 
 	if ((answerType == DB.Current.Constant.DataType.String) ||
@@ -340,6 +442,22 @@ function AssignAnswer(control, question, sku, answer, answerType) {
 	q.AddParameter("sku", sku);
 	q.AddParameter("question", question);
 	q.Execute();
+	
+	if(controlPeremChooseBool != false){
+		editControl = controlPeremChooseBool;
+		var textAnswer = answer;
+		if (textAnswer == null)
+			textAnswer = "—";
+		editControl.Text = textAnswer;
+		controlPeremChooseBool = false;
+		CheangeObligatorinessIndex();
+	}
+	if(controlPeremSnapshot != false){
+		editControl = controlPeremSnapshot;
+		editControl.Text = Translate["#snapshotAttached#"];
+		controlPeremSnapshot = false;
+		CheangeObligatorinessIndex();
+	}
 }
 
 function GetActionAndBack() {
@@ -387,7 +505,7 @@ function DialogCallBack(state, args){
 	var entity = state[0];
 	AssignAnswer(null, entity, skuValueGl, args.Result);
 
-	Workflow.Refresh([$.search]);
+	//Workflow.Refresh([$.search]);
 }
 
 function GalleryCallBack(state, args) {
@@ -400,12 +518,167 @@ function GalleryCallBack(state, args) {
 		newFile.FullFileName = state[2];
 		newFile.Save();
 
-		Workflow.Refresh([]);
+		//Workflow.Refresh([]);
 	}
 }
 
 function DeleteAnswers(recordset) {
 	while (recordset.Next()){
 		DB.Delete(recordset.Id);
+	}
+//------------------------------Temporary, from dialogs----------------
+
+function DoChoose(listChoice, entity, attribute, control, func, title) {
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
+	if (attribute==null)
+		var startKey = control.Text;
+	else
+		var startKey = entity[attribute];
+
+	if (listChoice==null){
+		var tableName = entity[attribute].Metadata().TableName;
+		var query = new Query();
+		query.Text = "SELECT Id, Description FROM " + tableName;
+		listChoice = query.Execute();
+	}
+
+	if (func == null)
+		func = CallBack;
+	
+	controlPeremChooseBool = control;
+
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
+}
+
+function ChooseDateTime(entity, attribute, control, func, title) {
+	var startKey;
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
+	if (attribute==null)
+		startKey = control.Text;
+	else
+		startKey = entity[attribute];
+
+	if (String.IsNullOrEmpty(startKey) || startKey=="—")
+		startKey = DateTime.Now;
+
+	if (func == null)
+		func = CallBack;
+	
+	controlPeremChooseBool = control;
+	
+	Dialog.DateTime(title, startKey, func, [entity, attribute, control]);
+}
+
+function ChooseBool(entity, attribute, control, func, title) {
+
+	title = typeof title !== 'undefined' ? title : "#select_answer#";
+
+	if (attribute==null)
+		var startKey = control.Text;
+	else
+		var startKey = entity[attribute];
+
+	var listChoice = [[ "—", "-" ], [Translate["#YES#"], Translate["#YES#"]], [Translate["#NO#"], Translate["#NO#"]]];
+	if (func == null)
+		func = CallBack;
+	
+	controlPeremChooseBool = control;		
+	
+	Dialog.Choose(title, listChoice, startKey, func, [entity, attribute, control]);
+}
+
+function CallBack(state, args) {
+	AssignDialogValue(state, args);
+	var control = state[2];
+	if (getType(args.Result)=="BitMobile.DbEngine.DbRef")
+		control.Text = args.Result.Description;
+	else
+		control.Text = args.Result;
+}
+
+function AssignDialogValue(state, args) {
+	var entity = state[0];
+	var attribute = state[1];
+	entity[attribute] = args.Result;
+	entity.GetObject().Save();
+	return entity;
+}
+
+function CheangeObligatorinessIndex() {
+	var q = new Query("SELECT DISTINCT S.Question, S.Description, S.SKU " +
+			"FROM USR_SKUQuestions S " +
+			"WHERE (RTRIM(Answer)='' OR S.Answer IS NULL) AND S.Obligatoriness=1 " +
+			"AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT SS.Question FROM USR_SKUQuestions SS " +
+				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
+	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
+	obligateredLeft = q.ExecuteCount();
+				
+	if(parseInt(obligateredLeft)==parseInt(0)){
+		if(controlPeremObligatered){
+			controlPeremObligatered = false;
+			controlPeremRefresh = true;
+			Workflow.Refresh([]);
+		}
+	}else{
+		if(controlPeremRefresh == false){
+			Variables["obligateredButton"].Text = obligateredLeft;
+			Variables["obligateredInfo"].Text = obligateredLeft;
+			return;
+		}else{
+			controlPeremRefresh = false;
+			Workflow.Refresh([]);
+		}
+	}
+	
+	
+//	if(parseInt(obligateredLeft)==parseInt(0)){
+//		if(controlPeremObligatered){
+//			controlPeremObligatered = false;
+//			controlPeremRefresh = true;
+//			Workflow.Refresh([]);
+//		}
+//	}else{
+//		if(controlPeremRefresh){			
+//			controlPeremObligatered = true;	
+//			controlPeremRefresh = false;
+//			Workflow.Refresh([]);			
+//		}else{
+//			if(controlPeremObligatered){
+//				Variables["obligateredButton"].Text = obligateredLeft;
+//				Variables["obligateredInfo"].Text = obligateredLeft;
+//				return;
+//			}
+//		}
+//	}
+//	
+}
+function CheangeObligatorinessIndex() {
+	var q = new Query("SELECT DISTINCT S.Question, S.Description, S.SKU " +
+			"FROM USR_SKUQuestions S " +
+			"WHERE (RTRIM(Answer)='' OR S.Answer IS NULL) AND S.Obligatoriness=1 " +
+			"AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT SS.Question FROM USR_SKUQuestions SS " +
+				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
+	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
+	obligateredLeft = q.ExecuteCount();
+				
+	if(parseInt(obligateredLeft)==parseInt(0)){
+		if(controlPeremObligatered){
+			controlPeremObligatered = false;
+			controlPeremRefresh = true;
+			Workflow.Refresh([]);
+		}
+	}else{
+		if(controlPeremRefresh == false){
+			Variables["obligateredButton"].Text = obligateredLeft;
+			Variables["obligateredInfo"].Text = obligateredLeft;
+			return;
+		}else{
+			controlPeremRefresh = false;
+			Workflow.Refresh([]);
+		}
 	}
 }
