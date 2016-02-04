@@ -300,28 +300,72 @@ function GetChilds(sku) {
 	if (regularAnswers)
 		single = 0;
 
-var q = new Query("SELECT DISTINCT S.Description, S.Obligatoriness, S.AnswerType, S.Question, S.Answer, S.IsInputField, S.KeyboardType, " +
-			"CASE WHEN IsInputField='1' THEN Answer ELSE " +
-				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput, " +
-				"CASE WHEN S.AnswerType=@snapshot THEN 1 END AS IsSnapshot, " +
-			"CASE WHEN S.AnswerType=@snapshot THEN " +
-				" CASE WHEN TRIM(IFNULL(VFILES.FullFileName, '')) != '' THEN LOWER(VFILES.FullFileName) ELSE " +
-					" CASE WHEN TRIM(IFNULL(OFILES.FullFileName, '')) != '' THEN LOWER(OFILES.FullFileName) ELSE '/shared/result.jpg' END END ELSE NULL END AS FullFileName " +
-			"FROM USR_SKUQuestions S " +
-			"LEFT JOIN Document_Visit_Files VFILES ON VFILES.FileName = S.Answer AND VFILES.Ref = @visit " +
-			"LEFT JOIN Catalog_Outlet_Files OFILES ON OFILES.FileName = S.Answer AND OFILES.Ref = @outlet " +
-			"WHERE S.SKU=@sku AND S.Single=@single AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT Question FROM USR_SKUQuestions " +
-			"WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) " +
-			"ORDER BY S.DocDate, S.QuestionOrder ");
+	var q = new Query(
+			"SELECT *, "
+					+ "CASE WHEN IsInputField='1' THEN Answer ELSE "
+					+ "CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput "
+					+ "FROM USR_SKUQuestions S "
+					+ "WHERE SKU=@sku AND Single=@single AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions "
+					+ "WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) "
+					+ "ORDER BY DocDate, QuestionOrder ");
 	q.AddParameter("sku", sku);
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	q.AddParameter("single", single);
 	q.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
 	q.AddParameter("attached", Translate["#snapshotAttached#"]);
-	q.AddParameter("visit", $.workflow.visit);
-	q.AddParameter("outlet", $.workflow.outlet);
-	result = q.Execute();
-	return result;
+
+	
+	var qq = q.Execute();
+	
+	var arr = [];
+	
+	var qtyStr = 0;
+	var arr_int = [];
+	while(qq.Next()) {
+		
+		var str_qq = qq;
+		if (qtyStr < 4) {
+			var dict = new Dictionary();
+			dict.Add("AnswerOutput", str_qq.AnswerOutput);
+			dict.Add("Answer", str_qq.Answer);
+			dict.Add("Obligatoriness", str_qq.Obligatoriness);
+			dict.Add("AnswerType", str_qq.AnswerType);
+			dict.Add("Question", str_qq.Question);
+			dict.Add("Description", str_qq.Description);
+			dict.Add("IsInputField", str_qq.IsInputField);
+			dict.Add("KeyboardType", str_qq.KeyboardType);
+									
+			arr_int.push(dict);
+			qtyStr = qtyStr + 1
+			
+		} else {
+			var dict = new Dictionary();
+			dict.Add("AnswerOutput", str_qq.AnswerOutput);
+			dict.Add("Answer", str_qq.Answer);
+			dict.Add("Obligatoriness", str_qq.Obligatoriness);
+			dict.Add("AnswerType", str_qq.AnswerType);
+			dict.Add("Question", str_qq.Question);
+			dict.Add("Description", str_qq.Description);
+			dict.Add("IsInputField", str_qq.IsInputField);
+			dict.Add("KeyboardType", str_qq.KeyboardType);
+									
+			arr_int.push(dict);
+			
+			arr.push(arr_int);
+			arr_int = [];
+			qtyStr = 0;			
+		}		
+	}
+	
+	if (qtyStr != 0){
+		arr.push(arr_int);
+		arr_int = [];
+		qtyStr = 0;
+	}
+	
+	//Dialog.Debug(arr[0][0]);
+	
+	return arr;
 }
 
 function GetImagePath(visitID, outletID, pictID, pictExt) {
