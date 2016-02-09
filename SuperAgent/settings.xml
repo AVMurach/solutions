@@ -2,7 +2,7 @@
 <configuration>
 	<resource>
 		<!-- <version version="702.6.4.196"></version> -->
-		<version version="0.0.0.1"></version>
+		<version version="0.0.0.2"></version>
 	</resource>
 	<client>
 		<supportedCore version="2.4.4.126" />
