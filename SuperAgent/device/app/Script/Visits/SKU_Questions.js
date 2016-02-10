@@ -10,7 +10,7 @@ var scrollIndex;
 var setScroll;
 var bool_answer;
 var curr_item;
-var curr_sku;
+
 var skuValueGl;
 var questionValueGl;
 var forwardAllowed;
@@ -162,7 +162,7 @@ function GetSKUsFromQuesionnaires(search) {
 }
 
 
-/////---------------------------------------AVMurach +
+//////---------------------------------------AVMurach +
 function GetSKUsFromQuesionnaires_NTZ_m(search) {
 
 	var single = 1;
@@ -295,25 +295,34 @@ function ShowChilds(index) {
 }
 
 function GetChilds(sku) {
+		var single = 1;
 
-	var single = 1;
+
 	if (regularAnswers)
 		single = 0;
 
-	var q = new Query(
-			"SELECT *, "
-					+ "CASE WHEN IsInputField='1' THEN Answer ELSE "
-					+ "CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput "
-					+ "FROM USR_SKUQuestions S "
-					+ "WHERE SKU=@sku AND Single=@single AND (ParentQuestion=@emptyRef OR ParentQuestion IN (SELECT Question FROM USR_SKUQuestions "
-					+ "WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) "
-					+ "ORDER BY DocDate, QuestionOrder ");
+var q = new Query("SELECT DISTINCT S.Description, S.Obligatoriness, S.AnswerType, S.Question, S.Answer, S.IsInputField, S.KeyboardType, " +
+
+
+			"CASE WHEN IsInputField='1' THEN Answer ELSE " +
+				"CASE WHEN (RTRIM(Answer)!='' AND Answer IS NOT NULL) THEN CASE WHEN AnswerType=@snapshot THEN @attached ELSE Answer END ELSE '—' END END AS AnswerOutput, " +
+				"CASE WHEN S.AnswerType=@snapshot THEN 1 END AS IsSnapshot, " +
+			"CASE WHEN S.AnswerType=@snapshot THEN " +
+				" CASE WHEN TRIM(IFNULL(VFILES.FullFileName, '')) != '' THEN LOWER(VFILES.FullFileName) ELSE " +
+					" CASE WHEN TRIM(IFNULL(OFILES.FullFileName, '')) != '' THEN LOWER(OFILES.FullFileName) ELSE '/shared/result.jpg' END END ELSE NULL END AS FullFileName " +
+			"FROM USR_SKUQuestions S " +
+			"LEFT JOIN Document_Visit_Files VFILES ON VFILES.FileName = S.Answer AND VFILES.Ref = @visit " +
+			"LEFT JOIN Catalog_Outlet_Files OFILES ON OFILES.FileName = S.Answer AND OFILES.Ref = @outlet " +
+			"WHERE S.SKU=@sku AND S.Single=@single AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT Question FROM USR_SKUQuestions " +
+			"WHERE SKU=S.SKU AND (Answer='Yes' OR Answer='Да'))) " +
+			"ORDER BY S.DocDate, S.QuestionOrder ");
 	q.AddParameter("sku", sku);
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	q.AddParameter("single", single);
 	q.AddParameter("snapshot", DB.Current.Constant.DataType.Snapshot);
 	q.AddParameter("attached", Translate["#snapshotAttached#"]);
-
+	q.AddParameter("visit", $.workflow.visit);
+	q.AddParameter("outlet", $.workflow.outlet);
 	
 	var qq = q.Execute();
 	
@@ -366,6 +375,9 @@ function GetChilds(sku) {
 	//Dialog.Debug(arr[0][0]);
 	
 	return arr;
+	
+	
+	//return q.Execute();
 }
 
 function GetImagePath(visitID, outletID, pictID, pictExt) {
@@ -417,10 +429,12 @@ function CreateItemAndShow(control, sku, index, showChild) {
 function GoToQuestionAction(control, answerType, question, sku, editControl, currAnswer, title) {
 
 
-	if ($.Exists("globPeremSnapshot") != false)
+    if ($.Exists("globPeremSnapshot") != false)
 		$.Remove("globPeremSnapshot");
 	controlPeremSnapshot = false;
 	controlPeremChooseBool = false;
+	
+
 	editControlName = editControl;
 	editControl = Variables[editControl];
 	skuValueGl = sku;
@@ -430,19 +444,23 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 		q.Text = "SELECT Value, Value FROM Catalog_Question_ValueList WHERE Ref=@ref UNION SELECT '', '—' ORDER BY Value";
 		q.AddParameter("ref", question);
 		DoChoose(q.Execute(), question, null, editControl, DialogCallBack, title);
-	}
+	} 
+
 
 	if (answerType == DB.Current.Constant.DataType.Snapshot) {		
-	skuValueGl = sku;
+
 		questionValueGl = question;
 
-		
-		controlPeremSnapshot = editControl;
+
+        
+        controlPeremSnapshot = editControl;
 				
 		if ($.Exists("globPeremSnapshot") == false)
 			$.AddGlobal("globPeremSnapshot", editControl);
-						
-		//AddSnapshot($.workflow.visit, null, GalleryCallBack, listChoice, "document.visit", title);
+
+
+			
+
 		var path = null;
 		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAnswer, true, title, GalleryCallBack);
 	}
@@ -452,6 +470,8 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 	}
 
 	if (answerType == DB.Current.Constant.DataType.Boolean) {
+		bool_answer = currAnswer;
+		curr_item = sku;
 		ChooseBool(question, null, editControl, DialogCallBack, title);
 	}
 
@@ -459,7 +479,8 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 	   ((answerType).ToString() == (DB.Current.Constant.DataType.Integer).ToString()) ||
 		 ((answerType).ToString() == (DB.Current.Constant.DataType.Decimal).ToString())) {
 		FocusOnEditText(editControlName, '1');
-	}
+		
+		}
 
 	setScroll = false;
 }
@@ -503,6 +524,8 @@ function AssignAnswer(control, question, sku, answer, answerType) {
 		CheangeObligatorinessIndex();
 	}
 }
+
+
 
 function GetActionAndBack() {
 	var q = new Query("SELECT NextStep " +
@@ -570,6 +593,7 @@ function DeleteAnswers(recordset) {
 	while (recordset.Next()){
 		DB.Delete(recordset.Id);
 	}
+}
 //------------------------------Temporary, from dialogs----------------
 
 function DoChoose(listChoice, entity, attribute, control, func, title) {
@@ -700,29 +724,5 @@ function CheangeObligatorinessIndex() {
 //	}
 //	
 }
-function CheangeObligatorinessIndex() {
-	var q = new Query("SELECT DISTINCT S.Question, S.Description, S.SKU " +
-			"FROM USR_SKUQuestions S " +
-			"WHERE (RTRIM(Answer)='' OR S.Answer IS NULL) AND S.Obligatoriness=1 " +
-			"AND (S.ParentQuestion=@emptyRef OR S.ParentQuestion IN (SELECT SS.Question FROM USR_SKUQuestions SS " +
-				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
-	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
-	obligateredLeft = q.ExecuteCount();
-				
-	if(parseInt(obligateredLeft)==parseInt(0)){
-		if(controlPeremObligatered){
-			controlPeremObligatered = false;
-			controlPeremRefresh = true;
-			Workflow.Refresh([]);
-		}
-	}else{
-		if(controlPeremRefresh == false){
-			Variables["obligateredButton"].Text = obligateredLeft;
-			Variables["obligateredInfo"].Text = obligateredLeft;
-			return;
-		}else{
-			controlPeremRefresh = false;
-			Workflow.Refresh([]);
-		}
-	}
-}
+
+

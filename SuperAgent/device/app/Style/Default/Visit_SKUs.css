@@ -436,7 +436,8 @@ SKUDescription_dl_m {
 .answer_editText_m {
 	width: 100%;
 	height: 55%;
-	padding-top: -15%;
+	padding-top: 21%;
+	padding-left: 30%;
 	margin-top: 0%;
 	margin-left: 0.3mm;
 	margin-right: 0.3mm;
@@ -445,7 +446,7 @@ SKUDescription_dl_m {
 	font: 35% Arial;
 	color: #2D89CF;
 	placeholder-color: #2D89CF;
-	text-align: center;	
+	/*text-align: center;*/	
 	
 	background-color: #ffffff;
 }
