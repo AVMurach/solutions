@@ -38,7 +38,7 @@ function OnLoading(){
 	forwardAllowed = true;
 
 }
-function ForwardIsntAllowed() {
+function ForwardIsAllowed() {
 	if (parseInt(obligateredLeft)==parseInt(0))
 		return true;
 	else
@@ -80,6 +80,7 @@ function SetScrollIndex() {
 }
 
 function CountResultAndForward() {
+	//	Workflow.Refresh([]);
 
 	parentId = null;
 

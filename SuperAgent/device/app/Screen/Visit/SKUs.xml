@@ -13,7 +13,7 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<s:If Test="$ForwardIsntAllowed()">
+			<s:If Test="$ForwardIsAllowed()">
 				<c:DockLayout Id="btn_forward" CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CountResultAndForward()">
 					<c:TextView Id="btnForward" Text="#forward#" />
 				</c:DockLayout>
@@ -36,7 +36,7 @@
 			<s:If Test="@regularAnswers">
 				<c:HorizontalLayout CssClass="mode_left_button_on">
 					<c:HorizontalLayout Id="regular" CssClass="select_zone" OnClick="$ChangeListAndRefresh(1)">
-						<c:TextView Text="#regular# ({@regular_answ} #of# {@regular_total})"></c:TextView>
+						<c:TextView Text="#regular# ({@regular_total})"></c:TextView>
 					</c:HorizontalLayout>
 				</c:HorizontalLayout>
 				<c:HorizontalLayout CssClass="mode_right_button_off">
@@ -82,7 +82,7 @@
 				<c:HorizontalLine />
 
 				<!--<s:If Test="@forwardAllowed">-->
-				<s:If Test="$ForwardIsntAllowed()">
+				<s:If Test="$ForwardIsAllowed()">
 					<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
 				</s:If>
 				<s:Else>

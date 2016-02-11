@@ -119,7 +119,7 @@
 				<c:HorizontalLine />
 			<!-- </s:If> -->
 
-			<s:If Test="$ShowQuestionnaires()">
+			<!--<s:If Test="$ShowQuestionnaires()">
 				<c:DockLayout CssClass="parameter_grid">
 					<s:Push Id="answered" Value="$GetSum($workflow.questions_answ, $workflow.questions_answ_sku)"></s:Push>
 					<s:Push Id="questions" Value="$GetSum($workflow.questions_qty, $workflow.questions_qty_sku)"></s:Push>
@@ -127,7 +127,7 @@
 					<c:TextView Text="{$answered} #of# {$questions}" CssClass="value"></c:TextView>
 				</c:DockLayout>
 				<c:HorizontalLine />
-			</s:If>
+			</s:If>-->
 
 			<s:If Test="@orderEnabled">
 				<c:DockLayout CssClass="parameter_grid">
