@@ -38,6 +38,12 @@ function OnLoading(){
 	forwardAllowed = true;
 
 }
+function ForwardIsntAllowed() {
+	if (parseInt(obligateredLeft)==parseInt(0))
+		return true;
+	else
+		return false;
+}
 
 function OnLoad() {
 	if (setScroll)
@@ -180,7 +186,7 @@ function GetSKUsFromQuesionnaires_NTZ_m(search) {
 					+ "WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	obligateredLeft = q.ExecuteCount();
-	
+
 	if(parseInt(obligateredLeft)!=parseInt(0)){
 		controlPeremObligatered = true;
 	}
@@ -701,7 +707,7 @@ function CheangeObligatorinessIndex() {
 			Workflow.Refresh([]);
 		}
 	}
-	
+
 	
 //	if(parseInt(obligateredLeft)==parseInt(0)){
 //		if(controlPeremObligatered){

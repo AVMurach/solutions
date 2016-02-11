@@ -13,7 +13,7 @@
 				<c:Image />
 				<c:TextView Text="#back#" />
 			</c:DockLayout>
-			<s:If Test="@forwardAllowed">
+			<s:If Test="$ForwardIsntAllowed()">
 				<c:DockLayout Id="btn_forward" CssClass="btn_forward" OnEvent="Forward" OnClickAction="$CountResultAndForward()">
 					<c:TextView Id="btnForward" Text="#forward#" />
 				</c:DockLayout>
@@ -21,7 +21,8 @@
 			<s:Else>
 				<c:DockLayout Id="btnForward" CssClass="forward">
 					<c:VerticalLayout></c:VerticalLayout>
-					<c:TextView Id="obligateredButton" Text="{@obligateredLeft})" />
+					<c:TextView Id="obligateredButton" Text="{$ToString(@obligateredLeft)})" />
+					<!--<c:TextView Id="obligateredButton" Text="{@obligateredLeft})" />-->
 					<c:Image />
 					<c:TextView Text="#forward# (" />
 				</c:DockLayout>
@@ -80,7 +81,8 @@
 				</c:DockLayout>
 				<c:HorizontalLine />
 
-				<s:If Test="@forwardAllowed">
+				<!--<s:If Test="@forwardAllowed">-->
+				<s:If Test="$ForwardIsntAllowed()">
 					<c:HorizontalLayout CssClass="margin_top"></c:HorizontalLayout>
 				</s:If>
 				<s:Else>
