@@ -345,3 +345,4 @@ web_site	Web-site
 webSite		Сайт разработчика		
 YES		Yes		
 ZAO				ZAO
+emDash	—

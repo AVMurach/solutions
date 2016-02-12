@@ -461,14 +461,13 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 			$.AddGlobal("globPeremSnapshot", editControl);
 		var path = null;
 	
-		currAns_ = currAnswer;
-		if((currAnswer).ToString()== '—'){
-          var currAns_ = null;
-        } else {var currAns_ = currAnswer};
+		//currAns_ = currAnswer;
+	//	if((currAnswer).ToString()== '—'){
+      //    var currAns_ = null;
+    //    } else {var currAns_ = currAnswer};
 
-Dialog.Debug(currAns_);
 
-		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAns_, true, title, GalleryCallBack);
+		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAnswer, true, title, GalleryCallBack);
 	}
 
 	if (answerType == DB.Current.Constant.DataType.DateTime) {
