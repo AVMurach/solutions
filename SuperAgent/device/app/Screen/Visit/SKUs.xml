@@ -167,7 +167,19 @@
 											<c:DockLayout
 												OnClick="$GoToQuestionAction($child.AnswerType, $child.Question, $sku.SKU, control{$indexCh}, $child.AnswerOutput, $child.Description)"
 												CssClass="dl_answers_m" >
-								
+
+												<s:If Test="$ObligatedAnswered($child.Answer, $child.Obligatoriness)">
+													<!-- <c:HorizontalLayout CssClass="answered_side_gr_m"></c:HorizontalLayout> -->
+													<s:If Test="$child.Obligatoriness">
+														<c:HorizontalLayout CssClass="required_side_gr_m"></c:HorizontalLayout>
+													</s:If>
+												</s:If>
+												<s:Else>
+													<s:If Test="$child.Obligatoriness">
+														<c:HorizontalLayout CssClass="required_side_gr_m"></c:HorizontalLayout>
+													</s:If>
+												</s:Else>
+					
 												<c:TextView Text="$child.Description" CssClass="description_answered_m"></c:TextView>
 												<s:If Test="$child.IsInputField==1">
 													<c:EditText Id="control{$indexCh}" Text="$child.Answer"
@@ -176,10 +188,14 @@
 														CssClass="answer_editText_m" OnLostFocus="$CheangeObligatorinessIndex()"></c:EditText>
 														
 												</s:If>
-												<s:Else>
+                                                <s:Else>
 													<c:TextView Id="control{$indexCh}" Text="$child.AnswerOutput"
 														CssClass="answer_textView_m"></c:TextView>
-												</s:Else>
+												</s:Else> 
+
+                                          
+
+
 											</c:DockLayout>
 				
 										</c:VerticalLayout>

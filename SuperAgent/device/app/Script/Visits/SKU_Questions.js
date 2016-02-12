@@ -455,21 +455,20 @@ function GoToQuestionAction(control, answerType, question, sku, editControl, cur
 
 
 	if (answerType == DB.Current.Constant.DataType.Snapshot) {		
-
-		questionValueGl = question;
-
-
-        
-        controlPeremSnapshot = editControl;
-				
+		questionValueGl = question;        
+       controlPeremSnapshot = editControl;				
 		if ($.Exists("globPeremSnapshot") == false)
 			$.AddGlobal("globPeremSnapshot", editControl);
-
-
-			
-
 		var path = null;
-		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAnswer, true, title, GalleryCallBack);
+	
+		currAns_ = currAnswer;
+		if((currAnswer).ToString()== '—'){
+          var currAns_ = null;
+        } else {var currAns_ = currAnswer};
+
+Dialog.Debug(currAns_);
+
+		Images.AddQuestionSnapshot("USR_SKUQuestions", question, sku, currAns_, true, title, GalleryCallBack);
 	}
 
 	if (answerType == DB.Current.Constant.DataType.DateTime) {
@@ -691,7 +690,8 @@ function CheangeObligatorinessIndex() {
 				"WHERE SS.SKU=S.SKU AND (SS.Answer='Yes' OR SS.Answer='Да')))");
 	q.AddParameter("emptyRef", DB.EmptyRef("Catalog_Question"));
 	obligateredLeft = q.ExecuteCount();
-				
+			
+
 	if(parseInt(obligateredLeft)==parseInt(0)){
 		if(controlPeremObligatered){
 			controlPeremObligatered = false;
@@ -700,7 +700,7 @@ function CheangeObligatorinessIndex() {
 		}
 	}else{
 		if(controlPeremRefresh == false){
-			Variables["obligateredButton"].Text = obligateredLeft;
+			Variables["obligateredButton"].Text = ToString(obligateredLeft)+')' ;  
 			Variables["obligateredInfo"].Text = obligateredLeft;
 			return;
 		}else{
@@ -732,4 +732,12 @@ function CheangeObligatorinessIndex() {
 //	
 }
 
+
+function ObligatedAnswered(answer, obligatoriness) {
+	if (parseInt(obligatoriness)==parseInt(1)){
+		if (String.IsNullOrEmpty(answer)==false & answer!="—")
+			return true;
+	}
+	return false;
+}
 
